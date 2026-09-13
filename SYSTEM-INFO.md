@@ -7,7 +7,7 @@ size/count. "Possible gamut" = everything the real hardware could
 ever produce; "palette size/count" = how many of those colors are
 selectable on screen at once. `tools/check_palette.py` enforces GAMUT
 for `c64/` and `gb/` (screen colors only) and FAMILY (baseline +
-distance check) for `nes/` `gb/` `gg/` `snes/` `c64/`.
+distance check) for `nes/` `gb/` `gg/` `snes/` `c64/` `compy/`.
 
 | Theme | Native resolution | Color depth | Possible gamut | Palette size / count on-screen |
 | --- | --- | --- | --- | --- |
@@ -18,6 +18,7 @@ distance check) for `nes/` `gb/` `gg/` `snes/` `c64/`.
 | `amiga/` | 320×256 (PAL low-res) | OCS 12-bit RGB (4-4-4) | 4096 (12-bit OCS) | This theme: fixed 4-pen chrome (`#0055AA` white black `#FF8800`); art uses full 4096-color OCS range |
 | `gb/` | 160×144 (DMG-01) | 2-bit (4 shades) | 4 fixed greens (DMG LCD) | 4 (gamut == palette, no larger master palette to pick from) |
 | `gg/` | 160×144 | 12-bit master palette (4-4-4) | 4096 (Master System VDP) | 32 on screen at once (2 palettes × 16, incl. sprite) |
+| `compy/` | 640×480 (VGA text) | 4-bit chrome / VGA DAC | 16 (EGA) / 256 (VGA 6-bit DAC) | This theme: declared `--compy-*` pens (tube + beige plastic); FAMILY only, same reasoning as SNES — VGA is dense, plastic is not gamut-limited |
 | `snes/` | 256×224 (NTSC) | 15-bit RGB (5-5-5) | 32,768 (SNES PPU) | 256 on screen at once (CGRAM, 8-bit indexed) |
 | `win31/` `win98/` `xp/` `win7/` | Desktop-metaphor, resolution-independent (CSS) | n/a (vendor CSS theme, not emulated video hardware) | n/a | n/a — chrome fidelity governed by vendor dist (98.css / XP.css / 7.css), not a fixed hardware palette |
 | `next/` | Desktop-metaphor, resolution-independent | n/a | n/a | Chrome constrained to 4 MegaPixel grays (theme convention, not hardware gamut) |
@@ -28,7 +29,7 @@ distance check) for `nes/` `gb/` `gg/` `snes/` `c64/`.
 ## Notes
 
 - **Fixed vs. desktop-metaphor themes.** `c64/`, `gb/`, `nes/`, `gg/`,
-  `snes/`, `mac1984/`, `amiga/` emulate real fixed-resolution,
+  `snes/`, `compy/`, `mac1984/`, `amiga/` emulate real fixed-resolution,
   fixed-palette video hardware — the numbers above are hardware facts,
   not stylistic choices. `win31/` `win98/` `xp/` `win7/` `next/`
   `mac8/` `aqua/` `kde/` are desktop-metaphor themes skinned with vendor CSS

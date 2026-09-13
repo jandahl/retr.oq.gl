@@ -1,0 +1,569 @@
+/* retr-oq compy theme. Beige VGA CRT (1987 look), hand-drawn -- not
+   dos/'s COMMAND.COM and not a window manager. One tube owns the picture,
+   a chunky keyboard is the pad, screens swap via hidden. Contrast knobs
+   sit on the chin. IBM EGA 8×8 is already vendored at vendor/dos/fonts/
+   (Apache-2.0, BOOTSTRA.386); this file @font-face's that OTF rather than
+   pulling the CSS kit. */
+
+@font-face {
+  font-family: "IBM EGA";
+  src: url("../vendor/dos/fonts/Px437_IBM_EGA8.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  font-kerning: none;
+  font-synthesis: none;
+}
+
+:root {
+  --compy-black: #05080a;
+  --compy-bg: #0a1014;
+  --compy-text: #c8d0d4;
+  --compy-dim: #6a7a80;
+  --compy-bright: #e8f0f4;
+  --compy-cyan: #5ad4e8;
+  --compy-amber: #e8c040;
+  --compy-beige: #d4c4a0;
+  --compy-beige-hi: #efe4c8;
+  --compy-beige-lo: #9a8860;
+  --compy-shadow: #5a4a32;
+  --compy-room: #16140f;
+  --compy-knob: #6a6258;
+  --compy-ink: #2a2418;
+  --compy-key: #c8b890;
+  --compy-tube-brightness: 1;
+  --compy-font-size: clamp(14px, 2.3vw, 20px);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  position: fixed;
+  width: 100%;
+  background: var(--compy-room);
+  color: var(--compy-text);
+  font-family: "IBM EGA", ui-monospace, "Courier New", monospace;
+  font-size: var(--compy-font-size);
+  line-height: 1.35;
+}
+
+button:not(:disabled),
+[role="button"]:not(:disabled),
+a,
+a:link {
+  cursor: default;
+}
+
+.compy-shell {
+  position: fixed;
+  top: var(--app-top, 0);
+  left: 0;
+  right: 0;
+  height: var(--app-height, 100dvh);
+  display: flex;
+  flex-direction: column;
+  background: var(--compy-room);
+}
+
+.compy-tv {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  margin: 8px 8px 0;
+  background: var(--compy-beige);
+  border: 4px solid var(--compy-shadow);
+  border-radius: 10px 10px 14px 14px;
+  box-shadow: 0 8px 0 var(--compy-ink);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.compy-picture {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  margin: 14px 16px 8px;
+  background: var(--compy-black);
+  border: 4px solid var(--compy-ink);
+  box-shadow: inset 0 0 0 2px var(--compy-dim);
+  overflow: hidden;
+  filter: brightness(var(--compy-tube-brightness));
+}
+
+.compy-scanlines,
+.compy-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+.compy-scanlines {
+  z-index: 8;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+.compy-glow {
+  z-index: 7;
+  background: radial-gradient(ellipse at 50% 40%, rgba(90, 212, 232, 0.1), transparent 62%);
+}
+
+.compy-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2em 12px 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: var(--compy-text);
+  text-align: center;
+  background: var(--compy-bg);
+}
+.compy-screen[hidden] {
+  display: none;
+}
+.compy-screen-app {
+  justify-content: flex-start;
+  align-items: stretch;
+  text-align: left;
+}
+
+.compy-attract {
+  z-index: 6;
+  padding: 0;
+  background: var(--compy-black);
+}
+.attract-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: var(--compy-black);
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.compy-boot {
+  background: var(--compy-black);
+}
+.boot-flash {
+  position: absolute;
+  inset: 0;
+  background: var(--compy-bright);
+  pointer-events: none;
+  z-index: 2;
+  animation: compy-crt-on 0.55s steps(4) forwards;
+}
+@keyframes compy-crt-on {
+  0% { opacity: 1; transform: scaleY(0.04); }
+  45% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+.boot-kicker {
+  margin: 0 0 0.8em;
+  letter-spacing: 0.22em;
+  color: var(--compy-dim);
+}
+.boot-mem {
+  margin: 0 0 0.5em;
+  color: var(--compy-bright);
+}
+.boot-tag {
+  margin: 0 0 1.4em;
+  color: var(--compy-cyan);
+}
+.boot-prompt {
+  margin: 0;
+  color: var(--compy-text);
+}
+
+.prompt-line {
+  margin: 0;
+  color: var(--compy-bright);
+  white-space: pre;
+}
+.cursor {
+  animation: compy-blink 1s steps(1) infinite;
+}
+.press-start {
+  margin: 2em 0 0;
+  color: var(--compy-amber);
+  letter-spacing: 0.16em;
+  animation: compy-blink 1s steps(1) infinite;
+}
+@keyframes compy-blink {
+  0%, 74% { opacity: 1; }
+  75%, 100% { opacity: 0; }
+}
+.title-copy {
+  margin: 1.6em 0 0;
+  color: var(--compy-dim);
+  font-size: 0.85em;
+}
+
+.dir-box {
+  width: min(40em, 100%);
+  max-height: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  padding: 0.4em 0.2em;
+}
+.dir-box-fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.screen-heading {
+  margin: 0 0 0.35em;
+  font-size: 1em;
+  font-weight: 400;
+  color: var(--compy-cyan);
+}
+.vol {
+  margin: 0 0 0.6em;
+  color: var(--compy-dim);
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+.menu-item {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0.2em 0.35em;
+  line-height: 1.4;
+}
+.menu-cursor {
+  visibility: hidden;
+  display: inline-block;
+  width: 1.2em;
+}
+.menu-item.is-selected {
+  background: var(--compy-text);
+  color: var(--compy-bg);
+}
+.menu-item.is-selected .menu-cursor {
+  visibility: visible;
+}
+
+.hint {
+  margin: 0.8em 0 0;
+  color: var(--compy-dim);
+  font-size: 0.85em;
+}
+
+.compy-field {
+  margin-bottom: 0.5em;
+}
+.compy-field label {
+  display: block;
+  margin-bottom: 0.2em;
+  color: var(--compy-amber);
+}
+.compy-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--compy-bright);
+  background: var(--compy-black);
+  border: 2px solid var(--compy-dim);
+  padding: 0.3em 0.4em;
+  border-radius: 0;
+  outline: none;
+}
+.compy-input:focus {
+  border-color: var(--compy-amber);
+}
+
+.oq-status {
+  margin: 0 0 0.4em;
+  color: var(--compy-cyan);
+  min-height: 1.3em;
+}
+.oq-results,
+.decon-results {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  text-align: left;
+}
+.oq-row {
+  -webkit-appearance: none;
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.15em;
+  width: 100%;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  padding: 0.3em 0.35em 0.4em;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+.oq-gloss-line {
+  color: var(--compy-amber);
+}
+.oq-row.is-selected {
+  background: var(--compy-text);
+  color: var(--compy-bg);
+}
+.oq-row.is-selected .oq-gloss-line {
+  color: var(--compy-bg);
+}
+.oq-attribution {
+  flex: none;
+  margin: 0.6em 0 0;
+  color: var(--compy-dim);
+  font-size: 0.75em;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.oq-attribution a {
+  color: inherit;
+}
+
+.decon-order {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0 0 0.5em;
+  color: var(--compy-text);
+}
+.decon-card {
+  margin-bottom: 0.7em;
+  padding: 0.4em 0.3em;
+  border: 2px solid var(--compy-dim);
+  text-align: left;
+}
+.decon-tag {
+  color: var(--compy-cyan);
+}
+.decon-tag--approximate {
+  color: var(--compy-amber);
+}
+.decon-word {
+  color: var(--compy-bright);
+}
+.decon-meaning {
+  margin: 0.3em 0;
+  color: var(--compy-amber);
+  overflow-wrap: anywhere;
+}
+.decon-breakdown {
+  margin: 0.3em 0 0;
+  overflow-wrap: anywhere;
+  color: var(--compy-dim);
+}
+.decon-truncated {
+  color: var(--compy-amber);
+}
+.decon-dict-match {
+  margin: 0.5em 0 0;
+  color: var(--compy-cyan);
+  overflow-wrap: anywhere;
+}
+
+.about-copy {
+  margin: 0 0 1em;
+  text-align: left;
+  line-height: 1.5;
+  color: var(--compy-text);
+}
+.about-credit {
+  margin: 0;
+  color: var(--compy-dim);
+  line-height: 1.5;
+}
+.gameover-title {
+  margin: 0 0 0.7em;
+  font-size: 1.3em;
+  color: var(--compy-amber);
+  letter-spacing: 0.08em;
+}
+
+.compy-chin {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px 10px;
+  background: var(--compy-beige);
+}
+.compy-brand {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--compy-shadow);
+}
+.compy-knobs {
+  display: flex;
+  gap: 10px;
+}
+.knob {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--compy-key), var(--compy-knob) 55%, var(--compy-ink));
+  box-shadow: 0 2px 0 var(--compy-ink);
+}
+.knob:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+html.is-keyboard .compy-keyboard {
+  display: none;
+}
+html.is-keyboard .compy-tv {
+  margin-bottom: 8px;
+}
+
+.compy-keyboard {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  margin: 8px;
+  padding: 14px 16px 16px;
+  background: linear-gradient(var(--compy-beige-hi), var(--compy-beige) 42%, var(--compy-beige-lo));
+  border: 3px solid var(--compy-shadow);
+  border-radius: 10px;
+  box-shadow: 0 5px 0 var(--compy-ink);
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+}
+.key-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.key {
+  -webkit-appearance: none;
+  appearance: none;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--compy-ink);
+  background: linear-gradient(var(--compy-beige-hi), var(--compy-key));
+  border: 0;
+  border-radius: 4px;
+  box-shadow: 0 3px 0 var(--compy-shadow);
+  min-width: 42px;
+  min-height: 36px;
+  padding: 0 8px;
+}
+.key:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+.key-enter {
+  min-width: 76px;
+  min-height: 52px;
+  background: linear-gradient(var(--compy-amber), var(--compy-beige-lo));
+}
+.key-dpad {
+  position: relative;
+  width: 108px;
+  height: 108px;
+}
+.key-up,
+.key-down,
+.key-left,
+.key-right {
+  position: absolute;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+}
+.key-up { left: 37px; top: 0; }
+.key-down { left: 37px; bottom: 0; }
+.key-left { left: 0; top: 37px; }
+.key-right { right: 0; top: 37px; }
+
+@media (min-width: 700px) {
+  .compy-tv {
+    margin: 12px auto 0;
+    width: min(720px, calc(100% - 24px));
+  }
+  .compy-keyboard {
+    margin: 8px auto 12px;
+    width: min(720px, calc(100% - 24px));
+  }
+}
+
+@media (min-width: 900px) and (min-aspect-ratio: 3/2) {
+  .compy-shell {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .compy-tv {
+    order: 0;
+    flex: 1 1 auto;
+    align-self: stretch;
+    width: auto;
+    max-width: 1100px;
+    margin: 12px 0;
+  }
+  .compy-keyboard {
+    display: contents;
+  }
+  .key-cluster {
+    background: linear-gradient(var(--compy-beige-hi), var(--compy-beige) 42%, var(--compy-beige-lo));
+    border: 3px solid var(--compy-shadow);
+    border-radius: 999px;
+    box-shadow: 0 5px 0 var(--compy-ink);
+    padding: 18px 16px;
+  }
+  .key-cluster-left { order: -1; }
+  .key-cluster-right { order: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-flash, .cursor, .press-start { animation: none; }
+  .compy-scanlines, .compy-glow { display: none; }
+}
