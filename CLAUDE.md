@@ -57,7 +57,7 @@ Don't mix window managers across families.
 | OS X | `aqua/` (+ future Tiger/Leopard) | `shared/osx/` — not classic Mac, not Redmond |
 | Own WM | `next/` `kde/` `beos/` | each theme's own `app.js` — not Redmond |
 | Text mode | `dos/` `c64/` | no overlapping windows; full-screen takeovers |
-| Console | `nes/` `gb/` `snes/` `gg/` | one screen, one `handleInput()` |
+| Console | `nes/` `gb/` `snes/` `gg/` `compy/` | one screen, one `handleInput()` |
 | OS/2 host | `os2/` | Workplace Shell host; Win-OS/2 and DOS guests reuse their source themes |
 
 ## `shared/`
@@ -98,7 +98,7 @@ plus undocumented `DOOM`. `BUILD`/`DECON` in `DIR` are placeholders.
 `LOAD"NAME",8` then `RUN`. Hand-drawn chrome; C64 Pro Mono at
 `vendor/c64/fonts/`.
 
-**`nes/` / `gb/` / `snes/` / `gg/`** — Console, not a desktop: no floating windows.
+**`nes/` / `gb/` / `snes/` / `gg/` / `compy/`** — Console, not a desktop: no floating windows.
 Keyboard and on-screen pad both call `handleInput()`. 16px inputs;
 `html.is-keyboard` hides the pad. NES audio is Web Audio pulse/triangle/
 noise — no samples, no Nintendo tunes. SNES is sampled + echo, still
@@ -111,6 +111,10 @@ an LCD filter, not the UI. SNES is PAL Super Nintendo (no NES.css): gray
 dogbone, rainbow Y/X/B/A, not the NA purple toaster. Title wordmark is
 Super (TeX Gyre Heros italic) + OQ! (Press Start 2P). Audio is sampled +
 echo at a high clip, not NES pulse. X=A, Y=B, L=Select, R=Start.
+`compy/` is a beige VGA CRT in this family, not `dos/`: DIR listing is
+the SELECT menu, IBM EGA 8×8 from `vendor/dos/fonts/`, contrast knobs on
+the chin (outside the framebuffer), PC-speaker squares. Hub name Beige
+386; no cartoon character marks on the glass.
 
 **`amiga/`** — Chrome is four Kickstart 1.3 pens (`#0055AA` white black
 `#FF8800`). Art (backdrop, icons, About, copper, Boing) is 12-bit OCS.
@@ -187,7 +191,7 @@ keyboard by stubbing `visualViewport.height` / `offsetTop` and firing
 `resize` — you cannot drive a real IME from CI.
 
 `tools/check_palette.py` (CI: `.github/workflows/palette.yml`) covers
-`nes/` `gb/` `gg/` `snes/` `c64/` — the themes that declare a canon
+`nes/` `gb/` `gg/` `snes/` `c64/` `compy/` — the themes that declare a canon
 palette as `--<theme>-*` CSS custom properties. Two different checks,
 because "the palette" means two different sizes: the *possible* gamut
 (everything the hardware could produce -- C64: exactly 16 colors; DMG

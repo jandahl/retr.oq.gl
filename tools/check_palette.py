@@ -54,7 +54,7 @@ BASELINE_PATH = Path(__file__).resolve().parent / "palette-baseline.json"
 PALETTE_DISTANCE = 75  # RGB Euclidean distance -- catches a wrong *family* of color, not a slightly-off shade
 GAMUT_DISTANCE = 20  # tighter: this is "is it actually one of the hardware's fixed colors", not just "close"
 
-PALETTE_THEMES = ["nes", "gb", "gg", "snes", "c64"]
+PALETTE_THEMES = ["nes", "gb", "gg", "snes", "c64", "compy"]
 
 # Real hardware color counts, for context in the report -- see module
 # docstring for why only c64/gb get a hard GAMUT check below.
@@ -63,6 +63,7 @@ GAMUT_INFO = {
     "gb": "DMG LCD: exactly 4 fixed shades of green, all on screen at once -- gamut-checked below (--gb-lightest/light/dark/darkest only; the rest is the plastic shell)",
     "gg": "12-bit VDP, 4096 possible colors, 32 simultaneous -- dense enough that ~any 24-bit color already lands within half a quantization step of a real one, so there's no meaningful 'unreachable' to gate on",
     "snes": "15-bit palette, 32768 possible colors, up to 256 simultaneous -- same reasoning as gg: too dense for a hard gamut check to ever actually fire",
+    "compy": "VGA 6-bit DAC / EGA 16 -- tube pens are a declared family, beige plastic is not gamut-limited, so FAMILY only (same split as SNES chrome vs picture)",
     "c64": "VIC-II: exactly 16 fixed colors, full stop -- gamut-checked below across the whole theme (a real C64's screen, border included, truly could not show anything else)",
 }
 

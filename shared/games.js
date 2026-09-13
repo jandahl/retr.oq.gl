@@ -43,6 +43,7 @@ window.OqGames = {
     amiga: ["boing", "copper", "ss-boing-idle"],
     gb: ["morph", "konami", "ss-attract"],
     gg: ["konami", "ss-attract"],
+    compy: ["konami", "ss-attract"],
     snes: ["kal-q", "konami", "ss-attract"],
     win31: ["solitaire", "credits", "ss-flying"],
     next: ["panic", "ss-backspace"],

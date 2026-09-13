@@ -23,6 +23,7 @@ stays the cross-theme source of truth.
 | 1982 | [`c64/`](c64/) | `LOAD"$",8` / `RUN`. Hand-drawn; C64 Pro Mono |
 | 1984 | [`mac1984/`](mac1984/) | System 1.0. [`system.css`](https://github.com/sakofchit/system.css) |
 | 1985 | [`nes/`](nes/) | Title → file select → OQ!. [NES.css](https://github.com/nostalgic-css/NES.css); Web Audio APU |
+| 1987 | [`compy/`](compy/) | Beige VGA CRT. DIR as SELECT, contrast knobs, IBM EGA from `vendor/dos/` |
 | 1988 | [`amiga/`](amiga/) | Workbench 1.3. Four-pen chrome, OCS art, TopazPlus |
 | 1989 | [`gb/`](gb/) | DMG-01 brick. Hand-drawn; Press Start 2P from `vendor/nes/` |
 | 1990 | [`gg/`](gg/) | Game Gear. Pocket Master System: 160×144, 32/4096. Landscape; 1/2, no Select |
@@ -54,6 +55,7 @@ audio demo, or an easter egg. Source of truth: `shared/games.js`.
 | `amiga/` | Boing Ball, Copper bars, Boing idle |
 | `gb/` | MORPH!, Konami Code, LCD fox attract |
 | `gg/` | Konami Code, LCD plasma attract |
+| `compy/` | Konami Code, CGA starfield attract |
 | `snes/` | Super KAL-Q! (Klax), Konami Code, Mode 7 attract |
 | `win31/` | Solitaire (joke), hidden credits |
 | `next/` | Kernel panic (undocumented egg), BackSpace idle |
@@ -84,7 +86,7 @@ It checks whitespace, JavaScript, CSS, the CI HTML page set, and the OQ!2
 smoke tests before allowing a push.
 
 **`vendor/<theme>/`** — upstream dist + LICENSE, not SCSS sources.
-**`tests/`** — Playwright/pytest for `win98/`, `nes/`, `gb/`, `snes/`, `gg/`, Redmond Run, and the screensaver host. `tests/shared/*.mjs` is Node-only and runs on every PR.
+**`tests/`** — Playwright/pytest for `win98/`, `nes/`, `gb/`, `snes/`, `gg/`, `compy/`, Redmond Run, and the screensaver host. `tests/shared/*.mjs` is Node-only and runs on every PR.
 
 ## License
 

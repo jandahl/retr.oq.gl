@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>retr-oq — Beige 386</title>
+<!-- ?v= cache-busting, same convention as snes/index.html -- bump when
+     style.css or app.js actually changes. -->
+<link rel="stylesheet" href="style.css?v=1" />
+</head>
+<body>
+  <!-- Beige VGA CRT, not a window manager and not dos/'s COMMAND.COM:
+       one tube owns the picture, a chunky keyboard is the pad, screens
+       swap via hidden. Contrast knobs live on the chin, outside the
+       framebuffer. No vendor marks. -->
+  <div class="compy-shell" id="compy-shell">
+    <div class="compy-tv" id="compy-tv">
+      <div class="compy-picture" id="compy-picture">
+        <div class="compy-screen compy-boot" id="boot-screen" hidden>
+          <div class="boot-flash" aria-hidden="true"></div>
+          <p class="boot-kicker">BEIGE 386 BIOS 3.86</p>
+          <p class="boot-mem">640K BASE MEMORY OK</p>
+          <p class="boot-tag">A SPECTACLE OF GRAPHICS AND SOUND</p>
+          <p class="boot-prompt">C:\OQ></p>
+        </div>
+        <div class="compy-screen" id="title-screen">
+          <p class="prompt-line">C:\OQ> dir /p<span class="cursor" aria-hidden="true">_</span></p>
+          <p class="press-start" id="press-start">PRESS ENTER</p>
+          <p class="title-copy">retr-oq / VGA CRT</p>
+        </div>
+
+        <div class="compy-screen" id="menu-screen" hidden>
+          <section class="dir-box">
+            <h2 class="screen-heading">Directory of C:\OQ</h2>
+            <p class="vol">Volume in drive C is BEIGE386</p>
+            <ul class="menu-list" id="menu-list">
+              <li><button type="button" class="menu-item is-selected" data-screen="oq" id="menu-oq"><span class="menu-cursor" aria-hidden="true">></span> OQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EXE&nbsp;&nbsp;&nbsp;&nbsp;SUPER OQ!</button></li>
+              <li><button type="button" class="menu-item" data-screen="decon" id="menu-decon"><span class="menu-cursor" aria-hidden="true">></span> DECON&nbsp;&nbsp;&nbsp;EXE&nbsp;&nbsp;&nbsp;&nbsp;WORD DECONSTRUCTOR</button></li>
+              <li><button type="button" class="menu-item" data-screen="about" id="menu-about"><span class="menu-cursor" aria-hidden="true">></span> ABOUT&nbsp;&nbsp;&nbsp;TXT</button></li>
+              <li><button type="button" class="menu-item" data-screen="quit" id="menu-quit"><span class="menu-cursor" aria-hidden="true">></span> EXIT&nbsp;&nbsp;&nbsp;&nbsp;COM</button></li>
+            </ul>
+          </section>
+          <p class="hint">ARROWS=MOVE  ENTER=RUN  ESC=TITLE</p>
+        </div>
+
+        <div class="compy-screen compy-screen-app" id="oq-screen" hidden>
+          <section class="dir-box dir-box-fill">
+            <h2 class="screen-heading">OQ.EXE — SUPER OQ!</h2>
+            <div class="compy-field">
+              <label for="oq-filter">SEARCH</label>
+              <input type="text" id="oq-filter" class="compy-input" placeholder="TYPE A WORD..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+            </div>
+            <p class="oq-status" id="oq-status"></p>
+            <div class="oq-results" id="oq-results" role="listbox" aria-label="Dictionary results"></div>
+            <p class="oq-attribution">
+              <a id="oq-attribution" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer"></a>
+            </p>
+          </section>
+          <p class="hint">ARROWS=MOVE  ESC=DIR</p>
+        </div>
+
+        <div class="compy-screen compy-screen-app" id="decon-screen" hidden>
+          <section class="dir-box dir-box-fill">
+            <h2 class="screen-heading">DECON.EXE — WORD DECONSTRUCTOR</h2>
+            <div class="compy-field">
+              <label for="decon-word">WORD</label>
+              <input type="text" id="decon-word" class="compy-input" placeholder="TYPE, THEN ENTER..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+            </div>
+            <label class="decon-order">
+              <input type="checkbox" id="decon-root-first" checked />
+              <span>ROOT FIRST</span>
+            </label>
+            <p class="oq-status" id="decon-status"></p>
+            <div class="decon-results" id="decon-results"></div>
+          </section>
+          <p class="hint">ENTER=ANALYZE  ESC=DIR</p>
+        </div>
+
+        <div class="compy-screen" id="about-screen" hidden>
+          <section class="dir-box">
+            <h2 class="screen-heading">ABOUT.TXT</h2>
+            <p class="about-copy">
+              Super OQ! is a Kalaallisut dictionary on a beige 386 CRT.
+              640x480 VGA text, PC speaker, contrast knobs on the chin.
+              WORD DECONSTRUCTOR splits a word into its morphemes.
+            </p>
+            <p class="about-credit">A retr-oq theme.<br />ESC=DIR</p>
+          </section>
+        </div>
+
+        <div class="compy-screen" id="gameover-screen" hidden>
+          <p class="gameover-title">GAME OVER</p>
+          <section class="dir-box">
+            <h2 class="screen-heading">CONTINUE?</h2>
+            <ul class="menu-list" id="gameover-list">
+              <li><button type="button" class="menu-item is-selected" data-continue="yes" id="continue-yes"><span class="menu-cursor" aria-hidden="true">></span> CONTINUE</button></li>
+              <li><button type="button" class="menu-item" data-continue="no" id="continue-no"><span class="menu-cursor" aria-hidden="true">></span> GIVE UP</button></li>
+            </ul>
+          </section>
+          <p class="title-copy">30 LIVES REMAINING</p>
+        </div>
+
+        <!-- In-CRT attract: CGA starfield lives on the tube only.
+             The beige keyboard stays; this is not a fullscreen overlay. -->
+        <div class="compy-screen compy-attract" id="attract-screen" hidden>
+          <canvas class="attract-canvas" id="attract-canvas" width="320" height="200" aria-hidden="true"></canvas>
+        </div>
+
+        <div class="compy-scanlines" aria-hidden="true"></div>
+        <div class="compy-glow" aria-hidden="true"></div>
+      </div>
+
+      <div class="compy-chin">
+        <p class="compy-brand">BEIGE 386</p>
+        <div class="compy-knobs" role="group" aria-label="Contrast">
+          <button type="button" class="knob" data-input="contrast-down" aria-label="Contrast down"></button>
+          <button type="button" class="knob" data-input="contrast-up" aria-label="Contrast up"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- On-screen keyboard: the touch equivalent of sitting at the machine.
+         Keyboard arrows / Enter / Esc still drive handleInput(). -->
+    <div class="compy-keyboard" id="compy-keyboard">
+      <div class="key-cluster key-cluster-left">
+        <button type="button" class="key key-esc" data-input="b" aria-label="Escape">ESC</button>
+        <div class="key-dpad" role="group" aria-label="Arrows">
+          <button type="button" class="key key-up" data-input="up" aria-label="Up"></button>
+          <button type="button" class="key key-left" data-input="left" aria-label="Left"></button>
+          <button type="button" class="key key-right" data-input="right" aria-label="Right"></button>
+          <button type="button" class="key key-down" data-input="down" aria-label="Down"></button>
+        </div>
+      </div>
+      <div class="key-cluster key-cluster-right">
+        <button type="button" class="key key-tab" data-input="select" aria-label="Tab">TAB</button>
+        <button type="button" class="key key-enter" data-input="a" aria-label="Enter">ENTER</button>
+        <button type="button" class="key key-start" data-input="start" aria-label="Start">START</button>
+      </div>
+    </div>
+  </div>
+
+<script src="../shared/dict-source.js?v=3"></script>
+<script src="../shared/katersat-source.js?v=1"></script>
+<script src="../shared/dict-merge.js?v=1"></script>
+<script src="../shared/hyphenation.js?v=1"></script>
+<script src="../shared/router.js?v=1"></script>
+<script type="module" src="../shared/oq-analysis.js?v=13"></script>
+<script src="../shared/decon-app.js?v=4"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>

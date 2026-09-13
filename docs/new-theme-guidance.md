@@ -36,7 +36,7 @@ Period-specific differences belong at the boundary and should be recorded in
 | OS X desktop | `aqua/` (+ future) | Use `shared/osx/` |
 | Own window manager | `next/`, `kde/` | Keep WM behavior local |
 | Text mode | `dos/`, `c64/` | Single-tasking/full-screen; no overlapping windows |
-| Console | `nes/`, `gb/`, `snes/`, `gg/` | One screen and one central `handleInput()` |
+| Console | `nes/`, `gb/`, `snes/`, `gg/`, `compy/` | One screen and one central `handleInput()` |
 
 Before coding, record the period/hardware target, display geometry, font,
 palette, controls, shell metaphor, and asset/licensing needs. Do not mix

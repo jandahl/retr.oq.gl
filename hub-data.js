@@ -115,6 +115,30 @@ window.OqHubMachines = [
     `,
   },
   {
+    href: "compy/",
+    name: "Beige 386",
+    year: "1987",
+    category: "home-computer",
+    tags: ["console"],
+    hasGames: false,
+    meta: "VGA CRT",
+    iconNote: "Beige VGA monitor, cyan text, contrast knobs on the chin",
+    icon: `
+      <rect width="32" height="32" fill="#16140f"/>
+      <rect x="4" y="3" width="24" height="20" fill="#d4c4a0"/>
+      <rect x="6" y="5" width="20" height="13" fill="#0a1014"/>
+      <rect x="8" y="7" width="2" height="2" fill="#5ad4e8"/>
+      <rect x="11" y="7" width="8" height="2" fill="#c8d0d4"/>
+      <rect x="8" y="11" width="2" height="2" fill="#c8d0d4" class="blink"/>
+      <rect x="10" y="20" width="8" height="2" fill="#5a4a32"/>
+      <rect x="22" y="20" width="2" height="2" fill="#6a6258"/>
+      <rect x="25" y="20" width="2" height="2" fill="#6a6258"/>
+      <rect x="6" y="24" width="20" height="6" fill="#d4c4a0"/>
+      <rect x="8" y="26" width="3" height="2" fill="#2a2418"/>
+      <rect x="21" y="25" width="4" height="3" fill="#e8c040"/>
+    `,
+  },
+  {
     href: "amiga/",
     name: "Amiga",
     year: "1988",
