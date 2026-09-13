@@ -1,18 +1,19 @@
 /* retr-oq compy theme. Cartoon beige CRT (not a photoreal VGA, not
    dos/'s COMMAND.COM). One tube owns the picture, a chunky keyboard is
    the pad, screens swap via hidden. Contrast *wheels* sit on the bottom
-   of the chassis (18 steps, black → blue). C64 Pro Mono is already
-   vendored at vendor/c64/fonts/ -- the cartoon machine used that face,
-   not IBM EGA, so this file @font-face's it rather than BOOTSTRA. */
+   of the chassis (18 steps, black → blue). IBM EGA 8×8 is already
+   vendored at vendor/dos/fonts/ (BOOTSTRA.386 / Apache-2.0); this file
+   @font-face's that OTF rather than pulling the CSS kit. C64 Pro Mono
+   is 1em/glyph and ate the tube -- leave it on c64/. */
 
 @font-face {
-  font-family: "C64 Pro Mono";
-  src:
-    url("../vendor/c64/fonts/C64_Pro_Mono-STYLE.woff2") format("woff2"),
-    url("../vendor/c64/fonts/C64_Pro_Mono-STYLE.woff") format("woff");
+  font-family: "IBM EGA";
+  src: url("../vendor/dos/fonts/Px437_IBM_EGA8.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
+  font-kerning: none;
+  font-synthesis: none;
 }
 
 :root {
@@ -60,7 +61,7 @@ html, body {
   width: 100%;
   background: var(--compy-room);
   color: var(--compy-text);
-  font-family: "C64 Pro Mono", ui-monospace, "Courier New", monospace;
+  font-family: "IBM EGA", ui-monospace, "Courier New", monospace;
   font-size: var(--compy-font-size);
   line-height: 1.35;
 }
@@ -518,10 +519,8 @@ html.is-keyboard .compy-tv {
   -webkit-appearance: none;
   appearance: none;
   font: inherit;
-  /* C64 Pro Mono is 1em wide per glyph -- 11px START is 55px plus
-     chrome, which is how the live phone clipped STA / ESC. */
-  font-size: 8px;
-  letter-spacing: 0;
+  font-size: 11px;
+  letter-spacing: 0.04em;
   color: var(--compy-ink);
   background: var(--compy-key);
   border: 2px solid var(--compy-ink);

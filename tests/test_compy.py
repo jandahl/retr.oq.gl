@@ -294,11 +294,7 @@ def test_chassis_badge_cycles_undocumented_skins(page, base_url):
 
 
 def test_phone_keyboard_fits_viewport(touch_page, base_url):
-    """Cartoon chrome cannot shove START off the right edge of a phone.
-
-    C64 Pro Mono is 1em/glyph -- measure after the face is actually loaded
-    or the test passes on a fallback that's narrower than production.
-    """
+    """Cartoon chrome cannot shove START off the right edge of a phone."""
     goto_compy(touch_page, base_url)
     touch_page.evaluate("() => document.fonts && document.fonts.ready")
     touch_page.wait_for_timeout(80)

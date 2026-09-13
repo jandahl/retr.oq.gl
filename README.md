@@ -23,7 +23,7 @@ stays the cross-theme source of truth.
 | 1982 | [`c64/`](c64/) | `LOAD"$",8` / `RUN`. Hand-drawn; C64 Pro Mono |
 | 1984 | [`mac1984/`](mac1984/) | System 1.0. [`system.css`](https://github.com/sakofchit/system.css) |
 | 1985 | [`nes/`](nes/) | Title → file select → OQ!. [NES.css](https://github.com/nostalgic-css/NES.css); Web Audio APU |
-| 1987 | [`compy/`](compy/) | Beige cartoon CRT. DIR as SELECT, contrast wheels, C64 Pro Mono |
+| 1987 | [`compy/`](compy/) | Beige cartoon CRT. DIR as SELECT, contrast wheels, IBM EGA from `vendor/dos/` |
 | 1988 | [`amiga/`](amiga/) | Workbench 1.3. Four-pen chrome, OCS art, TopazPlus |
 | 1989 | [`gb/`](gb/) | DMG-01 brick. Hand-drawn; Press Start 2P from `vendor/nes/` |
 | 1990 | [`gg/`](gg/) | Game Gear. Pocket Master System: 160×144, 32/4096. Landscape; 1/2, no Select |

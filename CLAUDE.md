@@ -112,7 +112,7 @@ dogbone, rainbow Y/X/B/A, not the NA purple toaster. Title wordmark is
 Super (TeX Gyre Heros italic) + OQ! (Press Start 2P). Audio is sampled +
 echo at a high clip, not NES pulse. X=A, Y=B, L=Select, R=Start.
 `compy/` is a cartoon beige CRT in this family, not `dos/`: DIR listing is
-the SELECT menu, C64 Pro Mono from `vendor/c64/fonts/`, white/blue tube,
+the SELECT menu, IBM EGA 8×8 from `vendor/dos/fonts/`, white/blue tube,
 contrast wheels on the bottom (outside the framebuffer), PC-speaker squares.
 Hub name Beige 386; no cartoon character marks on the glass. Undocumented
 chassis skins (click the chin badge): 400 green phosphor (`html.is-tandy`),

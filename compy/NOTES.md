@@ -9,8 +9,9 @@ live on the bottom of the chassis (outside the framebuffer).
 - Hub name is **Beige 386**. The directory is `compy/` because that is
   the machine nickname; keep vendor names, wrestler characters, and
   cartoon proper names **off the glass**. Original art, no trademarks.
-- Font is C64 Pro Mono from `vendor/c64/fonts/` (the cartoon tube used
-  that face, not IBM EGA). White/blue monochrome phosphor.
+- Font is IBM EGA 8×8 from `vendor/dos/fonts/` (BOOTSTRA.386 / Apache-2.0).
+  White/blue monochrome phosphor. Not C64 Pro Mono -- that face is 1em
+  per glyph and ate the tube.
 - Contrast: 18 steps (0–17), `--compy-tube-brightness` plus a
   `--compy-blue-wash` that peaks mid-travel (black → blue → black).
   Wheels are `[data-input=contrast-down|contrast-up]`; `[` / `]` on the
