@@ -121,21 +121,18 @@ window.OqHubMachines = [
     category: "home-computer",
     tags: ["console"],
     hasGames: false,
-    meta: "VGA CRT",
-    iconNote: "Beige VGA monitor, cyan text, contrast knobs on the chin",
+    meta: "cartoon CRT",
+    iconNote: "Round beige CRT, blue text, contrast wheels on the bottom",
     icon: `
-      <rect width="32" height="32" fill="#16140f"/>
-      <rect x="4" y="3" width="24" height="20" fill="#d4c4a0"/>
-      <rect x="6" y="5" width="20" height="13" fill="#0a1014"/>
-      <rect x="8" y="7" width="2" height="2" fill="#5ad4e8"/>
-      <rect x="11" y="7" width="8" height="2" fill="#c8d0d4"/>
-      <rect x="8" y="11" width="2" height="2" fill="#c8d0d4" class="blink"/>
-      <rect x="10" y="20" width="8" height="2" fill="#5a4a32"/>
-      <rect x="22" y="20" width="2" height="2" fill="#6a6258"/>
-      <rect x="25" y="20" width="2" height="2" fill="#6a6258"/>
-      <rect x="6" y="24" width="20" height="6" fill="#d4c4a0"/>
-      <rect x="8" y="26" width="3" height="2" fill="#2a2418"/>
-      <rect x="21" y="25" width="4" height="3" fill="#e8c040"/>
+      <rect width="32" height="32" fill="#3a2e22"/>
+      <rect x="3" y="2" width="26" height="21" rx="6" fill="#e2d2a8"/>
+      <rect x="6" y="5" width="20" height="13" fill="#0c1420"/>
+      <rect x="8" y="7" width="10" height="2" fill="#7ec8f8"/>
+      <rect x="8" y="11" width="2" height="2" fill="#d4e4f8" class="blink"/>
+      <rect x="10" y="20" width="8" height="2" fill="#5a4830"/>
+      <rect x="8" y="23" width="4" height="4" rx="2" fill="#7a7268"/>
+      <rect x="20" y="23" width="4" height="4" rx="2" fill="#7a7268"/>
+      <rect x="5" y="27" width="22" height="4" rx="1" fill="#e2d2a8"/>
     `,
   },
   {
