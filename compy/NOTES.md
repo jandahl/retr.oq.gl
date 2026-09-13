@@ -20,6 +20,9 @@ live on the bottom of the chassis (outside the framebuffer).
   → **400** (`html.is-tandy`, green phosphor) → **486** (`html.is-lappy`,
   clamshell). On-glass labels stay `BEIGE 386` / `400` / `486`. Persisted
   in `localStorage` (`compy-chassis`). Not extra hub tiles, not games.
+- Mobile: the pad is a compact row (not the 900px split). Split layout
+  also requires `min-height: 560px` so a landscape phone keeps the tube
+  stacked above the keys.
 - No quit-to-hub UI on the chassis — console family, see `nes/NOTES.md`.
   `EXIT.COM` on the DIR listing is the title-menu option (`../`).
 - Konami Code egg lives here — undocumented beyond this pointer.
