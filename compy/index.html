@@ -6,7 +6,7 @@
 <title>retr-oq — Beige 386</title>
 <!-- ?v= cache-busting, same convention as snes/index.html -- bump when
      style.css or app.js actually changes. -->
-<link rel="stylesheet" href="style.css?v=3" />
+<link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body>
   <!-- Cartoon beige CRT, not a window manager and not dos/'s COMMAND.COM:
@@ -53,11 +53,8 @@
             </div>
             <p class="oq-status" id="oq-status"></p>
             <div class="oq-results" id="oq-results" role="listbox" aria-label="Dictionary results"></div>
-            <p class="oq-attribution">
-              <a id="oq-attribution" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer"></a>
-            </p>
           </section>
-          <p class="hint">ARROWS=MOVE  ESC=DIR</p>
+          <p class="hint">ARROWS=MOVE  ESC=DIR  SOURCES=ABOUT.TXT</p>
         </div>
 
         <div class="compy-screen compy-screen-app" id="decon-screen" hidden>
@@ -85,6 +82,7 @@
               White/blue tube, C64-style type, contrast wheels on the bottom.
               WORD DECONSTRUCTOR splits a word into its morphemes.
             </p>
+            <p class="about-credit" id="oq-attribution"></p>
             <p class="about-credit">A retr-oq theme.<br />ESC=DIR</p>
           </section>
         </div>
@@ -147,6 +145,6 @@
 <script src="../shared/router.js?v=1"></script>
 <script type="module" src="../shared/oq-analysis.js?v=13"></script>
 <script src="../shared/decon-app.js?v=4"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
