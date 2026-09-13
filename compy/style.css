@@ -45,7 +45,9 @@
   --compy-lappy-lo: #9a927c;
   --compy-tube-brightness: 1;
   --compy-blue-wash: 0%;
-  --compy-font-size: clamp(14px, 2.3vw, 20px);
+  --compy-font-size: clamp(11px, 3.2vw, 18px);
+  --compy-dpad: 84px;
+  --compy-key-min: 36px;
 }
 
 html, body {
@@ -79,6 +81,7 @@ a:link {
   display: flex;
   flex-direction: column;
   background: var(--compy-room);
+  overflow: hidden;
 }
 
 .compy-tv {
@@ -92,16 +95,16 @@ a:link {
   box-shadow: 6px 8px 0 var(--compy-shadow);
   display: flex;
   flex-direction: column;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .compy-picture {
   flex: 1 1 auto;
   min-height: 0;
   position: relative;
-  margin: 20px 22px 8px;
+  margin: 12px 14px 6px;
   background: var(--compy-black);
-  border: 6px solid var(--compy-ink);
+  border: 5px solid var(--compy-ink);
   border-radius: 10px;
   box-shadow: inset 0 0 0 3px var(--compy-beige-lo);
   overflow: hidden;
@@ -216,15 +219,16 @@ a:link {
 .prompt-line {
   margin: 0;
   color: var(--compy-bright);
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .cursor {
   animation: compy-blink 1s steps(1) infinite;
 }
 .press-start {
-  margin: 2em 0 0;
+  margin: 1.4em 0 0;
   color: var(--compy-cyan);
-  letter-spacing: 0.16em;
+  letter-spacing: 0.1em;
   animation: compy-blink 1s steps(1) infinite;
 }
 @keyframes compy-blink {
@@ -443,33 +447,37 @@ a:link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  padding: 8px 16px 16px;
+  gap: 20px;
+  padding: 6px 12px 10px;
   background: var(--compy-beige);
   border-radius: 0 0 22px 22px;
   position: relative;
 }
 .compy-brand {
   position: absolute;
-  left: 18px;
+  left: 12px;
   margin: 0;
-  font-size: 10px;
-  letter-spacing: 0.28em;
+  font-size: 9px;
+  letter-spacing: 0.12em;
   color: var(--compy-shadow);
   background: none;
   border: 0;
   padding: 0;
   font-family: inherit;
+  max-width: 38%;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
 }
 .compy-knobs {
   display: flex;
-  gap: 22px;
+  gap: 18px;
 }
 .knob {
   -webkit-appearance: none;
   appearance: none;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border: 3px solid var(--compy-ink);
   border-radius: 50%;
@@ -492,15 +500,17 @@ html.is-keyboard .compy-tv {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 28px;
-  margin: 14px 8px 8px;
-  padding: 14px 16px 16px;
+  justify-content: space-evenly;
+  gap: 8px;
+  margin: 8px;
+  padding: 8px 8px 10px;
   background: var(--compy-beige);
   border: 5px solid var(--compy-ink);
   border-radius: 18px;
   box-shadow: 6px 8px 0 var(--compy-shadow);
   box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -509,63 +519,84 @@ html.is-keyboard .compy-tv {
 .key-cluster {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 .key {
   -webkit-appearance: none;
   appearance: none;
   font: inherit;
-  font-size: 12px;
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  letter-spacing: 0.04em;
   color: var(--compy-ink);
   background: var(--compy-key);
   border: 3px solid var(--compy-ink);
   border-radius: 8px;
   box-shadow: 0 4px 0 var(--compy-shadow);
-  min-width: 42px;
-  min-height: 36px;
-  padding: 0 8px;
+  min-width: var(--compy-key-min);
+  min-height: 32px;
+  padding: 0 6px;
 }
 .key:active {
   transform: translateY(2px);
   box-shadow: none;
 }
 .key-enter {
-  min-width: 76px;
-  min-height: 52px;
+  min-width: calc(var(--compy-key-min) * 1.6);
+  min-height: 44px;
   background: var(--compy-beige-hi);
 }
 .key-dpad {
   position: relative;
-  width: 108px;
-  height: 108px;
+  width: var(--compy-dpad);
+  height: var(--compy-dpad);
+  flex: 0 0 auto;
 }
 .key-up,
 .key-down,
 .key-left,
 .key-right {
   position: absolute;
-  min-width: 34px;
-  min-height: 34px;
+  min-width: 28px;
+  min-height: 28px;
   padding: 0;
 }
-.key-up { left: 37px; top: 0; }
-.key-down { left: 37px; bottom: 0; }
-.key-left { left: 0; top: 37px; }
-.key-right { right: 0; top: 37px; }
+.key-up { left: calc(50% - 14px); top: 0; }
+.key-down { left: calc(50% - 14px); bottom: 0; }
+.key-left { left: 0; top: calc(50% - 14px); }
+.key-right { right: 0; top: calc(50% - 14px); }
 
 @media (min-width: 700px) {
+  :root {
+    --compy-dpad: 108px;
+    --compy-key-min: 42px;
+  }
   .compy-tv {
     margin: 12px auto 0;
     width: min(720px, calc(100% - 24px));
   }
+  .compy-picture {
+    margin: 18px 20px 8px;
+  }
   .compy-keyboard {
-    margin: 14px auto 12px;
+    margin: 10px auto 12px;
     width: min(720px, calc(100% - 24px));
+    gap: 20px;
+    padding: 12px 16px 14px;
+  }
+  .key-cluster { gap: 12px; }
+  .compy-brand {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    max-width: none;
   }
 }
 
-@media (min-width: 900px) and (min-aspect-ratio: 3/2) {
+/* Width alone isn't the right trigger: a landscape *phone* (e.g. 932×430)
+   matches 900px + 3/2 and would split the pad into cramped side clusters.
+   SNES's comment is the same idea -- require real height too. */
+@media (min-width: 900px) and (min-aspect-ratio: 3/2) and (min-height: 560px) {
   .compy-shell {
     flex-direction: row;
     align-items: center;
@@ -593,6 +624,26 @@ html.is-keyboard .compy-tv {
   }
   .key-cluster-left { order: -1; }
   .key-cluster-right { order: 1; }
+}
+
+@media (max-height: 500px) {
+  :root {
+    --compy-dpad: 72px;
+    --compy-key-min: 32px;
+    --compy-font-size: 12px;
+  }
+  .compy-tv { margin: 4px 6px 0; border-width: 4px; }
+  .compy-picture { margin: 8px 10px 4px; border-width: 4px; }
+  .compy-chin { padding: 4px 10px 6px; }
+  .knob { width: 22px; height: 22px; }
+  .compy-keyboard {
+    margin: 4px 6px 6px;
+    padding: 4px 6px 6px;
+    border-width: 4px;
+    box-shadow: 4px 4px 0 var(--compy-shadow);
+  }
+  .key { min-height: 28px; font-size: 10px; }
+  .key-enter { min-height: 36px; }
 }
 
 /* ---- chassis eggs (undocumented, same idea as snes html.is-ntsc) ---- */
