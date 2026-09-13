@@ -111,10 +111,12 @@ an LCD filter, not the UI. SNES is PAL Super Nintendo (no NES.css): gray
 dogbone, rainbow Y/X/B/A, not the NA purple toaster. Title wordmark is
 Super (TeX Gyre Heros italic) + OQ! (Press Start 2P). Audio is sampled +
 echo at a high clip, not NES pulse. X=A, Y=B, L=Select, R=Start.
-`compy/` is a beige VGA CRT in this family, not `dos/`: DIR listing is
-the SELECT menu, IBM EGA 8×8 from `vendor/dos/fonts/`, contrast knobs on
-the chin (outside the framebuffer), PC-speaker squares. Hub name Beige
-386; no cartoon character marks on the glass.
+`compy/` is a cartoon beige CRT in this family, not `dos/`: DIR listing is
+the SELECT menu, C64 Pro Mono from `vendor/c64/fonts/`, white/blue tube,
+contrast wheels on the bottom (outside the framebuffer), PC-speaker squares.
+Hub name Beige 386; no cartoon character marks on the glass. Undocumented
+chassis skins (click the chin badge): 400 green phosphor (`html.is-tandy`),
+486 clamshell (`html.is-lappy`) — same idea as SNES `html.is-ntsc`.
 
 **`amiga/`** — Chrome is four Kickstart 1.3 pens (`#0055AA` white black
 `#FF8800`). Art (backdrop, icons, About, copper, Boing) is 12-bit OCS.

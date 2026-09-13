@@ -6,13 +6,14 @@
 <title>retr-oq — Beige 386</title>
 <!-- ?v= cache-busting, same convention as snes/index.html -- bump when
      style.css or app.js actually changes. -->
-<link rel="stylesheet" href="style.css?v=1" />
+<link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body>
-  <!-- Beige VGA CRT, not a window manager and not dos/'s COMMAND.COM:
+  <!-- Cartoon beige CRT, not a window manager and not dos/'s COMMAND.COM:
        one tube owns the picture, a chunky keyboard is the pad, screens
-       swap via hidden. Contrast knobs live on the chin, outside the
-       framebuffer. No vendor marks. -->
+       swap via hidden. Contrast wheels live on the bottom of the chassis,
+       outside the framebuffer. Chassis skins (400 / 486) are undocumented.
+       No vendor marks. -->
   <div class="compy-shell" id="compy-shell">
     <div class="compy-tv" id="compy-tv">
       <div class="compy-picture" id="compy-picture">
@@ -26,7 +27,7 @@
         <div class="compy-screen" id="title-screen">
           <p class="prompt-line">C:\OQ> dir /p<span class="cursor" aria-hidden="true">_</span></p>
           <p class="press-start" id="press-start">PRESS ENTER</p>
-          <p class="title-copy">retr-oq / VGA CRT</p>
+          <p class="title-copy">retr-oq / CRT</p>
         </div>
 
         <div class="compy-screen" id="menu-screen" hidden>
@@ -80,8 +81,8 @@
           <section class="dir-box">
             <h2 class="screen-heading">ABOUT.TXT</h2>
             <p class="about-copy">
-              Super OQ! is a Kalaallisut dictionary on a beige 386 CRT.
-              640x480 VGA text, PC speaker, contrast knobs on the chin.
+              Super OQ! is a Kalaallisut dictionary on a beige cartoon CRT.
+              White/blue tube, C64-style type, contrast wheels on the bottom.
               WORD DECONSTRUCTOR splits a word into its morphemes.
             </p>
             <p class="about-credit">A retr-oq theme.<br />ESC=DIR</p>
@@ -111,7 +112,7 @@
       </div>
 
       <div class="compy-chin">
-        <p class="compy-brand">BEIGE 386</p>
+        <button type="button" class="compy-brand" id="compy-brand">BEIGE 386</button>
         <div class="compy-knobs" role="group" aria-label="Contrast">
           <button type="button" class="knob" data-input="contrast-down" aria-label="Contrast down"></button>
           <button type="button" class="knob" data-input="contrast-up" aria-label="Contrast up"></button>
@@ -146,6 +147,6 @@
 <script src="../shared/router.js?v=1"></script>
 <script type="module" src="../shared/oq-analysis.js?v=13"></script>
 <script src="../shared/decon-app.js?v=4"></script>
-<script src="app.js?v=1"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

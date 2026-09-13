@@ -61,9 +61,60 @@
 
   function applyContrast() {
     const t = contrast / CONTRAST_MAX;
-    document.documentElement.style.setProperty("--compy-tube-brightness", String(0.45 + t * 0.7));
+    document.documentElement.style.setProperty("--compy-tube-brightness", String(0.4 + t * 0.7));
+    // 18-step black → blue → black wash, the cartoon wheels' whole joke.
+    document.documentElement.style.setProperty("--compy-blue-wash", `${Math.round(Math.sin(t * Math.PI) * 45)}%`);
   }
   applyContrast();
+
+  const CHASSIS_ORDER = ["386", "400", "486"];
+  const CHASSIS_KEY = "compy-chassis";
+  const CHASSIS_META = {
+    "386": { brand: "BEIGE 386", boot: "BEIGE 386 BIOS 3.86", tag: "A SPECTACLE OF GRAPHICS AND SOUND", vol: "Volume in drive C is BEIGE386" },
+    "400": { brand: "400", boot: "400 BIOS", tag: "GREEN PHOSPHOR", vol: "Volume in drive C is 400" },
+    "486": { brand: "486", boot: "486 BIOS", tag: "SEVERAL COLORS", vol: "Volume in drive C is 486" },
+  };
+  const brandEl = document.getElementById("compy-brand");
+  const bootKicker = document.querySelector(".boot-kicker");
+  const bootTag = document.querySelector(".boot-tag");
+  const volEl = document.querySelector(".vol");
+
+  function readChassis() {
+    try {
+      const v = localStorage.getItem(CHASSIS_KEY);
+      return CHASSIS_ORDER.includes(v) ? v : "386";
+    } catch {
+      return "386";
+    }
+  }
+
+  function applyChassis(id) {
+    if (!CHASSIS_ORDER.includes(id)) id = "386";
+    document.documentElement.classList.toggle("is-tandy", id === "400");
+    document.documentElement.classList.toggle("is-lappy", id === "486");
+    const meta = CHASSIS_META[id];
+    if (brandEl) brandEl.textContent = meta.brand;
+    if (bootKicker) bootKicker.textContent = meta.boot;
+    if (bootTag) bootTag.textContent = meta.tag;
+    if (volEl) volEl.textContent = meta.vol;
+    try {
+      localStorage.setItem(CHASSIS_KEY, id);
+    } catch {
+      /* sandboxed iframe -- scheme still applies for this visit */
+    }
+  }
+
+  function cycleChassis() {
+    const cur = document.documentElement.classList.contains("is-tandy")
+      ? "400"
+      : document.documentElement.classList.contains("is-lappy")
+        ? "486"
+        : "386";
+    const next = CHASSIS_ORDER[(CHASSIS_ORDER.indexOf(cur) + 1) % CHASSIS_ORDER.length];
+    applyChassis(next);
+  }
+
+  applyChassis(readChassis());
 
   function nudgeContrast(delta) {
     contrast = Math.max(0, Math.min(CONTRAST_MAX, contrast + delta));
@@ -432,6 +483,15 @@
     sfx("boot");
     finishBoot();
   });
+  if (brandEl) {
+    brandEl.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      unlockAudio();
+      sfx("konami");
+      cycleChassis();
+    });
+  }
 
   function moveOqSelection(delta) {
     if (visibleRows.length === 0) return;

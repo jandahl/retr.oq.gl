@@ -250,3 +250,42 @@ def test_contrast_knobs_live_on_chin(page, base_url):
         "() => getComputedStyle(document.documentElement).getPropertyValue('--compy-tube-brightness').trim()"
     )
     assert after != before
+
+
+def test_chassis_badge_cycles_undocumented_skins(page, base_url):
+    """Chin badge is the SNES L+R equivalent: 386 → 400 (green) → 486 (laptop).
+    Undocumented; names on the glass stay generic."""
+    goto_compy(page, base_url)
+    html_class = page.locator("html").get_attribute("class") or ""
+    assert "is-tandy" not in html_class
+    assert "is-lappy" not in html_class
+    assert page.locator("#compy-brand").inner_text() == "BEIGE 386"
+
+    page.locator("#compy-brand").click()
+    page.wait_for_timeout(40)
+    assert "is-tandy" in (page.locator("html").get_attribute("class") or "")
+    assert page.locator("#compy-brand").inner_text() == "400"
+    assert page.locator("#title-screen").is_visible()
+
+    page.locator("#compy-brand").click()
+    page.wait_for_timeout(40)
+    assert "is-lappy" in (page.locator("html").get_attribute("class") or "")
+    assert page.locator("#compy-brand").inner_text() == "486"
+    info = page.evaluate(
+        """() => {
+          const tv = document.getElementById('compy-tv');
+          const pad = document.getElementById('compy-keyboard');
+          const picture = document.getElementById('compy-picture');
+          const attract = document.getElementById('attract-screen');
+          return {
+            padOutsideTv: !!(pad && tv && !tv.contains(pad)),
+            padOutsidePicture: !!(pad && picture && !picture.contains(pad)),
+            attractInTv: !!(tv && attract && tv.contains(attract)),
+          };
+        }"""
+    )
+    assert info["padOutsideTv"]
+    assert info["padOutsidePicture"]
+    assert info["attractInTv"]
+    assert page.locator("#title-screen").is_visible()
+    assert page.locator("#menu-screen").is_hidden()
