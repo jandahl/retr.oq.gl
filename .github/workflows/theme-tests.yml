@@ -9,27 +9,49 @@ name: theme tests
 # WHOLE suite) instead of just tests/test_win98.py, silently masked because
 # it still passed. Add a new console/desktop theme's own test suite here by
 # adding its own block to the `filters:` section below (its name becomes
-# both the matrix entry and the pytest file it runs, tests/test_<name>.py)
+# both a selected suite and the pytest file it runs, tests/test_<name>.py)
 # -- no new workflow file, no new job to copy.
 #
 # The `changes` job computes which themes' paths actually changed so an
-# unrelated PR (say, kde/ or docs) doesn't spin up five browser jobs for
-# nothing; the `test` job's matrix then only runs for themes that changed.
+# unrelated PR (say, kde/ or docs) doesn't spin up browser tests for
+# nothing; the `test` job then runs only the suites that changed.
 # Shared top-level scripts and workflow edits exercise every suite so common
 # dependency changes and CI changes cannot silently skip browser coverage.
 on:
-  push:
-    branches: [master]
-    paths-ignore: ['**/*.md']
   pull_request:
-    paths-ignore: ['**/*.md']
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "aqua/**"
+      - "c64/**"
+      - "compy/**"
+      - "gb/**"
+      - "gg/**"
+      - "nes/**"
+      - "snes/**"
+      - "win98/**"
+      - "os2/**"
+      - "win31/**"
+      - "dos/**"
+      - "xp/**"
+      - "win7/**"
+      - "kde/**"
+      - "shared/**"
+      - "vendor/**"
+      - "tests/**"
+      - ".github/workflows/theme-tests.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: theme-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   changes:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     # `changes` (not per-filter outputs.<name>) is dorny/paths-filter's own
     # "which filters matched" JSON array -- e.g. '["gb","win98"]' -- built
-    # for exactly this: feeding a matrix so it's SIZED to just the changed
+    # for exactly this: selecting just the changed
     # themes. The alternative (a fixed 5-item matrix gated by a job-level
     # `if: needs.changes.outputs[matrix.theme] == 'true'`) looks reasonable
     # but is invalid: `matrix` isn't in the context GitHub allows inside
@@ -38,6 +60,7 @@ jobs:
     # at all (zero jobs scheduled, no code ever ran).
     outputs:
       themes: ${{ steps.filter.outputs.changes }}
+      shared: ${{ steps.filter.outputs.shared }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -142,6 +165,10 @@ jobs:
               - "tests/requirements.txt"
               - "shared/*.js"
               - ".github/workflows/theme-tests.yml"
+            shared:
+              - "shared/**/*.js"
+              - "tests/shared/**"
+              - ".github/workflows/theme-tests.yml"
 
   shared-node-tests:
     # shared/morph-puzzles.js, shared/morph-game.js and shared/klax-game.js
@@ -149,9 +176,10 @@ jobs:
     # by gb/, snes/, and c64/)
     # are pure logic with no DOM, so they get their own fast Node-only job
     # instead of waiting on the `changes`/Playwright matrix above. Runs on
-    # every push/PR rather than being paths-filtered like the theme matrix:
-    # cheap enough (no browser) that gating it isn't worth the drift risk of
-    # a filter list falling out of sync with which files these tests import.
+    # only when shared JS or shared Node tests changed; this avoids a runner
+    # for unrelated theme-only changes while preserving the direct coverage.
+    needs: changes
+    if: needs.changes.outputs.shared == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -163,10 +191,6 @@ jobs:
   test:
     needs: changes
     if: needs.changes.outputs.themes != '[]'
-    strategy:
-      fail-fast: false
-      matrix:
-        theme: ${{ fromJSON(needs.changes.outputs.themes) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -174,14 +198,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: tests/requirements.txt
 
       - name: Install test dependencies
         run: pip install --require-hashes -r tests/requirements.txt
+
+      - name: Cache Playwright's Chromium
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-chromium-1.62.0
 
       # The hosted Ubuntu runner already has Chromium's system libraries.
       # Avoid --with-deps here: it runs apt-get against third-party runner
       # repositories and can fail before Playwright downloads the browser.
       - name: Install Playwright's Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 5
@@ -189,5 +223,10 @@ jobs:
           retry_wait_seconds: 15
           command: playwright install chromium
 
-      - name: Run ${{ matrix.theme }} test suite
-        run: python3 -m pytest tests/test_${{ matrix.theme }}.py -v
+      - name: Run changed theme test suites
+        run: |
+          test_files=()
+          for theme in ${{ join(fromJSON(needs.changes.outputs.themes), ' ') }}; do
+            test_files+=("tests/test_${theme}.py")
+          done
+          python3 -m pytest "${test_files[@]}" -v
