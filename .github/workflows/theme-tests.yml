@@ -59,7 +59,7 @@ jobs:
     # that mistake made the very first version of this file fail to parse
     # at all (zero jobs scheduled, no code ever ran).
     outputs:
-      themes: ${{ steps.theme-list.outputs.themes }}
+      themes: ${{ steps.theme_list.outputs.themes }}
       shared: ${{ steps.filter.outputs.shared }}
     steps:
       - uses: actions/checkout@v4
@@ -170,7 +170,7 @@ jobs:
               - "tests/shared/**"
               - ".github/workflows/theme-tests.yml"
       - name: Keep only runnable theme filters
-        id: theme-list
+        id: theme_list
         env:
           FILTERED_CHANGES: ${{ steps.filter.outputs.changes }}
         run: echo "themes=$(jq -c 'map(select(. != \"shared\"))' <<< \"$FILTERED_CHANGES\")" >> "$GITHUB_OUTPUT"
