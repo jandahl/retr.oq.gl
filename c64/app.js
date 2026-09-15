@@ -1023,13 +1023,13 @@
     // #c64-output doubles line spacing with the "\n" between rows.
     printLine('0 "OQ DISK       " 09 2A');
     const entries = [
-      ["load", "DICT", '1   "DICT"                 PRG'],
-      ["load", "DECON", '1   "DECON"                PRG'],
-      ["load", "MORPH", '1   "MORPH"                PRG'],
-      ["load", "KALQ", '1   "KALQ"                 PRG'],
-      ["dim", null, '1   "DICT DAT"             SEQ'],
-      ["dim", null, '1   "BUILD"                PRG'],
-      ["quit", null, '2   "QUIT"                 PRG'],
+      ["load", "DICT", '1   "DICT"              PRG'],
+      ["load", "DECON", '1   "DECON"             PRG'],
+      ["load", "MORPH", '1   "MORPH"             PRG'],
+      ["load", "KALQ", '1   "KALQ"              PRG'],
+      ["dim", null, '1   "DICT DAT"          SEQ'],
+      ["dim", null, '1   "BUILD"             PRG'],
+      ["quit", null, '2   "QUIT"              PRG'],
     ];
     for (const [kind, name, label] of entries) {
       c64Output.appendChild(document.createTextNode("\n"));
