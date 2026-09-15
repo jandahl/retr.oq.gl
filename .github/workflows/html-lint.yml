@@ -69,9 +69,6 @@ jobs:
       - name: JavaScript syntax validate
         run: git ls-files -z -- '*.js' ':(exclude)vendor/**' | xargs -0 -n1 node --check
 
-      - name: Palette validation
-        run: python3 tools/check_palette.py
-
       - name: HTML validate
         # Pin the CLI: resolving latest made the check depend on a moving
         # registry target and recently selected an unavailable tarball.

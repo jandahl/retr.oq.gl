@@ -1,0 +1,32 @@
+name: palette
+
+# Keep the required `palette` status context, but run it only when palette-
+# relevant sources change. It intentionally has no master push trigger: the
+# pull request already supplies the protected check, and manual dispatch is
+# available for an explicit full verification.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "c64/**"
+      - "compy/**"
+      - "gb/**"
+      - "gg/**"
+      - "nes/**"
+      - "snes/**"
+      - "tools/check_palette.py"
+      - "tools/palette-baseline.json"
+      - ".github/workflows/palette.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: palette-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  palette:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/check_palette.py
