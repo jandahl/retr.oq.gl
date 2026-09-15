@@ -15,20 +15,41 @@ name: html lint
 # same html-validate + linkinator recipe, generalized to a fixed page list
 # and running automatically instead of by hand.
 on:
-  push:
-    branches: [master]
-    paths-ignore: ['**/*.md']
   pull_request:
-    paths-ignore: ['**/*.md']
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "**/*.html"
+      - "**/*.css"
+      - "**/*.js"
+      - "hub-data.js"
+      - ".htmlvalidate.json"
+      - "package-lock.json"
+      - "requirements-dev.txt"
+      - "tools/check_css.py"
+      - "tools/check_palette.py"
+      - "tools/palette-baseline.json"
+      - ".github/workflows/html-lint.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: html-lint-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   PAGES: "index.html dos/index.html c64/index.html mac1984/index.html win31/index.html os2/index.html"
 
 jobs:
   validate:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install locked npm tooling
         run: npm ci --ignore-scripts
@@ -36,15 +57,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
 
       - name: Install CSS lint dependencies
         run: "pip install --only-binary=:all: --require-hashes -r requirements-dev.txt"
 
       - name: CSS syntax validate
-        run: python3 tools/check_css.py $(find . -type f -name 'style.css' -not -path './vendor/*')
+        run: git ls-files -z -- '*.css' ':(exclude)vendor/**' | xargs -0 python3 tools/check_css.py
 
       - name: JavaScript syntax validate
-        run: find . -type f -name '*.js' -not -path './vendor/*' -print0 | xargs -0 -n1 node --check
+        run: git ls-files -z -- '*.js' ':(exclude)vendor/**' | xargs -0 -n1 node --check
 
       - name: HTML validate
         # Pin the CLI: resolving latest made the check depend on a moving

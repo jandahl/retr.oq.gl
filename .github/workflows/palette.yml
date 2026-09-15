@@ -1,25 +1,31 @@
 name: palette
 
-# Guards the console themes that declare a canon color palette as CSS
-# custom properties (--<theme>-* in that theme's own style.css) against
-# off-palette colors in their own app.js/style.css. Two checks: FAMILY
-# (a wrong platform's hue, or a one-off nobody checked against the
-# theme's own rainbow -- KAL-Q's SNES canvas briefly had an off-palette
-# purple pill before it was fixed to reuse the theme's own button
-# colors) and, for c64/gb only, GAMUT (a color the real hardware could
-# not physically produce -- this found c64's screen background using a
-# blue that wasn't one of the VIC-II's actual 16 colors). See
-# tools/check_palette.py's docstring for exactly what each does and
-# doesn't flag.
+# Keep the required `palette` status context, but run it only when palette-
+# relevant sources change. It intentionally has no master push trigger: the
+# pull request already supplies the protected check, and manual dispatch is
+# available for an explicit full verification.
 on:
-  push:
-    branches: [master]
-    paths-ignore: ['**/*.md']
   pull_request:
-    paths-ignore: ['**/*.md']
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "c64/**"
+      - "compy/**"
+      - "gb/**"
+      - "gg/**"
+      - "nes/**"
+      - "snes/**"
+      - "tools/check_palette.py"
+      - "tools/palette-baseline.json"
+      - ".github/workflows/palette.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: palette-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   palette:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
