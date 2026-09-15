@@ -76,7 +76,9 @@ def test_deeplink_oq_loads_rows(page, base_url):
     line = page.locator(".oq-row.is-selected .oq-gloss-line").inner_text().strip()
     assert line, "selected row must show the English gloss, not just the lexeme"
     assert page.locator("#oq-balloon").count() == 0
+    assert "Oqaasileriffik" not in page.locator("#oq-screen").inner_text()
     assert "Oqaasileriffik" in page.locator("#oq-attribution").inner_text()
+    assert "Oqaasileriffik" in page.locator("#about-screen").inner_text()
 
 
 def test_deeplink_oq_filter(page, base_url):
@@ -289,3 +291,56 @@ def test_chassis_badge_cycles_undocumented_skins(page, base_url):
     assert info["attractInTv"]
     assert page.locator("#title-screen").is_visible()
     assert page.locator("#menu-screen").is_hidden()
+
+
+def test_phone_keyboard_fits_viewport(touch_page, base_url):
+    """Cartoon chrome cannot shove START off the right edge of a phone."""
+    goto_compy(touch_page, base_url)
+    touch_page.evaluate("() => document.fonts && document.fonts.ready")
+    touch_page.wait_for_timeout(80)
+    info = touch_page.evaluate(
+        """() => {
+          const pad = document.getElementById('compy-keyboard');
+          const keys = [...pad.querySelectorAll('.key')].map((k) => k.getBoundingClientRect());
+          const padBox = pad.getBoundingClientRect();
+          const brand = document.getElementById('compy-brand').getBoundingClientRect();
+          const knob = document.querySelector('.knob').getBoundingClientRect();
+          const overlap = !(brand.bottom <= knob.top + 1 || brand.right <= knob.left + 1 || brand.left >= knob.right - 1);
+          return {
+            vw: innerWidth,
+            padRight: padBox.right,
+            padLeft: padBox.left,
+            keyMaxRight: Math.max(...keys.map((k) => k.right)),
+            keyMinLeft: Math.min(...keys.map((k) => k.left)),
+            startVisible: keys.length > 0,
+            brandHitsKnob: overlap,
+          };
+        }"""
+    )
+    assert info["startVisible"]
+    assert info["padLeft"] >= 0
+    assert info["padRight"] <= info["vw"] + 1
+    assert info["keyMinLeft"] >= info["padLeft"] - 0.5
+    assert info["keyMaxRight"] <= info["padRight"] + 0.5
+    assert not info["brandHitsKnob"]
+
+
+def test_short_landscape_keeps_a_usable_tube(page, base_url):
+    """A landscape phone must not collapse the CRT to a ribbon under the pad."""
+    page.set_viewport_size({"width": 844, "height": 390})
+    goto_compy(page, base_url)
+    info = page.evaluate(
+        """() => {
+          const pic = document.getElementById('compy-picture').getBoundingClientRect();
+          const start = document.querySelector('[data-input=start]').getBoundingClientRect();
+          return {
+            picH: pic.height,
+            startRight: start.right,
+            vw: innerWidth,
+            split: getComputedStyle(document.getElementById('compy-keyboard')).display === 'contents',
+          };
+        }"""
+    )
+    assert not info["split"]
+    assert info["picH"] >= 140
+    assert info["startRight"] <= info["vw"] + 1

@@ -9,8 +9,9 @@ live on the bottom of the chassis (outside the framebuffer).
 - Hub name is **Beige 386**. The directory is `compy/` because that is
   the machine nickname; keep vendor names, wrestler characters, and
   cartoon proper names **off the glass**. Original art, no trademarks.
-- Font is C64 Pro Mono from `vendor/c64/fonts/` (the cartoon tube used
-  that face, not IBM EGA). White/blue monochrome phosphor.
+- Font is IBM EGA 8×8 from `vendor/dos/fonts/` (BOOTSTRA.386 / Apache-2.0).
+  White/blue monochrome phosphor. Not C64 Pro Mono -- that face is 1em
+  per glyph and ate the tube.
 - Contrast: 18 steps (0–17), `--compy-tube-brightness` plus a
   `--compy-blue-wash` that peaks mid-travel (black → blue → black).
   Wheels are `[data-input=contrast-down|contrast-up]`; `[` / `]` on the
@@ -20,6 +21,8 @@ live on the bottom of the chassis (outside the framebuffer).
   → **400** (`html.is-tandy`, green phosphor) → **486** (`html.is-lappy`,
   clamshell). On-glass labels stay `BEIGE 386` / `400` / `486`. Persisted
   in `localStorage` (`compy-chassis`). Not extra hub tiles, not games.
+- Dictionary sources live in ABOUT.TXT (`#oq-attribution`), not under the
+  OQ! results list -- the tube is too small for the CC-BY-SA dump.
 - No quit-to-hub UI on the chassis — console family, see `nes/NOTES.md`.
   `EXIT.COM` on the DIR listing is the title-menu option (`../`).
 - Konami Code egg lives here — undocumented beyond this pointer.
