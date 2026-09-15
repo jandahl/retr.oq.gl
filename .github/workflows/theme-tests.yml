@@ -173,7 +173,9 @@ jobs:
         id: theme_list
         env:
           FILTERED_CHANGES: ${{ steps.filter.outputs.changes }}
-        run: echo "themes=$(jq -c 'map(select(. != \"shared\"))' <<< \"$FILTERED_CHANGES\")" >> "$GITHUB_OUTPUT"
+        run: |
+          themes=$(jq -c 'map(select(. != "shared"))' <<< "$FILTERED_CHANGES")
+          echo "themes=$themes" >> "$GITHUB_OUTPUT"
 
   shared-node-tests:
     # shared/morph-puzzles.js, shared/morph-game.js and shared/klax-game.js
