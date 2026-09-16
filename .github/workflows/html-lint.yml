@@ -29,6 +29,7 @@ on:
       - "tools/check_palette.py"
       - "tools/palette-baseline.json"
       - ".github/workflows/html-lint.yml"
+      - ".github/workflows/palette.yml"
   workflow_dispatch:
 
 concurrency:
