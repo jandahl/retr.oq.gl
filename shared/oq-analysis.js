@@ -8,13 +8,13 @@
 // directly (browser ES module or Node)"). This repo targets http(s)
 // hosting, not file://, so that's not a constraint here.
 //
-// Imported from oq-api's rolling 0.1 alias rather than vendored —
+// Imported from oq-api's pinned 0.3 release rather than vendored —
 // public-api.js's whole point is to be a stable import boundary;
 // vendoring a copy would defeat that and silently drift stale.
 //
-// api/v0.1-latest tracks the newest 0.1.x (oq-api-0.1-latest tarball)
-// until a breaking 0.2 line. Frozen v0.1.N URLs are for reproducible
-// pins only.
+// The 0.3 API is the first release that exposes the standardized example
+// catalog consumed below. Keep this pinned so the catalog and its schema do
+// not silently drift.
 //
 // Dynamic import(), not a static top-level `import` -- a static import
 // that fails (network error, CORS, the target host 404ing/reshaping)
@@ -29,7 +29,7 @@
   let api;
   try {
     // Pin the deployed oq-api release so this app does not silently drift.
-    api = await import("https://jandahl.github.io/api.oq.gl/api/v0.1.4/public-api.js");
+    api = await import("https://jandahl.github.io/api.oq.gl/api/v0.3.0/public-api.js");
   } catch (err) {
     // window.OqAnalysis.analyzeWord still exists and is still a function
     // that returns a rejected Promise -- callers (dos/app.js's
@@ -53,6 +53,8 @@
     computeMorphemeBreakdownRows,
     GRAMMAR_MORPHEMES_URL,
     SCHEMA_MAJOR_VERSION,
+    STANDARD_EXAMPLES,
+    getStandardExamples,
   } = api;
 
   // oq's own gloss text can contain real single-glyph Unicode punctuation
@@ -213,7 +215,15 @@
     };
   }
 
-  window.OqAnalysis = { API_VERSION, analyzeWord };
+  // Keep the canonical public catalog behind the API boundary too. Consumers
+  // that enrich or annotate examples must use getStandardExamples(), which
+  // returns a defensive copy; STANDARD_EXAMPLES is the immutable source.
+  window.OqAnalysis = {
+    API_VERSION,
+    analyzeWord,
+    STANDARD_EXAMPLES,
+    getStandardExamples,
+  };
   // type="module" scripts are deferred until after classic scripts (like
   // dos/app.js) have already run their own top-level code, so a classic
   // script can't just destructure window.OqAnalysis at parse time the way
