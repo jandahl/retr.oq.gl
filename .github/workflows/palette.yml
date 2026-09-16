@@ -3,20 +3,12 @@ name: palette
 # Keep the required `palette` status context, but run it only when palette-
 # relevant sources change. It intentionally has no master push trigger: the
 # pull request already supplies the protected check, and manual dispatch is
-# available for an explicit full verification.
+# available for an explicit full verification. Do not add a paths filter here:
+# a skipped workflow produces no status context, which leaves the required
+# `palette` check stuck at "Expected" on unrelated pull requests.
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - "c64/**"
-      - "compy/**"
-      - "gb/**"
-      - "gg/**"
-      - "nes/**"
-      - "snes/**"
-      - "tools/check_palette.py"
-      - "tools/palette-baseline.json"
-      - ".github/workflows/palette.yml"
   workflow_dispatch:
 
 concurrency:
