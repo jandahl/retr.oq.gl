@@ -39,6 +39,7 @@ on:
       - "vendor/**"
       - "tests/**"
       - ".github/workflows/theme-tests.yml"
+      - ".github/workflows/palette.yml"
   workflow_dispatch:
 
 concurrency:
