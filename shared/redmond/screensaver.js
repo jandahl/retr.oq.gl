@@ -50,6 +50,7 @@
     let timer = 0;
     let running = false;
     let ignoreUntil = 0;
+    let launchGeneration = 0;
 
     function layoutOverlay() {
       // win31/mac8/mac1984 set html { zoom }. style.width is pre-zoom and
@@ -82,6 +83,7 @@
         event.stopPropagation();
       }
       running = false;
+      launchGeneration += 1;
       overlay.hidden = true;
       frame.removeAttribute("src");
       frame.setAttribute("aria-busy", "false");
@@ -114,6 +116,7 @@
       }
       if (running) return;
       running = true;
+      const generation = ++launchGeneration;
       clearTimeout(timer);
       ignoreUntil = Date.now() + 800;
       overlay.hidden = false;
@@ -121,7 +124,9 @@
       layoutOverlay();
       frame.removeAttribute("src");
       requestAnimationFrame(function () {
+        if (!running || generation !== launchGeneration) return;
         requestAnimationFrame(function () {
+          if (!running || generation !== launchGeneration) return;
           layoutOverlay();
           frame.src = resolveSrc();
         });
@@ -146,6 +151,7 @@
     function destroy() {
       clearTimeout(timer);
       running = false;
+      launchGeneration += 1;
       overlay.hidden = true;
       frame.removeAttribute("src");
       frame.setAttribute("aria-busy", "false");
