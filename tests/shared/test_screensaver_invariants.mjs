@@ -54,7 +54,7 @@ test("every vendored saver has period metadata", () => {
 test("router loads catalog before the saver host and preserves script order", () => {
   const src = read("shared/router.js");
   const catalog = src.indexOf('redmond/screensaver-catalog.js?v=1');
-  const host = src.indexOf('redmond/screensaver.js?v=33');
+  const host = src.indexOf('redmond/screensaver.js?v=34');
   assert.ok(catalog >= 0 && host > catalog, "catalog must load before host");
   assert.match(src, /s\.async\s*=\s*false/);
 });
@@ -71,6 +71,14 @@ test("screen saver host disables automatic idle motion when requested", () => {
   assert.match(src, /prefers-reduced-motion: reduce/);
   assert.match(src, /idleMs = reduced \? 0 : requestedIdleMs/);
   assert.match(src, /addEventListener\("change", syncReducedMotion\)/);
+});
+
+test("hidden desktops unload active saver frames", () => {
+  const src = read("shared/redmond/screensaver.js");
+  assert.match(src, /function handleVisibilityChange\(\)/);
+  assert.match(src, /pausedForVisibility = running/);
+  assert.match(src, /if \(running\) \{[\s\S]*?stop\(\);/);
+  assert.match(src, /document\.removeEventListener\("visibilitychange", handleVisibilityChange\)/);
 });
 
 test("GL savers use vendored three.js builds that exist on disk", () => {

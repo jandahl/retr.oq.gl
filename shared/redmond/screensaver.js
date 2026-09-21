@@ -53,6 +53,7 @@
     let running = false;
     let ignoreUntil = 0;
     let launchGeneration = 0;
+    let pausedForVisibility = false;
 
     function syncReducedMotion() {
       const reduced = motionQuery && motionQuery.matches;
@@ -173,6 +174,7 @@
       if (motionQuery && motionQuery.removeEventListener) {
         motionQuery.removeEventListener("change", syncReducedMotion);
       }
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       overlay.hidden = true;
       frame.removeAttribute("src");
       frame.setAttribute("aria-busy", "false");
@@ -201,10 +203,22 @@
     }, true);
     window.addEventListener("pointerdown", ping, true);
     window.addEventListener("pointermove", ping, true);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) clearTimeout(timer);
-      else ping();
-    });
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        pausedForVisibility = running;
+        clearTimeout(timer);
+        if (running) {
+          stop();
+          clearTimeout(timer);
+        }
+      } else if (pausedForVisibility) {
+        pausedForVisibility = false;
+        ping();
+      } else {
+        ping();
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     ping();
     const api = { start, stop, setSrc, setIdleMs, ping, launchUrl, destroy };
     global.OqScreensaver = global.OqScreensaver || { attach };
