@@ -1171,7 +1171,9 @@
 
 
   // ---------- Screen Effects (idle host from shared/redmond/screensaver.js) ----------
-  const AQUA_SAVERS = ["flux", "fieldlines", "solarwinds"];
+  const AQUA_SAVERS = window.OqScreenSaverCatalog
+    ? window.OqScreenSaverCatalog.forTheme("aqua").map((entry) => entry.id)
+    : ["flux", "fieldlines", "solarwinds"];
 
   function aquaSaverHost() {
     return window.OqScreensaver && (window.OqScreensaver.aqua || window.OqScreensaver.host);

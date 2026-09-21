@@ -545,13 +545,15 @@
     Compiz.spinCube(desktop);
   });
 
-  const saverEntries = [
+  const saverEntries = (window.OqScreenSaverCatalog
+    ? window.OqScreenSaverCatalog.forTheme("kde").map((entry) => [entry.id, `${entry.label} (GL)`])
+    : [
     ["flux", "Flux (GL)"], ["euphoria", "Euphoria (GL)"], ["solarwinds", "Solar Winds (GL)"],
     ["helios", "Helios (GL)"], ["lattice", "Lattice (GL)"], ["hyperspace", "Hyperspace (GL)"],
     ["cyclone", "Cyclone (GL)"], ["fieldlines", "Field Lines (GL)"], ["flocks", "Flocks (GL)"],
     ["pixelcity", "Pixel City (GL)"], ["lorenz", "Lorenz (GL)"], ["glmatrix", "GL Matrix (GL)"],
     ["skyrocket", "Skyrocket (GL)"],
-  ];
+  ]);
   const saverMenu = document.getElementById("screensavers-menu");
   const saverSettings = document.getElementById("win-screensaver");
   const saverSelect = document.getElementById("screensaver-select");

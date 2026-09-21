@@ -82,6 +82,9 @@
     const s = document.createElement("script");
     const src = document.currentScript && document.currentScript.src;
     s.src = src ? src.replace(/router\.js.*$/, name) : "../shared/" + name;
+    // These two scripts are a dependency chain: the catalog must exist
+    // before the saver host boots. Dynamic scripts are async by default.
+    s.async = false;
     document.head.appendChild(s);
   }
 
@@ -117,7 +120,8 @@
 
   // Desktop + text-mode themes: load the screensaver host from next to this file.
   if (/\/(win31|win98|xp|win7|kde|mac8|mac1984|aqua|amiga|next|dos|c64)(\/|$)/.test(location.pathname)) {
-    loadNextToRouter("redmond/screensaver.js?v=30");
+    loadNextToRouter("redmond/screensaver-catalog.js?v=1");
+    loadNextToRouter("redmond/screensaver.js?v=31");
   }
   if (/\/(win98|xp|win7)(\/|$)/.test(location.pathname)) {
     loadNextToRouter("redmond/run.js?v=8");

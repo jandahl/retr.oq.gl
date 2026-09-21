@@ -43,6 +43,10 @@
       document.body.appendChild(overlay);
     }
     const frame = overlay.querySelector("iframe");
+    // Keep the preview document out of the render tree until it is actually
+    // needed. This matters for themes that expose several WebGL savers but
+    // only ever run one at a time.
+    frame.loading = "lazy";
     let timer = 0;
     let running = false;
     let ignoreUntil = 0;
@@ -80,6 +84,7 @@
       running = false;
       overlay.hidden = true;
       frame.removeAttribute("src");
+      frame.setAttribute("aria-busy", "false");
       ping();
     }
 
@@ -112,6 +117,7 @@
       clearTimeout(timer);
       ignoreUntil = Date.now() + 800;
       overlay.hidden = false;
+      frame.setAttribute("aria-busy", "true");
       layoutOverlay();
       frame.removeAttribute("src");
       requestAnimationFrame(function () {
@@ -135,6 +141,14 @@
     function setIdleMs(next) {
       idleMs = Math.max(0, Number(next) || 0);
       ping();
+    }
+
+    function destroy() {
+      clearTimeout(timer);
+      running = false;
+      overlay.hidden = true;
+      frame.removeAttribute("src");
+      frame.setAttribute("aria-busy", "false");
     }
 
     function tapOut(event) {
@@ -165,7 +179,7 @@
       else ping();
     });
     ping();
-    const api = { start, stop, setSrc, setIdleMs, ping, launchUrl };
+    const api = { start, stop, setSrc, setIdleMs, ping, launchUrl, destroy };
     global.OqScreensaver = global.OqScreensaver || { attach };
     global.OqScreensaver.host = api;
     return api;
@@ -174,6 +188,20 @@
   function vendor(name) {
     var bust = name === "maze-backrooms" ? "?v=14" : name === "backrooms-ii" ? "?v=6" : name === "flying-windows" ? "?v=ss5" : "?v=ss4";
     return "../vendor/screensavers/" + name + "/index.html" + bust;
+  }
+
+  function catalogEntries(theme, fallback) {
+    if (global.OqScreenSaverCatalog) {
+      var byId = Object.fromEntries(global.OqScreenSaverCatalog.forTheme(theme).map(function (entry) {
+        return [entry.id, entry];
+      }));
+      // Keep each desktop's established historical menu order while taking
+      // labels and membership from the shared catalog.
+      return fallback.filter(function (entry) { return byId[entry[0]]; }).map(function (entry) {
+        return [entry[0], byId[entry[0]].label];
+      });
+    }
+    return fallback;
   }
 
   function themeKey() {
@@ -266,14 +294,24 @@
     if (theme === "win31") {
       const host = attach({ src: vendor("flying-windows"), idleMs: 45000 });
       const group = document.querySelector("#win-group-acc .group-icons");
-      const savers = [
-        ["acc-ss", "Flying Windows", "flying-windows"],
-        ["acc-ss-mystify", "Mystify", "mystify"],
-        ["acc-ss-starfield", "Starfield", "starfield"],
-        ["acc-ss-marquee", "Marquee", "marquee"],
-        ["acc-ss-beziers", "Beziers", "beziers"],
-        ["acc-ss-toasters", "Flying Toasters", "flying-toasters"],
-      ];
+      const win31Ids = {
+        "flying-windows": "acc-ss",
+        mystify: "acc-ss-mystify",
+        starfield: "acc-ss-starfield",
+        marquee: "acc-ss-marquee",
+        beziers: "acc-ss-beziers",
+        "flying-toasters": "acc-ss-toasters",
+      };
+      const savers = catalogEntries("win31", [
+        ["flying-windows", "Flying Windows"],
+        ["mystify", "Mystify"],
+        ["starfield", "Starfield"],
+        ["marquee", "Marquee"],
+        ["beziers", "Beziers"],
+        ["flying-toasters", "Flying Toasters"],
+      ]).map(function (entry) {
+        return [win31Ids[entry[0]], entry[1], entry[0]];
+      });
       savers.forEach(function (row) {
         const id = row[0];
         const label = row[1];
@@ -349,7 +387,7 @@
     }
 
     if (theme === "kde") {
-      var kdeGl = [
+      var kdeGl = catalogEntries("kde", [
         ["flux", "Flux (GL)"],
         ["euphoria", "Euphoria (GL)"],
         ["solarwinds", "Solar Winds (GL)"],
@@ -363,7 +401,7 @@
         ["lorenz", "Lorenz (GL)"],
         ["glmatrix", "GL Matrix (GL)"],
         ["skyrocket", "Skyrocket (GL)"]
-      ];
+      ]);
       var host = attach({
         src: function () {
           return vendor(kdeGl[Math.floor(Math.random() * kdeGl.length)][0]);
@@ -380,7 +418,9 @@
     if (theme === "aqua") {
       // Early OS X Screen Effects: abstract GL savers (flux / field lines /
       // solar winds) — period-plausible, no trademarked Apple Flurry clones.
-      var aquaGl = ["flux", "fieldlines", "solarwinds"];
+      var aquaGl = catalogEntries("aqua", [
+        ["flux", "Flux"], ["fieldlines", "Field Lines"], ["solarwinds", "Solar Winds"]
+      ]).map(function (entry) { return entry[0]; });
       var aquaReduced = false;
       try {
         aquaReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

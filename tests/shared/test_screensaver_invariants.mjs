@@ -41,6 +41,24 @@ test("every saver page loads ss-exit.js and no CDN scripts", () => {
   }
 });
 
+test("every vendored saver has period metadata", () => {
+  const catalog = read("shared/redmond/screensaver-catalog.js");
+  const ids = [...catalog.matchAll(/\["([a-z0-9-]+)",\s*"[^"]+",\s*\[/g)].map((match) => match[1]);
+  assert.equal(new Set(ids).size, ids.length, "screen saver catalog contains duplicate ids");
+  for (const name of saverDirs()) {
+    assert.match(catalog, new RegExp('\\["' + name + '",'), name + " is missing catalog metadata");
+  }
+  assert.equal(ids.length, saverDirs().length, "catalog has stale or missing saver metadata");
+});
+
+test("router loads catalog before the saver host and preserves script order", () => {
+  const src = read("shared/router.js");
+  const catalog = src.indexOf('redmond/screensaver-catalog.js?v=1');
+  const host = src.indexOf('redmond/screensaver.js?v=31');
+  assert.ok(catalog >= 0 && host > catalog, "catalog must load before host");
+  assert.match(src, /s\.async\s*=\s*false/);
+});
+
 test("GL savers use vendored three.js builds that exist on disk", () => {
   const needed = {
     "three-r125.min.js": 100000,
@@ -164,5 +182,3 @@ test("Flying Windows face is the Greenland flag, not a four-pane logo", () => {
   assert.match(src, /fillStyle = white;\s*\n\s*g\.fillRect\(0, 0,/);
   assert.match(src, /fillStyle = red;\s*\n\s*g\.fillRect\(0, c\.height \/ 2,/);
 });
-
-
