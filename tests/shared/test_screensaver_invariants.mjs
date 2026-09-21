@@ -54,9 +54,16 @@ test("every vendored saver has period metadata", () => {
 test("router loads catalog before the saver host and preserves script order", () => {
   const src = read("shared/router.js");
   const catalog = src.indexOf('redmond/screensaver-catalog.js?v=1');
-  const host = src.indexOf('redmond/screensaver.js?v=31');
+  const host = src.indexOf('redmond/screensaver.js?v=32');
   assert.ok(catalog >= 0 && host > catalog, "catalog must load before host");
   assert.match(src, /s\.async\s*=\s*false/);
+});
+
+test("dismissal cancels a pending saver iframe launch", () => {
+  const src = read("shared/redmond/screensaver.js");
+  assert.match(src, /let launchGeneration = 0/);
+  assert.match(src, /const generation = \+\+launchGeneration/);
+  assert.match(src, /generation !== launchGeneration/);
 });
 
 test("GL savers use vendored three.js builds that exist on disk", () => {
