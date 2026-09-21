@@ -24,8 +24,10 @@
   ].join("");
 
   function attach(opts) {
-    let idleMs = opts.idleMs == null ? 45000 : opts.idleMs;
+    let requestedIdleMs = opts.idleMs == null ? 45000 : opts.idleMs;
+    let idleMs = requestedIdleMs;
     let src = opts.src;
+    let motionQuery = null;
     if (!document.getElementById("oq-ss-style")) {
       const style = document.createElement("style");
       style.id = "oq-ss-style";
@@ -51,6 +53,21 @@
     let running = false;
     let ignoreUntil = 0;
     let launchGeneration = 0;
+
+    function syncReducedMotion() {
+      const reduced = motionQuery && motionQuery.matches;
+      idleMs = reduced ? 0 : requestedIdleMs;
+      if (reduced) clearTimeout(timer);
+      else ping();
+    }
+
+    try {
+      motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      syncReducedMotion();
+      if (motionQuery.addEventListener) motionQuery.addEventListener("change", syncReducedMotion);
+    } catch (e) {
+      // Older browsers simply retain the configured idle delay.
+    }
 
     function layoutOverlay() {
       // win31/mac8/mac1984 set html { zoom }. style.width is pre-zoom and
@@ -144,14 +161,18 @@
       if (running && !nestedFrame()) frame.src = resolveSrc();
     }
     function setIdleMs(next) {
-      idleMs = Math.max(0, Number(next) || 0);
-      ping();
+      requestedIdleMs = Math.max(0, Number(next) || 0);
+      idleMs = motionQuery && motionQuery.matches ? 0 : requestedIdleMs;
+      if (idleMs) ping();
     }
 
     function destroy() {
       clearTimeout(timer);
       running = false;
       launchGeneration += 1;
+      if (motionQuery && motionQuery.removeEventListener) {
+        motionQuery.removeEventListener("change", syncReducedMotion);
+      }
       overlay.hidden = true;
       frame.removeAttribute("src");
       frame.setAttribute("aria-busy", "false");
