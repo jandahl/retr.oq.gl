@@ -107,6 +107,7 @@
   const assistantBubble = document.getElementById("assistant-bubble");
   const assistantStatus = document.getElementById("assistant-status");
   const sledDog = document.getElementById("sled-dog");
+  const welcomeDesk = document.getElementById("win-welcome-desk");
   const guideMessages = {
     dictionary: ["Let's find a word!", "Opening the OQ! dictionary."],
     deconstruct: ["A word can be a little machine.", "Opening Word Deconstructor."],
@@ -131,6 +132,12 @@
     assistantStatus.textContent = guideMessages.close[1];
     sledDog.classList.add("assistant-wave");
   });
+  document.getElementById("assistant-exit").addEventListener("click", () => closeWindow(welcomeDesk));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && welcomeDesk.classList.contains("assistant-fullscreen")) {
+      closeWindow(welcomeDesk);
+    }
+  });
 
   window.OqRedmond.initDesktopIcons({
     desktop,
@@ -151,6 +158,7 @@
   const startButton = document.getElementById("start-button");
   const startMenu = document.getElementById("start-menu");
   const { close: closeStartMenu } = window.OqRedmond.initStartMenu({ startButton, startMenu });
+  if (window.OqWin95Start) window.OqWin95Start(startMenu);
 
   // ---------- Shut Down dialog ----------
   const shutdownOverlay = document.getElementById("shutdown-overlay");
