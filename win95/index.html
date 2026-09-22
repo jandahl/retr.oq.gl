@@ -6,18 +6,18 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>retr-oq — Windows 95 desktop</title>
+<title>retr-oq — OQ!95 desktop</title>
 <link rel="stylesheet" href="../vendor/win98/98.css" />
 <link rel="stylesheet" href="style.css?v=1" />
 </head>
 <body>
-  <section class="boot-screen" id="boot-screen" aria-label="Windows 95 startup" aria-live="polite">
+  <section class="boot-screen" id="boot-screen" aria-label="OQ!95 startup" aria-live="polite">
     <div class="boot-panel">
       <div class="boot-mark" aria-hidden="true">
         <span></span><span></span><span></span><span></span>
       </div>
       <div class="boot-title">WINDOWS</div>
-      <div class="boot-subtitle">Starting Windows 95...</div>
+      <div class="boot-subtitle">Starting OQ!95...</div>
       <div class="boot-progress" aria-hidden="true">
         <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
@@ -50,13 +50,13 @@
       </div>
       <div class="desktop-icon" role="button" tabindex="0" data-open="win-welcome-desk">
         <span class="desktop-icon-glyph icon-welcome-desk" aria-hidden="true"></span>
-        <span class="desktop-icon-label">Welcome Desk</span>
+        <span class="desktop-icon-label">Mikisoq's Office</span>
       </div>
     </div>
 
     <section class="window win95-window welcome-desk-window" id="win-welcome-desk" data-icon="welcome-desk" style="top: 4rem; left: 8rem; width: 34rem; height: 24rem;">
       <div class="title-bar">
-        <div class="title-bar-text">Welcome Desk</div>
+        <div class="title-bar-text">Mikisoq's Office Desk</div>
         <div class="title-bar-controls">
           <button aria-label="Minimize" class="win-minimize"></button>
           <button aria-label="Maximize" class="win-maximize"></button>
@@ -66,7 +66,8 @@
       <div class="window-body win95-window-body welcome-desk-body">
         <div class="welcome-desk-banner">
           <span class="welcome-desk-banner-mark">OQ!</span>
-          <div><strong>Welcome to Windows 95</strong><small>Your desktop assistant is ready.</small></div>
+          <div><strong>Mikisoq's Office Desk</strong><small>Your OQ!95 guide is ready.</small></div>
+          <button type="button" class="assistant-exit" id="assistant-exit">Return to desktop</button>
         </div>
         <div class="welcome-desk-main">
           <div class="assistant-stage">
@@ -83,11 +84,11 @@
               <button type="button" data-guide="dictionary" data-open="win-oq"><span class="action-icon icon-oq" aria-hidden="true"></span><span><strong>Look up a word</strong><small>Open the OQ! dictionary</small></span></button>
               <button type="button" data-guide="deconstruct" data-open="win-oq"><span class="action-icon icon-decon" aria-hidden="true"></span><span><strong>Take a word apart</strong><small>Use Word Deconstructor</small></span></button>
               <button type="button" data-guide="tour" data-open="win-about"><span class="action-icon icon-computer" aria-hidden="true"></span><span><strong>Tour the desktop</strong><small>See what is installed</small></span></button>
-              <button type="button" data-guide="close"><span class="action-icon icon-recyclebin" aria-hidden="true"></span><span><strong>Maybe later</strong><small>Keep exploring on your own</small></span></button>
+              <button type="button" data-guide="close"><span class="action-icon icon-recyclebin" aria-hidden="true"></span><span><strong>Leave the office</strong><small>Keep exploring on your own</small></span></button>
             </div>
           </div>
         </div>
-        <div class="welcome-desk-status"><span class="status-led"></span><span id="assistant-status">Mikisoq is waiting for a click.</span><span class="welcome-desk-version">Welcome Desk 1.0</span></div>
+        <div class="welcome-desk-status"><span class="status-led"></span><span id="assistant-status">Mikisoq is waiting for a click.</span><span class="welcome-desk-version">OQ!95 Office 1.0</span></div>
       </div>
     </section>
 
@@ -282,7 +283,7 @@
       <span class="start-menu-icon icon-recyclebin" aria-hidden="true"></span> Recycle Bin
     </li>
     <li role="menuitem" class="start-menu-item" data-open="win-welcome-desk">
-      <span class="start-menu-icon icon-welcome-desk" aria-hidden="true"></span> Welcome Desk
+      <span class="start-menu-icon icon-welcome-desk" aria-hidden="true"></span> Mikisoq's Office
     </li>
     <li class="start-menu-divider"></li>
     <li role="menu-item" class="start-menu-item start-menu-item--disabled">
@@ -361,6 +362,7 @@
   <script src="../shared/redmond/screensaver.js?v=35"></script>
   <script src="../shared/redmond/window-manager.js"></script>
   <script src="../shared/redmond/oq-shell.js?v=2"></script>
+  <script src="start-extra.js?v=1"></script>
   <!-- Real ES module, not a classic script -- see shared/oq-analysis.js's
        own header comment for why this one file is the exception.
        type="module" scripts are deferred automatically, so window.OqAnalysis

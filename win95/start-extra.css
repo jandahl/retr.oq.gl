@@ -9,7 +9,7 @@
   bottom: 3px;
   width: 22px;
   pointer-events: none;
-  background: linear-gradient(to top, #6e0818 0%, #a10e24 38%, #c8102e 72%, #e44558 100%);
+  background: linear-gradient(to top, #555 0%, #707070 42%, #888 100%);
 }
 #start-menu > .start-menu-banner .start-menu-banner-text {
   position: absolute;
