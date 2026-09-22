@@ -332,10 +332,10 @@
   function boot() {
     let theme = themeKey();
     if (!theme) return;
+    document.body.classList.add("theme-" + theme);
     // Windows 95 uses the Win98-compatible saver menu surface while the
     // desktop shell remains its own theme.
     if (theme === "win95") theme = "win98";
-    document.body.classList.add("theme-" + theme);
 
     if (theme === "win31") {
       const host = attach({ src: vendor("flying-windows"), idleMs: 45000 });

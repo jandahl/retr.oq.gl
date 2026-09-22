@@ -1,4 +1,4 @@
-window.OqWin98Start = function (menu) {
+window.OqWin95Start = function (menu) {
   if (!menu || menu.querySelector(".start-menu-banner")) return;
   if (!document.querySelector('link[href*="start-extra.css"]')) {
     const link = document.createElement("link");
@@ -9,7 +9,7 @@ window.OqWin98Start = function (menu) {
   const banner = document.createElement("li");
   banner.className = "start-menu-banner";
   banner.setAttribute("aria-hidden", "true");
-  banner.innerHTML = '<span class="start-menu-banner-text"><strong>Oq!</strong>98</span>';
+  banner.innerHTML = '<span class="start-menu-banner-text"><strong>Oq!</strong>95</span>';
   menu.insertBefore(banner, menu.firstChild);
 
   function addItem(label, className, opts) {
@@ -60,7 +60,7 @@ window.OqWin98Start = function (menu) {
   menu.insertBefore(
     addItem("Help", "icon-help", {
       onClick: function () {
-        window.alert("retr-oq Windows 98 prototype. Shut Down returns to the theme picker.");
+        window.alert("retr-oq Windows 95 prototype. Shut Down returns to the theme picker.");
       },
     }),
     shutdown
