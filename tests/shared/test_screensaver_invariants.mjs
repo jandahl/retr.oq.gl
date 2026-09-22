@@ -92,6 +92,7 @@ test("Windows 95 scaffold keeps the assistant optional", () => {
   assert.match(app, /assistant-fullscreen/);
   assert.match(html, /id="assistant-exit"/);
   assert.match(app, /Escape/);
+  assert.match(app, /welcomeDesk\.classList\.remove\("assistant-fullscreen"\)/);
   assert.match(css, /width: 100vw !important;/);
   assert.match(css, /\.desktop:has\(\.assistant-fullscreen\) ~ \.taskbar/);
   assert.match(app, /welcome-desk-actions/);

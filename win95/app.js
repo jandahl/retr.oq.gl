@@ -132,10 +132,14 @@
     assistantStatus.textContent = guideMessages.close[1];
     sledDog.classList.add("assistant-wave");
   });
-  document.getElementById("assistant-exit").addEventListener("click", () => closeWindow(welcomeDesk));
+  function exitAssistant() {
+    welcomeDesk.classList.remove("assistant-fullscreen");
+    closeWindow(welcomeDesk);
+  }
+  document.getElementById("assistant-exit").addEventListener("click", exitAssistant);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && welcomeDesk.classList.contains("assistant-fullscreen")) {
-      closeWindow(welcomeDesk);
+      exitAssistant();
     }
   });
 
