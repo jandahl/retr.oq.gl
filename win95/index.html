@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <section class="window win95-window welcome-desk-window" id="win-welcome-desk" data-icon="welcome-desk" style="top: 4rem; left: 8rem; width: 30rem; height: 22rem;">
+    <section class="window win95-window welcome-desk-window" id="win-welcome-desk" data-icon="welcome-desk" style="top: 4rem; left: 8rem; width: 34rem; height: 24rem;">
       <div class="title-bar">
         <div class="title-bar-text">Welcome Desk</div>
         <div class="title-bar-controls">
@@ -64,18 +64,30 @@
         </div>
       </div>
       <div class="window-body win95-window-body welcome-desk-body">
-        <div class="sled-dog" aria-label="A friendly sled dog assistant" role="img">
-          <span class="sled-dog-ear"></span><span class="sled-dog-face"><span class="sled-dog-eye sled-dog-eye-left"></span><span class="sled-dog-eye sled-dog-eye-right"></span><span class="sled-dog-nose"></span></span><span class="sled-dog-scarf"></span>
+        <div class="welcome-desk-banner">
+          <span class="welcome-desk-banner-mark">OQ!</span>
+          <div><strong>Welcome to Windows 95</strong><small>Your desktop assistant is ready.</small></div>
         </div>
-        <div class="welcome-desk-copy">
-          <h2>Welcome to your desktop!</h2>
-          <p>I'm your guide to the OQ! reference shelf. Open the dictionary or try the Word Deconstructor.</p>
-          <div class="welcome-desk-actions">
-            <button type="button" data-open="win-oq">Open OQ!</button>
-            <button type="button" data-open="win-about">About this desktop</button>
+        <div class="welcome-desk-main">
+          <div class="assistant-stage">
+            <div class="assistant-bubble" id="assistant-bubble" role="status">Hi! I'm Mikisoq. What would you like to do?</div>
+            <div class="sled-dog" id="sled-dog" aria-label="Mikisoq, a friendly sled dog assistant" role="img">
+              <span class="sled-dog-tail"></span><span class="sled-dog-ear sled-dog-ear-left"></span><span class="sled-dog-ear sled-dog-ear-right"></span><span class="sled-dog-face"><span class="sled-dog-eye sled-dog-eye-left"></span><span class="sled-dog-eye sled-dog-eye-right"></span><span class="sled-dog-brow sled-dog-brow-left"></span><span class="sled-dog-brow sled-dog-brow-right"></span><span class="sled-dog-nose"></span><span class="sled-dog-mouth"></span></span><span class="sled-dog-scarf"></span>
+            </div>
+            <div class="assistant-nameplate"><strong>Mikisoq</strong><span>Desktop guide</span></div>
           </div>
-          <p class="welcome-desk-note">This friendly guide is an original retr-oq character.</p>
+          <div class="welcome-desk-copy">
+            <h2>What can I help you find?</h2>
+            <p class="welcome-desk-intro">I can show you around this little reference computer.</p>
+            <div class="welcome-desk-actions" aria-label="Assistant actions">
+              <button type="button" data-guide="dictionary" data-open="win-oq"><span class="action-icon icon-oq" aria-hidden="true"></span><span><strong>Look up a word</strong><small>Open the OQ! dictionary</small></span></button>
+              <button type="button" data-guide="deconstruct" data-open="win-oq"><span class="action-icon icon-decon" aria-hidden="true"></span><span><strong>Take a word apart</strong><small>Use Word Deconstructor</small></span></button>
+              <button type="button" data-guide="tour" data-open="win-about"><span class="action-icon icon-computer" aria-hidden="true"></span><span><strong>Tour the desktop</strong><small>See what is installed</small></span></button>
+              <button type="button" data-guide="close"><span class="action-icon icon-recyclebin" aria-hidden="true"></span><span><strong>Maybe later</strong><small>Keep exploring on your own</small></span></button>
+            </div>
+          </div>
         </div>
+        <div class="welcome-desk-status"><span class="status-led"></span><span id="assistant-status">Mikisoq is waiting for a click.</span><span class="welcome-desk-version">Welcome Desk 1.0</span></div>
       </div>
     </section>
 

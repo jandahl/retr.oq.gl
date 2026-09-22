@@ -73,17 +73,92 @@
 }
 
 .welcome-desk-body {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  background: #fffdf0;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 !important;
+  overflow: hidden;
+  background: linear-gradient(180deg, #eaf4ff 0 48%, #fffdf0 48% 100%);
 }
 
-.welcome-desk-copy { flex: 1; }
-.welcome-desk-copy h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
-.welcome-desk-copy p { line-height: 1.35; }
-.welcome-desk-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
-.welcome-desk-note { color: #666; font-size: .8rem; }
+.welcome-desk-window.assistant-fullscreen {
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 100 !important;
+}
+.welcome-desk-window.assistant-fullscreen .title-bar { flex: 0 0 auto; }
+.welcome-desk-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  color: #fff;
+  background: #000080;
+  box-sizing: border-box;
+}
+.welcome-desk-banner-mark {
+  padding: .35rem .55rem;
+  color: #000080;
+  background: #fff;
+  font-size: 1.35rem;
+  font-weight: bold;
+  letter-spacing: .08em;
+}
+.welcome-desk-banner strong, .welcome-desk-banner small { display: block; }
+.welcome-desk-banner strong { font-size: 1.2rem; }
+.welcome-desk-banner small { margin-top: .25rem; color: #c9dcff; }
+.welcome-desk-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2rem, 8vw, 8rem);
+  width: min(72rem, 100%);
+  flex: 1;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+.assistant-stage { position: relative; flex: 0 0 19rem; text-align: center; }
+.assistant-bubble {
+  position: relative;
+  min-height: 3rem;
+  margin-bottom: 1.25rem;
+  padding: .8rem 1rem;
+  color: #000080;
+  background: #fff;
+  border: 2px solid #000080;
+  box-shadow: 4px 4px 0 rgba(0,0,128,.2);
+  font-size: 1.05rem;
+  text-align: left;
+}
+.assistant-bubble::after {
+  content: "";
+  position: absolute;
+  left: 2.5rem;
+  bottom: -1rem;
+  width: 1rem;
+  height: 1rem;
+  background: #fff;
+  border-right: 2px solid #000080;
+  border-bottom: 2px solid #000080;
+  transform: skewY(35deg) rotate(45deg);
+}
+.assistant-nameplate { display: flex; justify-content: center; gap: .5rem; align-items: baseline; margin-top: .7rem; color: #000080; }
+.assistant-nameplate span { color: #555; font-size: .8rem; }
+.welcome-desk-copy { flex: 0 1 30rem; }
+.welcome-desk-copy h2 { margin: 0 0 .5rem; color: #000080; font-size: 1.45rem; }
+.welcome-desk-intro { margin: 0 0 1rem; line-height: 1.35; }
+.welcome-desk-actions { display: grid; grid-template-columns: repeat(2, minmax(12rem, 1fr)); gap: .65rem; }
+.welcome-desk-actions button { display: flex; align-items: center; gap: .65rem; min-height: 4rem; padding: .55rem; text-align: left; }
+.welcome-desk-actions button > span:last-child { display: grid; gap: .2rem; }
+.welcome-desk-actions small { color: #555; font-size: .72rem; }
+.action-icon { flex: 0 0 2rem; width: 2rem; height: 2rem; background-size: contain; background-position: center; background-repeat: no-repeat; }
+.welcome-desk-status { display: flex; align-items: center; gap: .45rem; width: 100%; padding: .35rem .65rem; border-top: 1px solid #808080; box-sizing: border-box; color: #444; font-size: .75rem; }
+.status-led { width: .55rem; height: .55rem; background: #008000; border: 1px solid #004000; }
+.welcome-desk-version { margin-left: auto; color: #777; }
 
 .sled-dog {
   position: relative;
@@ -95,17 +170,30 @@
   transform-origin: 50% 85%;
   animation: sled-dog-bob 1.8s ease-in-out infinite;
 }
+.sled-dog.assistant-think { animation: sled-dog-think .65s ease-in-out 2; }
+.sled-dog.assistant-wave { animation: sled-dog-wave .8s ease-in-out 2; }
 .sled-dog::before, .sled-dog::after { content: ""; position: absolute; background: #8b4d32; border: 2px solid #43281e; }
 .sled-dog::before { width: 3rem; height: 4rem; left: -.8rem; top: .7rem; transform: rotate(-28deg); border-radius: 80% 20% 70% 30%; }
 .sled-dog::after { width: 3rem; height: 4rem; right: -.8rem; top: .7rem; transform: rotate(28deg); border-radius: 20% 80% 30% 70%; }
 .sled-dog-face { position: absolute; inset: 2.5rem 1.5rem 1.7rem; background: #f0c698; border-radius: 45% 45% 52% 52%; }
+.sled-dog-tail { position: absolute; right: -1.6rem; bottom: 2rem; width: 3rem; height: 4rem; border: .8rem solid #8b4d32; border-left: 0; border-bottom-color: transparent; border-radius: 0 80% 20% 0; transform: rotate(-18deg); }
 .sled-dog-eye { position: absolute; top: 2rem; width: .55rem; height: .7rem; background: #201510; border-radius: 50%; }
 .sled-dog-eye-left { left: 1rem; }.sled-dog-eye-right { right: 1rem; }
+.sled-dog-brow { position: absolute; top: 1.45rem; width: .9rem; height: .18rem; background: #43281e; }
+.sled-dog-brow-left { left: .85rem; transform: rotate(-8deg); }.sled-dog-brow-right { right: .85rem; transform: rotate(8deg); }
 .sled-dog-nose { position: absolute; left: calc(50% - .45rem); bottom: 1.3rem; width: .9rem; height: .65rem; background: #201510; border-radius: 50%; }
+.sled-dog-mouth { position: absolute; left: calc(50% - .7rem); bottom: .75rem; width: 1.4rem; height: .55rem; border-bottom: 2px solid #43281e; border-radius: 50%; }
 .sled-dog-ear { position: absolute; left: 1rem; top: 1.4rem; width: 2rem; height: 3rem; background: #6e3929; border-radius: 80% 20%; transform: rotate(-25deg); z-index: 2; }
 .sled-dog-scarf { position: absolute; left: .3rem; right: .3rem; bottom: 1.2rem; height: 1rem; background: #244e78; border: 2px solid #17324e; z-index: 3; }
 @keyframes sled-dog-bob { 50% { transform: translateY(-3px) rotate(-1deg); } }
+@keyframes sled-dog-think { 50% { transform: translateY(-5px) rotate(2deg); } }
+@keyframes sled-dog-wave { 25% { transform: rotate(-7deg); } 75% { transform: rotate(7deg); } }
 @media (prefers-reduced-motion: reduce) { .sled-dog { animation: none; } }
+@media (max-width: 760px) {
+  .welcome-desk-main { gap: 1rem; padding: 1rem; }
+  .assistant-stage { flex-basis: 13rem; transform: scale(.8); transform-origin: center; }
+  .welcome-desk-actions { grid-template-columns: 1fr; }
+}
 
 html, body {
   margin: 0;

@@ -87,6 +87,8 @@ test("Windows 95 scaffold keeps the assistant optional", () => {
   assert.match(html, /id="win-welcome-desk"/);
   assert.match(html, /data-open="win-welcome-desk"/);
   assert.match(html, /class="sled-dog"/);
+  assert.match(html, /Mikisoq/);
+  assert.match(app, /assistant-fullscreen/);
   assert.match(app, /welcome-desk-actions/);
   assert.match(html, /id="win-oq"/);
 });
