@@ -306,6 +306,24 @@ window.OqHubMachines = [
     `,
   },
   {
+    href: "win95/",
+    name: "Windows 95",
+    year: "1995",
+    category: "redmond",
+    hasGames: false,
+    meta: "Start / Welcome Desk",
+    iconNote: "Teal desktop, Windows 95 shell, optional sled-dog guide",
+    icon: `
+      <rect width="32" height="32" fill="#008080"/>
+      <rect x="4" y="6" width="24" height="18" fill="#c0c0c0"/>
+      <rect x="5" y="7" width="22" height="3" fill="#000080"/>
+      <rect x="6" y="11" width="20" height="11" fill="#fff"/>
+      <circle cx="16" cy="16" r="4" fill="#c98c57" stroke="#43281e"/>
+      <circle cx="14.5" cy="15.5" r=".6" fill="#201510"/><circle cx="17.5" cy="15.5" r=".6" fill="#201510"/>
+      <rect x="5" y="24" width="22" height="4" fill="#c0c0c0"/>
+    `,
+  },
+  {
     href: "win98/",
     name: "Windows 98",
     year: "1998",

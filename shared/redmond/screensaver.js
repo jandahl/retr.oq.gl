@@ -238,9 +238,10 @@
       }));
       // Keep each desktop's established historical menu order while taking
       // labels and membership from the shared catalog.
-      return fallback.filter(function (entry) { return byId[entry[0]]; }).map(function (entry) {
+      var matched = fallback.filter(function (entry) { return byId[entry[0]]; }).map(function (entry) {
         return [entry[0], byId[entry[0]].label];
       });
+      return matched.length ? matched : fallback;
     }
     return fallback;
   }
@@ -248,6 +249,7 @@
   function themeKey() {
     const p = location.pathname;
     if (p.includes("/win31/")) return "win31";
+    if (p.includes("/win95/")) return "win95";
     if (p.includes("/win98/")) return "win98";
     if (p.includes("/win7/")) return "win7";
     if (p.includes("/xp/")) return "xp";
@@ -328,9 +330,12 @@
   }
 
   function boot() {
-    const theme = themeKey();
+    let theme = themeKey();
     if (!theme) return;
     document.body.classList.add("theme-" + theme);
+    // Windows 95 uses the Win98-compatible saver menu surface while the
+    // desktop shell remains its own theme.
+    if (theme === "win95") theme = "win98";
 
     if (theme === "win31") {
       const host = attach({ src: vendor("flying-windows"), idleMs: 45000 });
