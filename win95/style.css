@@ -116,14 +116,21 @@ html, body {
 
 body {
   font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  cursor: var(--cursor-arrow);
 }
+
+/* Keep the desktop's own bitmap pointer everywhere. Browser I-beams,
+   resize glyphs, and hand pointers otherwise leak through from 98.css. */
+body * { cursor: var(--cursor-arrow) !important; }
 
 .desktop {
   position: fixed;
   inset: 0;
   bottom: 32px; /* leaves room for the fixed taskbar below */
-  /* The real Windows 95 default desktop -- solid teal, no wallpaper image. */
-  background: #008080;
+  /* Original vector evocation of the Bliss-era rolling green hillside. */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232f5fc4'/%3E%3Cstop offset='.48' stop-color='%236ea8ea'/%3E%3Cstop offset='.8' stop-color='%23bcdcfb'/%3E%3Cstop offset='1' stop-color='%23e8f4ff'/%3E%3C/linearGradient%3E%3ClinearGradient id='h' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop stop-color='%237fc24a'/%3E%3Cstop offset='1' stop-color='%233f8a24'/%3E%3C/linearGradient%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop stop-color='%235fae30'/%3E%3Cstop offset='1' stop-color='%23255f13'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1600' height='900' fill='url(%23s)'/%3E%3Cg fill='white' opacity='.8'%3E%3Cellipse cx='360' cy='170' rx='150' ry='32'/%3E%3Cellipse cx='460' cy='150' rx='105' ry='24'/%3E%3Cellipse cx='1180' cy='120' rx='130' ry='28'/%3E%3Cellipse cx='1290' cy='102' rx='85' ry='20'/%3E%3C/g%3E%3Cpath d='M0 540C220 460 420 610 680 520S1160 580 1600 470V900H0Z' fill='url(%23h)'/%3E%3Cpath d='M0 660C260 600 560 700 860 630S1380 680 1600 610V900H0Z' fill='url(%23f)'/%3E%3C/svg%3E") center bottom / cover no-repeat,
+    linear-gradient(180deg, #2f5fc4 0%, #6ea8ea 48%, #bcdcfb 80%, #3f8a24 100%);
   overflow: hidden;
 }
 
@@ -153,13 +160,9 @@ body {
      The dotted outline in :hover/:focus-visible below is this theme's own
      deliberate feedback instead. */
   -webkit-tap-highlight-color: transparent;
-  /* Desktop icons are real <button> elements (for native focus/keyboard
-     support), but 98.css's own `button` reset styles every one of them as
-     a beveled, silver, min-75px-wide 3D button by default -- background,
-     box-shadow, min-width/min-height, padding, and even color:transparent
-     (its own pixel-font text-shadow trick). Every one of those needs an
-     explicit override here, or a desktop icon renders as a visible button
-     square instead of a plain icon-and-label sitting on the desktop. */
+  /* Desktop icons are semantic divs with role=button, not 98.css button
+     controls; keep their hit area plain and let the glyph/label provide the
+     only visible selection treatment. */
   min-width: 0;
   min-height: 0;
   background: transparent;
@@ -174,14 +177,6 @@ body {
      else. The deliberate replacement is scoped to just the label text,
      via :focus-visible below. */
   outline: none;
-}
-
-.desktop-icon:active {
-  /* 98.css's own button:active swaps the bevel direction (box-shadow) and
-     nudges the text-shadow -- both no-ops here since box-shadow/
-     text-shadow are already reset above, but padding:0 on :active would
-     otherwise still apply and shift the icon by a pixel on press. */
-  padding: 0.25rem;
 }
 
 /* No hover/selected treatment on the button element itself -- a border or
@@ -504,6 +499,8 @@ body {
 }
 
 .win95-window .title-bar {
+  background: #000080;
+  color: #ffffff;
   cursor: var(--cursor-arrow);
   user-select: none;
   touch-action: none;
@@ -541,7 +538,7 @@ body {
   left: 6px;
   right: 6px;
   height: 6px;
-  cursor: ns-resize;
+  cursor: var(--cursor-arrow);
 }
 .win95-resize-n { top: -3px; }
 .win95-resize-s { bottom: -3px; }
@@ -550,7 +547,7 @@ body {
   top: 6px;
   bottom: 6px;
   width: 6px;
-  cursor: ew-resize;
+  cursor: var(--cursor-arrow);
 }
 .win95-resize-e { right: -3px; }
 .win95-resize-w { left: -3px; }
@@ -560,10 +557,10 @@ body {
   height: 10px;
   z-index: 2;
 }
-.win95-resize-ne { top: -3px; right: -3px; cursor: nesw-resize; }
-.win95-resize-nw { top: -3px; left: -3px; cursor: nwse-resize; }
-.win95-resize-se { bottom: -3px; right: -3px; cursor: nwse-resize; }
-.win95-resize-sw { bottom: -3px; left: -3px; cursor: nesw-resize; }
+.win95-resize-ne { top: -3px; right: -3px; }
+.win95-resize-nw { top: -3px; left: -3px; }
+.win95-resize-se { bottom: -3px; right: -3px; }
+.win95-resize-sw { bottom: -3px; left: -3px; }
 
 .win95-window.maximized .win95-resize-handle {
   display: none; /* nothing to resize while maximized */

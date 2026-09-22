@@ -729,6 +729,12 @@
           if (target) openWindow(target);
         });
       }
+      icon.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        const target = targetFor(icon);
+        if (target) openWindow(target);
+      });
     }
     desktop.addEventListener("pointerdown", (event) => {
       if (event.target === desktop && selectedIcon) {

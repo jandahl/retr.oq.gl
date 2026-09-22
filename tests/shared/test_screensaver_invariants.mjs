@@ -91,6 +91,17 @@ test("Windows 95 scaffold keeps the assistant optional", () => {
   assert.match(html, /id="win-oq"/);
 });
 
+test("Windows 95 shell keeps desktop affordances out of 98.css button chrome", () => {
+  const html = read("win95/index.html");
+  const css = read("win95/style.css");
+  assert.doesNotMatch(html, /<button[^>]+class="desktop-icon"/);
+  assert.match(html, /class="desktop-icon" role="button" tabindex="0"/);
+  assert.match(css, /body \* \{ cursor: var\(--cursor-arrow\) !important; \}/);
+  assert.match(css, /background:\s+url\("data:image\/svg\+xml/);
+  assert.match(css, /\.win95-window \.title-bar \{\s*background: #000080;/);
+  assert.match(read("win95/app.js"), /String\(now\.getHours\(\)\)\.padStart\(2, "0"\)/);
+});
+
 test("GL savers use vendored three.js builds that exist on disk", () => {
   const needed = {
     "three-r125.min.js": 100000,
