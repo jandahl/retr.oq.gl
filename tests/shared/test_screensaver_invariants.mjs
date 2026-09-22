@@ -54,7 +54,7 @@ test("every vendored saver has period metadata", () => {
 test("router loads catalog before the saver host and preserves script order", () => {
   const src = read("shared/router.js");
   const catalog = src.indexOf('redmond/screensaver-catalog.js?v=1');
-  const host = src.indexOf('redmond/screensaver.js?v=34');
+  const host = src.indexOf('redmond/screensaver.js?v=35');
   assert.ok(catalog >= 0 && host > catalog, "catalog must load before host");
   assert.match(src, /s\.async\s*=\s*false/);
 });
@@ -79,6 +79,16 @@ test("hidden desktops unload active saver frames", () => {
   assert.match(src, /pausedForVisibility = running/);
   assert.match(src, /if \(running\) \{[\s\S]*?stop\(\);/);
   assert.match(src, /document\.removeEventListener\("visibilitychange", handleVisibilityChange\)/);
+});
+
+test("Windows 95 scaffold keeps the assistant optional", () => {
+  const html = read("win95/index.html");
+  const app = read("win95/app.js");
+  assert.match(html, /id="win-welcome-desk"/);
+  assert.match(html, /data-open="win-welcome-desk"/);
+  assert.match(html, /class="sled-dog"/);
+  assert.match(app, /welcome-desk-actions/);
+  assert.match(html, /id="win-oq"/);
 });
 
 test("GL savers use vendored three.js builds that exist on disk", () => {
