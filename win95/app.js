@@ -241,26 +241,10 @@
   // #29 calls this out explicitly as a period-accurate touch 98.css
   // doesn't give you out of the box).
   const clockEl = document.getElementById("taskbar-clock");
-  // Honor the visitor's own 24-hour-clock preference when the browser
-  // exposes one; default to 24-hour when it doesn't rather than assuming
-  // English 12-hour AM/PM.
-  let use24Hour = true;
-  try {
-    const resolved = Intl.DateTimeFormat(undefined, { hour: "numeric" }).resolvedOptions();
-    if (typeof resolved.hour12 === "boolean") use24Hour = !resolved.hour12;
-  } catch {}
   function updateClock() {
     const now = new Date();
     const minutes = String(now.getMinutes()).padStart(2, "0");
-    if (use24Hour) {
-      clockEl.textContent = `${String(now.getHours()).padStart(2, "0")}:${minutes}`;
-      return;
-    }
-    let hours = now.getHours();
-    const suffix = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12;
-    if (hours === 0) hours = 12;
-    clockEl.textContent = `${hours}:${minutes} ${suffix}`;
+    clockEl.textContent = `${String(now.getHours()).padStart(2, "0")}:${minutes}`;
   }
   updateClock();
   setInterval(updateClock, 1000);
