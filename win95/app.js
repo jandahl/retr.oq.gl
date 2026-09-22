@@ -58,6 +58,7 @@
     },
     onOpen(win) {
       if (win.id === "win-oq") startOqLoad();
+      if (win.id === "win-welcome-desk") win.classList.add("assistant-fullscreen");
     },
     // Desktop icon / Start menu / taskbar-restore clicks on OQ! or DECON
     // all funnel through this one openWindow() (see shared/redmond/
@@ -100,15 +101,36 @@
     });
   }
 
-  // Welcome Desk buttons use the same real window manager path as desktop
+  // Welcome Desk actions use the same real window manager path as desktop
   // icons and Start-menu entries; the assistant is optional, never a boot
-  // gate or replacement shell.
+  // gate or replacement shell. Guide copy/poses are local UI state only.
+  const assistantBubble = document.getElementById("assistant-bubble");
+  const assistantStatus = document.getElementById("assistant-status");
+  const sledDog = document.getElementById("sled-dog");
+  const guideMessages = {
+    dictionary: ["Let's find a word!", "Opening the OQ! dictionary."],
+    deconstruct: ["A word can be a little machine.", "Opening Word Deconstructor."],
+    tour: ["I'll show you the important corners.", "Opening desktop information."],
+    close: ["I'll be right here when you need me.", "Welcome Desk is staying open."],
+  };
   for (const el of document.querySelectorAll(".welcome-desk-actions [data-open]")) {
     el.addEventListener("click", () => {
+      const message = guideMessages[el.dataset.guide];
+      if (message) {
+        assistantBubble.textContent = message[0];
+        assistantStatus.textContent = message[1];
+        sledDog.classList.remove("assistant-think", "assistant-wave");
+        sledDog.classList.add(el.dataset.guide === "close" ? "assistant-wave" : "assistant-think");
+      }
       const target = document.getElementById(el.dataset.open);
       if (target) openWindow(target);
     });
   }
+  document.querySelector('[data-guide="close"]').addEventListener("click", () => {
+    assistantBubble.textContent = guideMessages.close[0];
+    assistantStatus.textContent = guideMessages.close[1];
+    sledDog.classList.add("assistant-wave");
+  });
 
   window.OqRedmond.initDesktopIcons({
     desktop,
