@@ -104,39 +104,11 @@
   // Welcome Desk actions use the same real window manager path as desktop
   // icons and Start-menu entries; the assistant is optional, never a boot
   // gate or replacement shell. Guide copy/poses are local UI state only.
-  const assistantBubble = document.getElementById("assistant-bubble");
-  const assistantStatus = document.getElementById("assistant-status");
-  const sledDog = document.getElementById("sled-dog");
   const welcomeDesk = document.getElementById("win-welcome-desk");
-  const guideMessages = {
-    dictionary: ["Let's find a word!", "Opening the OQ! dictionary."],
-    deconstruct: ["A word can be a little machine.", "Opening Word Deconstructor."],
-    tour: ["I'll show you the important corners.", "Opening desktop information."],
-    close: ["I'll be right here when you need me.", "Welcome Desk is staying open."],
-  };
-  for (const el of document.querySelectorAll(".welcome-desk-actions [data-open]")) {
-    el.addEventListener("click", () => {
-      const message = guideMessages[el.dataset.guide];
-      if (message) {
-        assistantBubble.textContent = message[0];
-        assistantStatus.textContent = message[1];
-        sledDog.classList.remove("assistant-think", "assistant-wave");
-        sledDog.classList.add(el.dataset.guide === "close" ? "assistant-wave" : "assistant-think");
-      }
-      const target = document.getElementById(el.dataset.open);
-      if (target) openWindow(target);
-    });
-  }
-  document.querySelector('[data-guide="close"]').addEventListener("click", () => {
-    assistantBubble.textContent = guideMessages.close[0];
-    assistantStatus.textContent = guideMessages.close[1];
-    sledDog.classList.add("assistant-wave");
-  });
   function exitAssistant() {
     welcomeDesk.classList.remove("assistant-fullscreen");
     closeWindow(welcomeDesk);
   }
-  document.getElementById("assistant-exit").addEventListener("click", exitAssistant);
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && welcomeDesk.classList.contains("assistant-fullscreen")) {
       exitAssistant();
