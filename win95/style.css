@@ -1,0 +1,1188 @@
+/* Windows 95 desktop prototype -- layered on top of vendor/win95/98.css
+   (jdan/98.css), which supplies the window/title-bar/button chrome. This
+   file only adds what 98.css doesn't: the desktop surface, desktop icons,
+   the taskbar + Start menu, and the resize-handle hitboxes the drag/resize
+   machinery in app.js hooks into. */
+
+* {
+  box-sizing: border-box;
+}
+
+/* Icon art, as inline data-URI SVGs rather than Unicode emoji -- an emoji
+   glyph's color rendering depends entirely on the platform having a color
+   emoji font installed (Noto Color Emoji, Apple Color Emoji, etc). Plenty
+   of real browsers don't (most Linux Chromium installs, some Android
+   WebViews), and silently fall back to a plain monochrome/outline glyph
+   instead -- exactly the "icons are black only" bug this was shipped
+   with. Real SVG art renders identically everywhere. Same reasoning
+   mac1984/'s own hand-drawn pixel icons already follow, just in color
+   here since the real Win95 desktop's icons were themselves in color
+   (unlike the 1-bit black-and-white original Mac). One custom property
+   per icon, shared by .desktop-icon-glyph, .taskbar-window-icon, and
+   .start-menu-icon below via a shared class name (icon-<name>) so the
+   same art appears in all three places an app can show up. */
+:root {
+  --icon-computer: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%2212%22%20height%3D%229%22%20fill%3D%22%23c0c0c0%22%2F%3E%20%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%2210%22%20height%3D%227%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%228%22%20height%3D%225%22%20fill%3D%22%231084d0%22%2F%3E%20%3Crect%20x%3D%226%22%20y%3D%2211%22%20width%3D%224%22%20height%3D%222%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%224%22%20y%3D%2213%22%20width%3D%228%22%20height%3D%221%22%20fill%3D%22%23808080%22%2F%3E%20%3C%2Fsvg%3E");
+  --icon-about: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%223%22%20y%3D%221%22%20width%3D%229%22%20height%3D%2214%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23000000%22%2F%3E%20%3Cpolygon%20points%3D%229%2C1%2012%2C4%209%2C4%22%20fill%3D%22%23c0c0c0%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%225%22%20y%3D%226%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%225%22%20y%3D%228%22%20width%3D%225%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%225%22%20y%3D%2210%22%20width%3D%223%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3C%2Fsvg%3E");
+  --icon-recyclebin: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%2210%22%20height%3D%222%22%20fill%3D%22%23c0c0c0%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%224%22%20height%3D%222%22%20fill%3D%22%23c0c0c0%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%224%22%20y%3D%225%22%20width%3D%228%22%20height%3D%2210%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%226%22%20y%3D%227%22%20width%3D%221%22%20height%3D%226%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%221%22%20height%3D%226%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%2210%22%20y%3D%227%22%20width%3D%221%22%20height%3D%226%22%20fill%3D%22%23808080%22%2F%3E%20%3C%2Fsvg%3E");
+  --icon-oq: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Cpath%20d%3D%22M1%203%20L8%202%20L8%2013%20L1%2014%20Z%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23000000%22%2F%3E%20%3Cpath%20d%3D%22M15%203%20L8%202%20L8%2013%20L15%2014%20Z%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%222%22%20height%3D%2211%22%20fill%3D%22%23800000%22%2F%3E%20%3Crect%20x%3D%223%22%20y%3D%225%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%223%22%20y%3D%227%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%223%22%20y%3D%229%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%229%22%20y%3D%225%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%229%22%20y%3D%227%22%20width%3D%224%22%20height%3D%221%22%20fill%3D%22%23000080%22%2F%3E%20%3C%2Fsvg%3E");
+  --icon-programs: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%221%22%20y%3D%224%22%20width%3D%226%22%20height%3D%222%22%20fill%3D%22%23ffcc00%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%2214%22%20height%3D%228%22%20fill%3D%22%23ffcc00%22%20stroke%3D%22%23000000%22%2F%3E%20%3C%2Fsvg%3E");
+  --icon-settings: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%226%22%20y%3D%221%22%20width%3D%224%22%20height%3D%223%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%226%22%20y%3D%2212%22%20width%3D%224%22%20height%3D%223%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%223%22%20height%3D%224%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%2212%22%20y%3D%226%22%20width%3D%223%22%20height%3D%224%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%224%22%20y%3D%224%22%20width%3D%228%22%20height%3D%228%22%20fill%3D%22%23c0c0c0%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%224%22%20height%3D%224%22%20fill%3D%22%23000080%22%2F%3E%20%3C%2Fsvg%3E");
+  --icon-shutdown: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%222%22%20height%3D%227%22%20fill%3D%22%23c00000%22%2F%3E%20%3Cpath%20d%3D%22M4%205%20A6%206%200%201%200%2012%205%22%20fill%3D%22none%22%20stroke%3D%22%23c00000%22%20stroke-width%3D%222%22%2F%3E%20%3C%2Fsvg%3E");
+  /* DECON's own icon: a word breaking apart into its own separate
+     morpheme blocks, the same "deconstruct" motif dos/'s own DECON.EXE
+     conveys via text ([EXACT REBUILD]/breakdown rows) instead of art --
+     two grey blocks either side of a navy "seam" splitting a third,
+     center block apart. */
+  --icon-decon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%221%22%20y%3D%226%22%20width%3D%224%22%20height%3D%224%22%20fill%3D%22%23c0c0c0%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%226%22%20y%3D%226%22%20width%3D%224%22%20height%3D%224%22%20fill%3D%22%23808080%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%2211%22%20y%3D%226%22%20width%3D%224%22%20height%3D%224%22%20fill%3D%22%23c0c0c0%22%20stroke%3D%22%23000000%22%2F%3E%20%3Crect%20x%3D%227%22%20y%3D%222%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%227%22%20y%3D%2211%22%20width%3D%222%22%20height%3D%223%22%20fill%3D%22%23000080%22%2F%3E%20%3C%2Fsvg%3E");
+  /* A monitor (same shape/colors as --icon-computer) plus a small color
+     wheel corner, distinguishing it from My Computer's plain monitor --
+     this is the icon for the Display applet specifically, not the
+     machine as a whole. */
+  --icon-display: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20shape-rendering%3D%22crispEdges%22%3E%20%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2211%22%20height%3D%228%22%20fill%3D%22%23c0c0c0%22%2F%3E%20%3Crect%20x%3D%222%22%20y%3D%222%22%20width%3D%229%22%20height%3D%226%22%20fill%3D%22%23000080%22%2F%3E%20%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%227%22%20height%3D%224%22%20fill%3D%22%231084d0%22%2F%3E%20%3Crect%20x%3D%224%22%20y%3D%229%22%20width%3D%224%22%20height%3D%222%22%20fill%3D%22%23808080%22%2F%3E%20%3Crect%20x%3D%222%22%20y%3D%2211%22%20width%3D%228%22%20height%3D%221%22%20fill%3D%22%23808080%22%2F%3E%20%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223.5%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23000000%22%20stroke-width%3D%220.6%22%2F%3E%20%3Cpath%20d%3D%22M12%208.5%20A3.5%203.5%200%200%201%2012%2015.5%20Z%22%20fill%3D%22%23c00000%22%2F%3E%20%3Cpath%20d%3D%22M8.7%2010.2%20A3.5%203.5%200%200%200%208.7%2013.8%20Z%22%20fill%3D%22%23ffcc00%22%2F%3E%20%3C%2Fsvg%3E");
+  /* The Start button's own flag -- deliberately the real Greenlandic flag
+     (white/red bands, an off-center circle with the colors swapped inside
+     it, same construction as the real flag), not a Windows-logo stand-in
+     and not OQ!'s own icon -- this is the one spot on the desktop that's
+     about the theme's setting, not about any one app. */
+  --icon-greenland-flag: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%20%3Crect%20width%3D%2216%22%20height%3D%228%22%20fill%3D%22%23ffffff%22%2F%3E%20%3Crect%20y%3D%228%22%20width%3D%2216%22%20height%3D%228%22%20fill%3D%22%23c8102e%22%2F%3E%20%3CclipPath%20id%3D%22c%22%3E%3Ccircle%20cx%3D%226%22%20cy%3D%228%22%20r%3D%224%22%2F%3E%3C%2FclipPath%3E%20%3Cg%20clip-path%3D%22url%28%23c%29%22%3E%20%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%228%22%20height%3D%224%22%20fill%3D%22%23c8102e%22%2F%3E%20%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%228%22%20height%3D%224%22%20fill%3D%22%23ffffff%22%2F%3E%20%3C%2Fg%3E%20%3Ccircle%20cx%3D%226%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20stroke-width%3D%220.4%22%20opacity%3D%220.35%22%2F%3E%20%3C%2Fsvg%3E");
+  /* Classic Windows 95 arrow: black outline, white fill. */
+  --cursor-arrow: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMiAxIEwyIDE0LjUgTDUuMiAxMS4zIEw3LjMgMTYgTDkuNCAxNSBMNy40IDEwLjUgTDEyIDEwLjUgWiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEuMSIvPjwvc3ZnPgo=") 2 1, default;
+}
+
+.icon-computer { background-image: var(--icon-computer); }
+.icon-about { background-image: var(--icon-about); }
+.icon-recyclebin { background-image: var(--icon-recyclebin); }
+.icon-oq { background-image: var(--icon-oq); }
+.icon-programs { background-image: var(--icon-programs); }
+.icon-settings { background-image: var(--icon-settings); }
+.icon-shutdown { background-image: var(--icon-shutdown); }
+.icon-display { background-image: var(--icon-display); }
+.icon-decon { background-image: var(--icon-decon); }
+
+/* Windows 95's optional Welcome Desk: an original sled-dog guide, built
+   from CSS shapes so the scaffold stays light and can later accept a proper
+   hand-drawn sprite sheet without changing the window contract. */
+.icon-welcome-desk {
+  background:
+    radial-gradient(circle at 50% 42%, #fff 0 13%, transparent 14%),
+    radial-gradient(circle at 50% 58%, #7a432d 0 9%, transparent 10%),
+    linear-gradient(145deg, transparent 0 28%, #d9b083 29% 76%, transparent 77%);
+  border: 1px solid #000;
+  border-radius: 45% 45% 35% 35%;
+}
+
+.welcome-desk-body {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: #fffdf0;
+}
+
+.welcome-desk-copy { flex: 1; }
+.welcome-desk-copy h2 { margin: 0 0 .5rem; font-size: 1.1rem; }
+.welcome-desk-copy p { line-height: 1.35; }
+.welcome-desk-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.welcome-desk-note { color: #666; font-size: .8rem; }
+
+.sled-dog {
+  position: relative;
+  flex: 0 0 9rem;
+  height: 11rem;
+  background: linear-gradient(160deg, transparent 0 33%, #c98c57 34% 78%, #8b4d32 79%);
+  border-radius: 48% 48% 42% 42%;
+  border: 2px solid #43281e;
+  transform-origin: 50% 85%;
+  animation: sled-dog-bob 1.8s ease-in-out infinite;
+}
+.sled-dog::before, .sled-dog::after { content: ""; position: absolute; background: #8b4d32; border: 2px solid #43281e; }
+.sled-dog::before { width: 3rem; height: 4rem; left: -.8rem; top: .7rem; transform: rotate(-28deg); border-radius: 80% 20% 70% 30%; }
+.sled-dog::after { width: 3rem; height: 4rem; right: -.8rem; top: .7rem; transform: rotate(28deg); border-radius: 20% 80% 30% 70%; }
+.sled-dog-face { position: absolute; inset: 2.5rem 1.5rem 1.7rem; background: #f0c698; border-radius: 45% 45% 52% 52%; }
+.sled-dog-eye { position: absolute; top: 2rem; width: .55rem; height: .7rem; background: #201510; border-radius: 50%; }
+.sled-dog-eye-left { left: 1rem; }.sled-dog-eye-right { right: 1rem; }
+.sled-dog-nose { position: absolute; left: calc(50% - .45rem); bottom: 1.3rem; width: .9rem; height: .65rem; background: #201510; border-radius: 50%; }
+.sled-dog-ear { position: absolute; left: 1rem; top: 1.4rem; width: 2rem; height: 3rem; background: #6e3929; border-radius: 80% 20%; transform: rotate(-25deg); z-index: 2; }
+.sled-dog-scarf { position: absolute; left: .3rem; right: .3rem; bottom: 1.2rem; height: 1rem; background: #244e78; border: 2px solid #17324e; z-index: 3; }
+@keyframes sled-dog-bob { 50% { transform: translateY(-3px) rotate(-1deg); } }
+@media (prefers-reduced-motion: reduce) { .sled-dog { animation: none; } }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* the desktop itself never scrolls -- windows do, internally, same convention as mac1984/ and dos/ */
+}
+
+body {
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+}
+
+.desktop {
+  position: fixed;
+  inset: 0;
+  bottom: 32px; /* leaves room for the fixed taskbar below */
+  /* The real Windows 95 default desktop -- solid teal, no wallpaper image. */
+  background: #008080;
+  overflow: hidden;
+}
+
+/* ---------- Desktop icons ---------- */
+
+.desktop-icons {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 1;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: 5.5rem;
+  /* WebKit's own default tap feedback -- a translucent grey rectangle
+     drawn over the whole hit area on touch -- is separate from any CSS
+     :active state and isn't suppressed by resetting box-shadow/background
+     above. Left on, it flashes exactly the "still a button square" look
+     this file otherwise goes out of its way to remove, every single tap.
+     The dotted outline in :hover/:focus-visible below is this theme's own
+     deliberate feedback instead. */
+  -webkit-tap-highlight-color: transparent;
+  /* Desktop icons are real <button> elements (for native focus/keyboard
+     support), but 98.css's own `button` reset styles every one of them as
+     a beveled, silver, min-75px-wide 3D button by default -- background,
+     box-shadow, min-width/min-height, padding, and even color:transparent
+     (its own pixel-font text-shadow trick). Every one of those needs an
+     explicit override here, or a desktop icon renders as a visible button
+     square instead of a plain icon-and-label sitting on the desktop. */
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  color: #ffffff;
+  text-shadow: none;
+  cursor: var(--cursor-arrow);
+  padding: 0.25rem;
+  /* The browser's own default focus ring draws around the whole button --
+     exactly the oversized-rectangle look this file removes everywhere
+     else. The deliberate replacement is scoped to just the label text,
+     via :focus-visible below. */
+  outline: none;
+}
+
+.desktop-icon:active {
+  /* 98.css's own button:active swaps the bevel direction (box-shadow) and
+     nudges the text-shadow -- both no-ops here since box-shadow/
+     text-shadow are already reset above, but padding:0 on :active would
+     otherwise still apply and shift the icon by a pixel on press. */
+  padding: 0.25rem;
+}
+
+/* No hover/selected treatment on the button element itself -- a border or
+   fill drawn across the whole icon+gap+label cluster is exactly the "still
+   a rectangle button" look this file otherwise goes out of its way to
+   remove (see the 98.css-reset comment above). Real Windows never
+   highlights a desktop icon as one rectangle: the icon glyph gets a navy
+   tint (via .desktop-icon-glyph::after below, sized to the glyph alone)
+   and the label gets a navy fill sized to its own text (already scoped
+   correctly below) -- two separate, correctly-sized highlights, not one
+   oversized box. Keyboard focus gets its own outline, on the label text
+   only, same reasoning. */
+.desktop-icon:focus-visible .desktop-icon-label {
+  outline: 1px dotted #ffffff;
+  outline-offset: 1px;
+}
+
+.desktop-icon-glyph {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  /* The real desktop icons render 32x32 with a hard drop shadow -- a
+     drop-shadow filter (not text-shadow, since this renders the icon's
+     background-image, not text) is the closest this gets without a
+     separate shadow asset per icon. */
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.6));
+}
+
+/* Selected-icon tint: a navy overlay sized to exactly the 32x32 glyph box
+   (not the wider button), multiplied against the icon art beneath it so
+   the icon stays recognizable but reads as "selected" the way a real
+   Windows icon mask does. */
+.desktop-icon.selected .desktop-icon-glyph::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000080;
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+
+.desktop-icon-label {
+  font-size: 11px;
+  text-align: center;
+  /* Real Win95 icon labels: white text on a transparent navy highlight
+     when selected, plain white with a 1px black shadow otherwise -- close
+     enough here is a shadow so it reads on the teal background. */
+  text-shadow: 1px 1px 0 #000000;
+}
+
+.desktop-icon.selected .desktop-icon-label {
+  background: #000080;
+  text-shadow: none;
+}
+
+/* ---------- Control Panel icon grid (inside the Settings window) ----------
+   Same "real <button>, strip 98.css's own chrome" approach as .desktop-icon
+   above, but on a normal silver window body instead of the teal desktop --
+   dark text, no white-on-teal shadow, and single click opens (this is the
+   window a touch visitor is specifically meant to reach Display Properties
+   through, so it shouldn't need the desktop-icon's double-click-on-mouse/
+   single-tap-on-touch fork at all). */
+.control-panel-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.control-panel-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  width: 4.5rem;
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  color: #000000;
+  text-shadow: none;
+  cursor: var(--cursor-arrow);
+  padding: 0.25rem;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control-panel-icon-glyph {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.control-panel-icon-label {
+  font-size: 11px;
+  text-align: center;
+}
+
+.control-panel-icon:focus-visible .control-panel-icon-label {
+  outline: 1px dotted #000000;
+  outline-offset: 1px;
+}
+
+/* ---------- Windows ---------- */
+
+.win95-window {
+  position: absolute;
+  min-width: 200px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  /* Baseline only -- app.js overwrites this with each window's own real
+     stacking order via an inline style at setup and on every focus().
+     Still needed here as a safety net: a window element with no inline
+     z-index yet (e.g. before app.js has run at all) would otherwise sit
+     at z-index:auto, the same stacking level as ordinary content -- BELOW
+     .desktop-icons' own explicit z-index: 1 above. That's exactly the
+     "icon in front of a background window" bug this repo already shipped
+     once; keep both the JS fix and this CSS floor, since either one alone
+     regressing shouldn't bring the bug back on its own. */
+  z-index: 10;
+}
+
+.win95-window.maximized {
+  /* !important: overrides the inline top/left/width/height style.* drag and
+     resize write directly to the element -- maximize needs to beat those
+     without app.js having to remember and re-apply every inline value. */
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.win95-window.minimized {
+  display: none;
+}
+
+.win95-window-body {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+/* OQ!'s own body: the filter input and status line stay fixed, only the
+   results table scrolls internally -- so overflow moves from the body
+   itself (the generic rule above) down onto .oq-results-panel alone. */
+.oq-body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 8px;
+}
+
+.oq-filter-row input {
+  width: 100%;
+}
+
+.oq-status {
+  margin: 0;
+  font-size: 11px;
+}
+
+.oq-results-panel {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.oq-results-panel table {
+  width: 100%;
+}
+
+.oq-attribution {
+  margin: 0;
+  font-size: 10px;
+  color: #444444;
+}
+
+
+/* OQ! property-sheet chrome: one shell window, Dictionary ↔ Word
+   Deconstructor as a real 98.css Tab control (menu[role=tablist] with
+   overlapping raised tabs sitting on a .window[role=tabpanel] client),
+   not a flat web flex strip. One taskbar button. */
+.oq-shell-body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 0;
+  /* Tighter than default .window-body margin so the tab row can sit flush
+     against the sheet the way Display Properties does. */
+  margin: 6px;
+  padding: 0;
+}
+
+.oq-shell-body > menu.oq-tabs[role="tablist"] {
+  flex-shrink: 0;
+  margin-bottom: -2px; /* 98.css already uses -2px; keep the overlap */
+}
+
+/* Nested .window.oq-sheet is the raised property-sheet client under the
+   tabs (98.css .window[role=tabpanel]). Fill the remaining body height. */
+.oq-sheet {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0 !important;
+  /* Override .window-body-ish padding so Dictionary/Decon layouts own it. */
+  padding: 6px !important;
+  box-sizing: border-box;
+}
+
+.oq-view {
+  display: none;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.oq-view.is-active {
+  display: flex;
+}
+
+.oq-view .oq-body,
+.oq-view .decon-body {
+  flex: 1;
+  min-height: 0;
+}
+
+
+/* DECON's own body: same fixed-input/scrolling-results split as OQ!'s
+   .oq-body above, plus a root-first/final-first order toggle row. */
+.decon-body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 8px;
+}
+
+.decon-word-row {
+  display: flex;
+  gap: 6px;
+}
+
+.decon-word-row input {
+  flex: 1;
+}
+
+.decon-order-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.decon-status {
+  margin: 0;
+  font-size: 11px;
+}
+
+.decon-results-panel {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px;
+}
+
+.decon-card {
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #808080;
+}
+
+.decon-card:last-child {
+  border-bottom: none;
+}
+
+.decon-tag {
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.decon-tag--approximate {
+  color: #800000;
+}
+
+.decon-word {
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.decon-meaning {
+  margin: 2px 0;
+  font-style: italic;
+  font-size: 11px;
+}
+
+.decon-breakdown {
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+.decon-truncated {
+  color: #800000;
+}
+
+.decon-dict-match {
+  margin: 6px 0 0;
+  font-size: 11px;
+}
+
+.win95-window .title-bar {
+  cursor: var(--cursor-arrow);
+  user-select: none;
+  touch-action: none;
+}
+
+.win95-window .title-bar-controls {
+  /* Above every resize-handle z-index below (1 for edges, 2 for corners)
+     -- the NE corner handle in particular, once scaled up for touch (see
+     the (pointer: coarse) block below), fully overlaps this button
+     cluster (top-right of the title bar), and without an explicit
+     z-index here the unpositioned title bar loses that hit-test to the
+     positioned handle sitting on top of it. That silently swallowed taps
+     on minimize/maximize/close on touch devices -- the buttons looked
+     fine but didn't respond, since the resize handle intercepted the
+     pointer event before it ever reached them. */
+  position: relative;
+  z-index: 3;
+}
+
+.win95-window .title-bar-controls button {
+  cursor: var(--cursor-arrow);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Resize handles: thin invisible strips along each edge/corner, laid over
+   the window's own border. Corners sit above the edges in the DOM/paint
+   order so an 8px-square corner hitbox always wins over the overlapping
+   edge strips beneath it. */
+.win95-resize-handle {
+  position: absolute;
+  z-index: 1;
+}
+
+.win95-resize-n, .win95-resize-s {
+  left: 6px;
+  right: 6px;
+  height: 6px;
+  cursor: ns-resize;
+}
+.win95-resize-n { top: -3px; }
+.win95-resize-s { bottom: -3px; }
+
+.win95-resize-e, .win95-resize-w {
+  top: 6px;
+  bottom: 6px;
+  width: 6px;
+  cursor: ew-resize;
+}
+.win95-resize-e { right: -3px; }
+.win95-resize-w { left: -3px; }
+
+.win95-resize-ne, .win95-resize-nw, .win95-resize-se, .win95-resize-sw {
+  width: 10px;
+  height: 10px;
+  z-index: 2;
+}
+.win95-resize-ne { top: -3px; right: -3px; cursor: nesw-resize; }
+.win95-resize-nw { top: -3px; left: -3px; cursor: nwse-resize; }
+.win95-resize-se { bottom: -3px; right: -3px; cursor: nwse-resize; }
+.win95-resize-sw { bottom: -3px; left: -3px; cursor: nesw-resize; }
+
+.win95-window.maximized .win95-resize-handle {
+  display: none; /* nothing to resize while maximized */
+}
+
+/* Touch: the 6-10px hitboxes above are fine for a mouse pointer's
+   pixel-accurate aim, but far under any real touch-target guideline
+   (~44px) -- a finger dragging from a window edge would miss them
+   constantly. (pointer: coarse) is true for touchscreens and false for a
+   mouse/trackpad, including on a touch-capable laptop with a mouse
+   attached, so this only kicks in where it's actually needed. Scaled up
+   ~5x from the mouse sizing (6px -> 30px edges, 10px -> 50px corners)
+   rather than a fixed 44px, so the corner-over-edge stacking order above
+   keeps the same proportions instead of the corner shrinking relative to
+   the edges it overlaps. */
+@media (pointer: coarse) {
+  .win95-resize-n, .win95-resize-s {
+    left: 30px;
+    right: 30px;
+    height: 30px;
+  }
+  .win95-resize-n { top: -15px; }
+  .win95-resize-s { bottom: -15px; }
+
+  .win95-resize-e, .win95-resize-w {
+    top: 30px;
+    bottom: 30px;
+    width: 30px;
+  }
+  .win95-resize-e { right: -15px; }
+  .win95-resize-w { left: -15px; }
+
+  .win95-resize-ne, .win95-resize-nw, .win95-resize-se, .win95-resize-sw {
+    width: 50px;
+    height: 50px;
+  }
+  .win95-resize-ne { top: -25px; right: -25px; }
+  .win95-resize-nw { top: -25px; left: -25px; }
+  .win95-resize-se { bottom: -25px; right: -25px; }
+  .win95-resize-sw { bottom: -25px; left: -25px; }
+}
+
+/* ---------- Taskbar ---------- */
+
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 4px;
+  background: silver;
+  box-shadow: inset 0 1px #dfdfdf;
+  z-index: 1000;
+}
+
+.start-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  font-weight: bold;
+  padding: 0 8px 0 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.start-button[aria-expanded="true"] {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px grey;
+}
+
+.start-flag {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  background-image: var(--icon-greenland-flag);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.taskbar-separator {
+  width: 2px;
+  align-self: stretch;
+  box-shadow: inset -1px 0 #fff, inset 1px 0 grey;
+}
+
+.taskbar-windows {
+  flex: 1;
+  display: flex;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.taskbar-window-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  max-width: 160px;
+  padding: 0 6px;
+  font-size: 11px;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* text-overflow:ellipsis only truncates a single run of inline text, not
+   a flex container's children as a group -- with the icon as a sibling
+   node the label needs its own overflow/ellipsis box, sized down to
+   whatever room the fixed-size icon leaves it via min-width: 0 (flex
+   items default to min-width: auto, which would keep the label at its
+   full intrinsic width and blow out the button's own max-width instead
+   of actually truncating). */
+.taskbar-window-icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.taskbar-window-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskbar-window-button.active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf, inset 2px 2px grey;
+}
+
+.taskbar-tray {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px grey, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+}
+
+.taskbar-clock {
+  font-size: 11px;
+}
+
+/* ---------- Start menu ---------- */
+
+.start-menu {
+  position: fixed;
+  left: 3px;
+  bottom: 35px;
+  z-index: 1001;
+  margin: 0;
+  padding: 3px;
+  list-style: none;
+  min-width: 12rem;
+  background: silver;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px grey, inset 2px 2px #fff;
+}
+
+.start-menu[hidden] {
+  display: none;
+}
+
+.start-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 11px;
+  cursor: var(--cursor-arrow);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.start-menu-item:hover,
+.start-menu-item:focus-visible {
+  background: navy;
+  color: #ffffff;
+  outline: none;
+}
+
+.start-menu-item--disabled {
+  color: grey;
+  cursor: var(--cursor-arrow);
+}
+
+.start-menu-item--disabled:hover {
+  background: none;
+  color: grey;
+}
+
+.start-menu-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.start-menu-divider {
+  height: 1px;
+  margin: 3px 2px;
+  box-shadow: inset 0 -1px #fff, inset 0 1px grey;
+}
+
+/* ---------- Shut Down dialog ---------- */
+
+.win95-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1002;
+}
+
+.win95-dialog-overlay[hidden] {
+  display: none;
+}
+
+.win95-dialog {
+  position: static;
+  width: 20rem;
+}
+
+.win95-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 1rem;
+}
+
+/* ---------- Desktop right-click menu ---------- */
+
+.desktop-context-menu {
+  /* .start-menu's own left/bottom defaults are overridden inline by
+     app.js's contextmenu handler (positioned at the click, not pinned
+     above the Start button) -- this only trims the width down from
+     .start-menu's 12rem, since "Properties" is the only item here. */
+  min-width: 8rem;
+}
+
+/* ---------- Customizable <select> popup (theme-agnostic) ----------
+   Originally added scoped to `body.hotdog-stand` only, to fix that
+   scheme's popup highlight color -- but the underlying fix (opting into
+   Chromium's fully-CSS-styleable select popup, appearance: base-select)
+   isn't actually about Hot Dog Stand at all, it's a general rendering
+   improvement over the plain native popup (Windows Standard's own popup
+   also gets a duplicate arrow without the ::picker-icon hide below).
+   Scoping it to one theme was an unintentional divergence rather than a
+   real fix ("that irks me") -- applies to every <select> regardless of
+   scheme now. No color is set here; each scheme's own rules (see Hot Dog
+   Stand below) style the popup, same as they already style the plain
+   select field. No fallback needed: browsers without base-select support
+   just keep rendering the ordinary native popup. */
+select {
+  appearance: base-select;
+}
+
+select::picker(select) {
+  appearance: base-select;
+}
+
+/* 98.css already draws its own arrow via `select{background-image:...}`
+   (a baked-in data: URI SVG, same source Hot Dog Stand's own arrow below
+   is recolored from) -- appearance: base-select would otherwise also
+   render the UA's own default arrow icon on top of it, doubling up. */
+select::picker-icon {
+  display: none;
+}
+
+/* ---------- Hot Dog Stand (hidden color scheme) ----------
+   A real built-in Windows 95 color scheme (Display Properties >
+   Appearance > Scheme), reachable via the desktop's right-click
+   Properties item or the Settings window's Display applet -- see either
+   markup's own comment for why the scheme choice itself isn't listed
+   anywhere more obvious than that dialog.
+
+   This block's own scope has moved twice already, each time chasing a
+   real report against a real screenshot: an early version colored the
+   window/dialog backdrop red with no explicit background on its own text,
+   which bled through and made it unreadable ("white bg color seems
+   wrong"); the fix for that swung to leaving every surface but the
+   desktop/title-bar/taskbar completely untouched, which then read as
+   unfinished ("lots of gray in the apps"). This version is a real full
+   reskin instead of another incremental patch: every surface 98.css or
+   this file's own CSS can reach gets recolored, red or yellow, with only
+   two things left alone on purpose --
+     1. a control's own explicit white background (an edit field, a
+        table, a dropdown's own field) -- unaffected by any rule below
+        by construction, since white is painted on top of whatever
+        backdrop sits behind it, not overridden;
+     2. 98.css's black-line icon glyphs baked into the vendored dist
+        build as literal `data:` URIs (title-bar minimize/maximize/close,
+        the select-arrow, checkbox/radio marks) -- there's no color to
+        hook there without forking the vendored file itself, and black
+        reads fine against both red and yellow anyway.
+   Red vs. yellow follows one rule throughout: title bars, the taskbar,
+   and every window/dialog's own outer frame are red (the "chrome" layer);
+   the desktop and every window/dialog's inner backdrop are yellow (the
+   "surface" layer) -- two tones, consistently applied, rather than an
+   arbitrary mix. */
+body.hotdog-stand .desktop {
+  background: #ffff00;
+}
+
+body.hotdog-stand .window {
+  background: #ff0000;
+}
+
+body.hotdog-stand .win95-window-body {
+  background: #ffff00;
+}
+
+body.hotdog-stand .taskbar {
+  background: #ff0000;
+  box-shadow: inset 0 1px #ffff00;
+}
+
+body.hotdog-stand .taskbar-separator {
+  box-shadow: inset -1px 0 #ffff00, inset 1px 0 #000000;
+}
+
+body.hotdog-stand .taskbar-tray {
+  background: #ff0000;
+}
+
+body.hotdog-stand .taskbar-clock,
+body.hotdog-stand .taskbar-window-label,
+body.hotdog-stand .start-button-label {
+  color: #ffffff;
+}
+
+body.hotdog-stand .start-button,
+body.hotdog-stand .taskbar-window-button {
+  background: #ff0000;
+}
+
+body.hotdog-stand .title-bar {
+  background: #ff0000;
+}
+
+body.hotdog-stand .title-bar-text {
+  color: #ffffff;
+}
+
+/* Title-bar minimize/maximize/close and every plain dialog button (Shut
+   Down's OK, Display Properties' OK/Cancel/Apply). :not() exclusions for
+   .desktop-icon/.control-panel-icon, not just relying on their own class
+   rule's specificity to win -- `body.hotdog-stand button` actually OUT-
+   specifies a lone `.desktop-icon` class selector (0,1,2 beats 0,1,0:
+   one class either way, but this selector also matches two type
+   selectors), so without excluding them explicitly here this repainted a
+   red box behind every desktop icon, exactly the "still a button
+   rectangle" bug fixed once already. */
+body.hotdog-stand button:not(.desktop-icon):not(.control-panel-icon) {
+  background-color: #ff0000;
+}
+
+body.hotdog-stand .win95-dialog-actions button {
+  /* 98.css renders button text via color:transparent + a text-shadow
+     "shadow" standing in for real text color (a pixel-font rendering
+     trick) -- overriding text-shadow, not color, is what actually changes
+     what's visible. The title-bar-control buttons have no text of their
+     own, so they don't need this. */
+  text-shadow: 0 0 #ffffff;
+}
+
+body.hotdog-stand table > thead > tr > * {
+  background: #ff0000;
+  color: #ffffff;
+}
+
+body.hotdog-stand .sunken-panel {
+  /* .sunken-panel's own inset bevel is a border-image (a baked grey/
+     white/black pixel SVG from 98.css) -- swapping its colors would need
+     a whole new SVG asset; a flat border reads close enough at this
+     size and keeps the panel visually boxed instead of being the one
+     conspicuously ungrouped white rectangle left. */
+  border: 2px solid #ff0000;
+  border-image: none;
+}
+
+body.hotdog-stand .start-menu {
+  background: #ff0000;
+}
+
+body.hotdog-stand .start-menu-item {
+  color: #ffffff;
+}
+
+body.hotdog-stand .start-menu-item--disabled {
+  color: #c0c0c0; /* dimmed relative to the enabled white above, same relationship 98.css's own grey-on-silver disabled state has */
+}
+
+body.hotdog-stand .start-menu-divider {
+  box-shadow: inset 0 -1px #000000, inset 0 1px #ffff00;
+}
+
+/* The real 98.css scrollbar is a baked grey bevel (SVG border-image /
+   background-image `data:` URIs) with no color to hook -- flat colors
+   here instead of trying to recreate that bevel's exact pixels in red/
+   yellow, which would need forking the vendored file for a part of the
+   UI a visitor mostly never stops to look at closely. */
+body.hotdog-stand ::-webkit-scrollbar-thumb {
+  background-color: #ff0000;
+  background-image: none;
+  box-shadow: none;
+}
+
+body.hotdog-stand ::-webkit-scrollbar-track {
+  background-color: #ffff00;
+  background-image: none;
+}
+
+body.hotdog-stand ::-webkit-scrollbar-corner {
+  background-color: #ffff00;
+}
+
+/* Reported directly ("Now the white in the filter search and the lexeme
+   list"): OQ!'s own filter input and results table were the two
+   remaining pure-white surfaces, on the "a control's own explicit white
+   background stays untouched" reasoning above -- overruled here
+   specifically for these two, same yellow as every other backdrop/
+   surface in this scheme. table>thead>tr>* (already red, from the
+   window-frame/table-header pass) is unaffected -- these selectors only
+   reach the table's own plain body background. */
+body.hotdog-stand input[type="text"],
+body.hotdog-stand input[type="search"],
+body.hotdog-stand select,
+body.hotdog-stand .sunken-panel,
+body.hotdog-stand table {
+  background-color: #ffff00;
+}
+
+/* Without an explicit color here, Chromium repaints the closed <select>'s
+   displayed value using the popup's currently-highlighted <option>'s
+   native (unstylable) blue-highlight text color while the popup is open,
+   even though the option list itself is themed below -- pin it to black
+   so the field's own text stays legible in both states. */
+body.hotdog-stand select {
+  color: #000000;
+}
+
+/* The selection color (98.css's own real navy/white, table>tbody>
+   tr.highlighted) was the one accent left in the original Windows blue
+   after everything else went red/yellow -- reported directly ("Marine
+   blue selection color is wrong"). Red/white instead, reusing the same
+   pairing every other emphasis surface in this scheme already uses
+   (title bar, taskbar, buttons) rather than introducing a third color
+   just for this one state. */
+body.hotdog-stand tr.highlighted {
+  background-color: #ff0000;
+}
+
+/* Reported directly ("Display properties drop down"): the Scheme
+   <select>'s own field was already yellow (see the input/table rule
+   above), but its native option-list popup is a separate, browser-drawn
+   surface that CSS on the <select> itself doesn't reach -- it was still
+   plain white with Windows-blue :checked highlighting, and Chromium also
+   reflects that same blue/white pairing back onto the closed field's text
+   color while the popup is open. Styling the <option>s directly (Chromium
+   honors background-color/color there, unlike most native popup chrome)
+   fixes both: the popup goes yellow/red to match, and the closed field's
+   text stops flashing white-on-yellow. */
+body.hotdog-stand select option {
+  background-color: #ffff00;
+  color: #000000;
+}
+
+/* :checked alone (not also :hover) deliberately isn't red here -- red is
+   the "actively highlighted" state, and the previously-selected row
+   should give that up the moment the mouse/keyboard moves to a different
+   row, the same way it did before this scheme touched anything. Only
+   :hover carries the highlight color; :checked keeps the plain
+   yellow/black row style above and relies on the browser's own checkmark
+   to show which option is selected. */
+body.hotdog-stand select option:hover {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+
+/* Reported directly ("a gray box on the dropdown selector"): the select's
+   own bevel border is a box-shadow, not a border (98.css:
+   `select{box-shadow:inset -1px -1px #fff,inset 1px 1px grey,inset -2px
+   -2px #dfdfdf,inset 2px 2px #0a0a0a}`), so overriding background-color
+   alone left that grey/white 3D inset frame untouched around the yellow
+   field -- same shape of bug as the .sunken-panel border fixed earlier.
+   Flattened to a plain red border here, same treatment.
+
+   98.css also has `select:focus{background-color:navy;color:#fff}` and
+   `select:focus option{background-color:#fff;color:#000}`, which would
+   otherwise flash the field navy and reset the popup's options back to
+   white/black the moment the select is focused (e.g. right after Apply).
+   Both are pinned explicitly rather than relying on our select/option
+   rules above happening to out-specify them. */
+body.hotdog-stand select {
+  border: 2px solid #ff0000;
+  box-shadow: none;
+}
+
+/* Still reported as gray after the box-shadow fix above: the dropdown
+   arrow itself is a *third*, separate piece of chrome -- a baked-in
+   data: URI SVG (98.css's `select{background-image:url(...)}`) whose
+   bevel/face colors (#dfdfdf, #fff, gray, silver) are hardcoded pixels,
+   not CSS colors, so no color/background-color/border override on the
+   select element can reach it. Same shape as the title-bar and scrollbar
+   icons already noted elsewhere in this file as needing a full
+   background-image replacement rather than a simple override -- this is
+   the same source SVG with silver/dfdfdf/gray swapped for red/yellow/
+   maroon and the black outline/arrow glyph left as-is for contrast. */
+body.hotdog-stand select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2716%27%20height%3D%2717%27%20fill%3D%27none%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cpath%20fill-rule%3D%27evenodd%27%20clip-rule%3D%27evenodd%27%20d%3D%27M15%200H0v16h1V1h14V0z%27%20fill%3D%27%23ffff00%27/%3E%3Cpath%20fill-rule%3D%27evenodd%27%20clip-rule%3D%27evenodd%27%20d%3D%27M2%201H1v14h1V2h12V1H2z%27%20fill%3D%27%23ffff00%27/%3E%3Cpath%20fill-rule%3D%27evenodd%27%20clip-rule%3D%27evenodd%27%20d%3D%27M16%2017H0v-1h15V0h1v17z%27%20fill%3D%27%23000%27/%3E%3Cpath%20fill-rule%3D%27evenodd%27%20clip-rule%3D%27evenodd%27%20d%3D%27M15%201h-1v14H1v1h14V1z%27%20fill%3D%27%23800000%27/%3E%3Cpath%20fill%3D%27%23ff0000%27%20d%3D%27M2%202h12v13H2z%27/%3E%3Cpath%20fill-rule%3D%27evenodd%27%20clip-rule%3D%27evenodd%27%20d%3D%27M11%206H4v1h1v1h1v1h1v1h1V9h1V8h1V7h1V6z%27%20fill%3D%27%23000%27/%3E%3C/svg%3E");
+}
+
+body.hotdog-stand select:focus {
+  background-color: #ffff00;
+  color: #000000;
+}
+
+body.hotdog-stand select:focus option {
+  background-color: #ffff00;
+  color: #000000;
+}
+
+body.hotdog-stand select:focus option:hover {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+
+/* The option:checked/:hover rules above theme every row in the popup
+   except the one row Chromium's *native* popup paints itself: the
+   actively mouse-hovered/keyboard-highlighted row, which ignores author
+   CSS entirely in a plain <select>. The generic `select { appearance:
+   base-select }` rule above (theme-agnostic, applies regardless of
+   scheme) opts in to the newer, fully own-CSS popup where that's no
+   longer true -- this just gives the popup box itself this scheme's
+   colors, same as every other themed surface here. */
+body.hotdog-stand select::picker(select) {
+  background-color: #ffff00;
+  border: 2px solid #ff0000;
+  padding: 0;
+}
+
+/* Boot screen -- shown on load, dismissed on click or after a timeout
+   (see finishBoot() in app.js). Original art: an abstract four-color
+   quadrant flag, not Microsoft's actual startup logo. z-index sits above
+   the taskbar's own highest (1002, see .taskbar) so it fully covers the
+   desktop underneath while it initializes. */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000814;
+  color: #fff;
+  font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  cursor: var(--cursor-arrow);
+}
+.boot-screen.is-done { display: none; }
+.boot-panel {
+  width: min(30rem, calc(100vw - 32px));
+  text-align: center;
+}
+.boot-mark {
+  display: grid;
+  grid-template-columns: repeat(2, 34px);
+  grid-template-rows: repeat(2, 34px);
+  gap: 4px;
+  justify-content: center;
+  margin: 0 auto 1.75rem;
+}
+.boot-mark span { display: block; }
+.boot-mark span:nth-child(1) { background: #ff2b2b; }
+.boot-mark span:nth-child(2) { background: #35c04a; }
+.boot-mark span:nth-child(3) { background: #2b6dff; }
+.boot-mark span:nth-child(4) { background: #ffd400; }
+.boot-title {
+  font-size: clamp(1.75rem, 7vw, 3rem);
+  font-weight: bold;
+  letter-spacing: .04em;
+}
+.boot-subtitle { margin-top: .5rem; font-size: 13px; color: #cfd8ea; }
+.boot-progress {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+.boot-progress span {
+  width: 14px;
+  height: 8px;
+  background: #274b8f;
+  animation: boot-progress-scan 1.4s ease-in-out infinite;
+}
+.boot-progress span:nth-child(1) { animation-delay: 0s; }
+.boot-progress span:nth-child(2) { animation-delay: .1s; }
+.boot-progress span:nth-child(3) { animation-delay: .2s; }
+.boot-progress span:nth-child(4) { animation-delay: .3s; }
+.boot-progress span:nth-child(5) { animation-delay: .4s; }
+.boot-progress span:nth-child(6) { animation-delay: .5s; }
+.boot-progress span:nth-child(7) { animation-delay: .6s; }
+.boot-progress span:nth-child(8) { animation-delay: .7s; }
+@keyframes boot-progress-scan {
+  0%, 100% { background: #274b8f; }
+  50% { background: #ffd400; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-progress span {
+    animation: none;
+    background: #ffd400;
+  }
+}

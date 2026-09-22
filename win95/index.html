@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>retr-oq — Windows 95 desktop</title>
+<link rel="stylesheet" href="../vendor/win98/98.css" />
+<link rel="stylesheet" href="style.css?v=1" />
+</head>
+<body>
+  <section class="boot-screen" id="boot-screen" aria-label="Windows 95 startup" aria-live="polite">
+    <div class="boot-panel">
+      <div class="boot-mark" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="boot-title">WINDOWS</div>
+      <div class="boot-subtitle">Starting Windows 95...</div>
+      <div class="boot-progress" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </section>
+  <!-- Taskbar, Start menu, and genuinely resizable-from-any-edge windows
+       with real minimize/maximize/close (see issue #29). OQ! is the one
+       window with a real app behind it -- a Kalaallisut dictionary
+       lookup, reusing shared/dict-source.js and shared/hyphenation.js the
+       same way dos/'s DICT.EXE does. My Computer/About retr-oq/Recycle
+       Bin stay chrome-only on purpose, matching mac1984/'s own icons that
+       have no window content behind them either. -->
+  <div class="desktop" id="desktop">
+    <div class="desktop-icons">
+      <button type="button" class="desktop-icon" data-open="win-oq">
+        <span class="desktop-icon-glyph icon-oq" aria-hidden="true"></span>
+        <span class="desktop-icon-label">OQ!</span>
+      </button>
+      <button type="button" class="desktop-icon" data-open="win-computer">
+        <span class="desktop-icon-glyph icon-computer" aria-hidden="true"></span>
+        <span class="desktop-icon-label">My Computer</span>
+      </button>
+      <button type="button" class="desktop-icon" data-open="win-about">
+        <span class="desktop-icon-glyph icon-about" aria-hidden="true"></span>
+        <span class="desktop-icon-label">About retr-oq</span>
+      </button>
+      <button type="button" class="desktop-icon" data-open="win-recyclebin">
+        <span class="desktop-icon-glyph icon-recyclebin" aria-hidden="true"></span>
+        <span class="desktop-icon-label">Recycle Bin</span>
+      </button>
+      <button type="button" class="desktop-icon" data-open="win-welcome-desk">
+        <span class="desktop-icon-glyph icon-welcome-desk" aria-hidden="true"></span>
+        <span class="desktop-icon-label">Welcome Desk</span>
+      </button>
+    </div>
+
+    <section class="window win95-window welcome-desk-window" id="win-welcome-desk" data-icon="welcome-desk" style="top: 4rem; left: 8rem; width: 30rem; height: 22rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">Welcome Desk</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body welcome-desk-body">
+        <div class="sled-dog" aria-label="A friendly sled dog assistant" role="img">
+          <span class="sled-dog-ear"></span><span class="sled-dog-face"><span class="sled-dog-eye sled-dog-eye-left"></span><span class="sled-dog-eye sled-dog-eye-right"></span><span class="sled-dog-nose"></span></span><span class="sled-dog-scarf"></span>
+        </div>
+        <div class="welcome-desk-copy">
+          <h2>Welcome to your desktop!</h2>
+          <p>I'm your guide to the OQ! reference shelf. Open the dictionary or try the Word Deconstructor.</p>
+          <div class="welcome-desk-actions">
+            <button type="button" data-open="win-oq">Open OQ!</button>
+            <button type="button" data-open="win-about">About this desktop</button>
+          </div>
+          <p class="welcome-desk-note">This friendly guide is an original retr-oq character.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="window win95-window" id="win-oq" data-icon="oq" style="top: 2.5rem; left: 4rem; width: 32rem; height: 22rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">OQ!</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body oq-shell-body">
+        <!-- 98.css property-sheet Tab control (menu[role=tablist] + .window[role=tabpanel]) -->
+        <menu role="tablist" class="oq-tabs" aria-label="OQ! views">
+          <li role="tab" class="oq-tab is-active" id="oq-tab-dict" data-oq-view="oq" aria-selected="true" aria-controls="oq-sheet"><a href="#oq-view-dict">Dictionary</a></li>
+          <li role="tab" class="oq-tab" id="oq-tab-decon" data-oq-view="decon" aria-selected="false" aria-controls="oq-sheet"><a href="#oq-view-decon">Word Deconstructor</a></li>
+        </menu>
+        <div class="window oq-sheet" role="tabpanel" id="oq-sheet">
+          <div class="oq-view is-active" id="oq-view-dict" data-oq-view="oq" aria-labelledby="oq-tab-dict">
+            <div class="oq-body">
+              <div class="field-row oq-filter-row">
+                <input type="text" id="oq-filter" placeholder="Type to search..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+              </div>
+              <p class="oq-status" id="oq-status">Loading dictionary...</p>
+              <div class="sunken-panel oq-results-panel">
+                <table class="interactive" id="oq-table">
+                  <thead>
+                    <tr><th>Lexeme</th><th>English</th></tr>
+                  </thead>
+                  <tbody id="oq-tbody"></tbody>
+                </table>
+              </div>
+              <p class="oq-attribution" id="oq-attribution"></p>
+            </div>
+          </div>
+          <div class="oq-view" id="oq-view-decon" data-oq-view="decon" aria-labelledby="oq-tab-decon" hidden>
+            <div class="decon-body">
+              <div class="field-row decon-word-row">
+                <input type="text" id="decon-word" placeholder="Type a Kalaallisut word..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+              </div>
+              <div class="field-row decon-order-row">
+                <input type="checkbox" id="decon-root-first" checked />
+                <label for="decon-root-first">Root first</label>
+              </div>
+              <p class="decon-status" id="decon-status">Type a word, press Enter.</p>
+              <div class="sunken-panel decon-results-panel" id="decon-results"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="win95-resize-handle win95-resize-n" data-dir="n"></div>
+      <div class="win95-resize-handle win95-resize-s" data-dir="s"></div>
+      <div class="win95-resize-handle win95-resize-e" data-dir="e"></div>
+      <div class="win95-resize-handle win95-resize-w" data-dir="w"></div>
+      <div class="win95-resize-handle win95-resize-ne" data-dir="ne"></div>
+      <div class="win95-resize-handle win95-resize-nw" data-dir="nw"></div>
+      <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
+      <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
+    </section>
+<section class="window win95-window" id="win-about" data-icon="about" style="top: 3rem; left: 3rem; width: 26rem; height: 16rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">About retr-oq</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body">
+        <p>
+          This is a prototype Windows 95 desktop -- a taskbar with a real
+          Start menu, and windows you can drag by the title bar and resize
+          from any edge or corner, minimize down to a taskbar button, and
+          maximize to fill the screen.
+        </p>
+        <p>No functional app lives inside a window yet -- that's deliberately
+          left for a follow-up once the window manager itself is solid.</p>
+      </div>
+      <div class="win95-resize-handle win95-resize-n" data-dir="n"></div>
+      <div class="win95-resize-handle win95-resize-s" data-dir="s"></div>
+      <div class="win95-resize-handle win95-resize-e" data-dir="e"></div>
+      <div class="win95-resize-handle win95-resize-w" data-dir="w"></div>
+      <div class="win95-resize-handle win95-resize-ne" data-dir="ne"></div>
+      <div class="win95-resize-handle win95-resize-nw" data-dir="nw"></div>
+      <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
+      <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
+    </section>
+
+    <section class="window win95-window" id="win-computer" data-icon="computer" style="top: 5rem; left: 6rem; width: 24rem; height: 14rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">My Computer</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body">
+        <p>Nothing to browse yet -- there's no real file system behind this
+          window, just window-manager chrome (see issue #29's "not in
+          scope" section).</p>
+      </div>
+      <div class="win95-resize-handle win95-resize-n" data-dir="n"></div>
+      <div class="win95-resize-handle win95-resize-s" data-dir="s"></div>
+      <div class="win95-resize-handle win95-resize-e" data-dir="e"></div>
+      <div class="win95-resize-handle win95-resize-w" data-dir="w"></div>
+      <div class="win95-resize-handle win95-resize-ne" data-dir="ne"></div>
+      <div class="win95-resize-handle win95-resize-nw" data-dir="nw"></div>
+      <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
+      <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
+    </section>
+
+    <section class="window win95-window" id="win-recyclebin" data-icon="recyclebin" style="top: 8rem; left: 9rem; width: 22rem; height: 12rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">Recycle Bin</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body">
+        <p>The Recycle Bin is empty.</p>
+      </div>
+      <div class="win95-resize-handle win95-resize-n" data-dir="n"></div>
+      <div class="win95-resize-handle win95-resize-s" data-dir="s"></div>
+      <div class="win95-resize-handle win95-resize-e" data-dir="e"></div>
+      <div class="win95-resize-handle win95-resize-w" data-dir="w"></div>
+      <div class="win95-resize-handle win95-resize-ne" data-dir="ne"></div>
+      <div class="win95-resize-handle win95-resize-nw" data-dir="nw"></div>
+      <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
+      <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
+    </section>
+
+    <section class="window win95-window" id="win-settings" data-icon="settings" style="top: 4rem; left: 5rem; width: 22rem; height: 12rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">Settings</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body">
+        <p>
+          Only Display is wired up here -- the rest of a real Control
+          Panel (Fonts, Mouse, Keyboard, and so on) isn't built.
+        </p>
+        <div class="control-panel-icons">
+          <button type="button" class="control-panel-icon" id="settings-display-icon">
+            <span class="control-panel-icon-glyph icon-display" aria-hidden="true"></span>
+            <span class="control-panel-icon-label">Display</span>
+          </button>
+        </div>
+      </div>
+      <div class="win95-resize-handle win95-resize-n" data-dir="n"></div>
+      <div class="win95-resize-handle win95-resize-s" data-dir="s"></div>
+      <div class="win95-resize-handle win95-resize-e" data-dir="e"></div>
+      <div class="win95-resize-handle win95-resize-w" data-dir="w"></div>
+      <div class="win95-resize-handle win95-resize-ne" data-dir="ne"></div>
+      <div class="win95-resize-handle win95-resize-nw" data-dir="nw"></div>
+      <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
+      <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
+    </section>
+  </div>
+
+  <footer class="taskbar" id="taskbar">
+    <button type="button" class="start-button" id="start-button" aria-haspopup="true" aria-expanded="false">
+      <span class="start-flag" aria-hidden="true"></span>
+      <span class="start-button-label">Start</span>
+    </button>
+    <div class="taskbar-separator"></div>
+    <div class="taskbar-windows" id="taskbar-windows"></div>
+    <div class="taskbar-separator"></div>
+    <div class="taskbar-tray">
+      <span class="taskbar-clock" id="taskbar-clock">12:00 PM</span>
+    </div>
+  </footer>
+
+  <ul role="menu" class="start-menu" id="start-menu" hidden>
+    <li role="menu-item" class="start-menu-item" data-open="win-oq">
+      <span class="start-menu-icon icon-oq" aria-hidden="true"></span> OQ!
+    </li>
+    <li role="menu-item" class="start-menu-item" data-open="win-computer">
+      <span class="start-menu-icon icon-computer" aria-hidden="true"></span> My Computer
+    </li>
+    <li role="menu-item" class="start-menu-item" data-open="win-about">
+      <span class="start-menu-icon icon-about" aria-hidden="true"></span> About retr-oq
+    </li>
+    <li role="menu-item" class="start-menu-item" data-open="win-recyclebin">
+      <span class="start-menu-icon icon-recyclebin" aria-hidden="true"></span> Recycle Bin
+    </li>
+    <li role="menuitem" class="start-menu-item" data-open="win-welcome-desk">
+      <span class="start-menu-icon icon-welcome-desk" aria-hidden="true"></span> Welcome Desk
+    </li>
+    <li class="start-menu-divider"></li>
+    <li role="menu-item" class="start-menu-item start-menu-item--disabled">
+      <span class="start-menu-icon icon-programs" aria-hidden="true"></span> Programs
+    </li>
+    <li role="menu-item" class="start-menu-item" data-open="win-settings">
+      <span class="start-menu-icon icon-settings" aria-hidden="true"></span> Settings
+    </li>
+    <li class="start-menu-divider"></li>
+    <li role="menu-item" class="start-menu-item" id="start-menu-shutdown">
+      <span class="start-menu-icon icon-shutdown" aria-hidden="true"></span> Shut Down…
+    </li>
+  </ul>
+
+  <div class="win95-dialog-overlay" id="shutdown-overlay" hidden>
+    <section class="window win95-dialog">
+      <div class="title-bar">
+        <div class="title-bar-text">Shut Down Windows</div>
+      </div>
+      <div class="window-body win95-window-body">
+        <p>It is now safe to leave this theme.</p>
+        <div class="win95-dialog-actions">
+          <button type="button" id="shutdown-ok">OK</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Right-click the bare desktop for a real Properties item -- same as
+       real Windows 95, and the only way to reach the color scheme picker
+       below. Not listed anywhere else on purpose (see the scheme
+       <option>s' own comment): a scheme this loud earns a real "found it"
+       moment, not a labeled menu entry. -->
+  <ul role="menu" class="start-menu desktop-context-menu" id="desktop-context-menu" hidden>
+    <li role="menu-item" class="start-menu-item" id="desktop-context-properties">
+      <span class="start-menu-icon icon-settings" aria-hidden="true"></span> Properties
+    </li>
+  </ul>
+
+  <div class="win95-dialog-overlay" id="display-props-overlay" hidden>
+    <section class="window win95-dialog">
+      <div class="title-bar">
+        <div class="title-bar-text">Display Properties</div>
+      </div>
+      <div class="window-body win95-window-body">
+        <div class="field-row">
+          <label for="scheme-select">Scheme:</label>
+        </div>
+        <div class="field-row">
+          <select id="scheme-select">
+            <option value="standard">Windows Standard</option>
+            <!-- A real built-in Windows 95 color scheme, not a made-up
+                 name -- famously the loudest, ugliest one Microsoft ever
+                 shipped as a serious option. -->
+            <option value="hotdog">Hot Dog Stand</option>
+          </select>
+        </div>
+        <div class="win95-dialog-actions">
+          <button type="button" id="display-props-ok">OK</button>
+          <button type="button" id="display-props-cancel">Cancel</button>
+          <button type="button" id="display-props-apply">Apply</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Load order matters (see CLAUDE.md): app.js reads window.OqDictSource
+       and window.OqHyphenation, both classic scripts setting those globals
+       synchronously, so both have to load and run before app.js does. -->
+  <script src="../shared/dict-source.js?v=3"></script>
+  <script src="../shared/katersat-source.js?v=1"></script>
+  <script src="../shared/dict-merge.js?v=1"></script>
+  <script src="../shared/hyphenation.js"></script>
+  <script src="../shared/router.js?v=21"></script>
+  <script src="../shared/redmond/screensaver-catalog.js?v=1"></script>
+  <script src="../shared/redmond/screensaver.js?v=35"></script>
+  <script src="../shared/redmond/window-manager.js"></script>
+  <script src="../shared/redmond/oq-shell.js?v=2"></script>
+  <!-- Real ES module, not a classic script -- see shared/oq-analysis.js's
+       own header comment for why this one file is the exception.
+       type="module" scripts are deferred automatically, so window.OqAnalysis
+       isn't guaranteed to exist the moment app.js's own top-level code runs
+       below -- shared/decon-app.js only reads it lazily, inside a search
+       call, never destructured at the top like window.OqDictSource is. -->
+  <script type="module" src="../shared/oq-analysis.js"></script>
+  <script src="../shared/decon-app.js"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>

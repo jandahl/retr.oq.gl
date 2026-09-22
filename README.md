@@ -31,6 +31,7 @@ stays the cross-theme source of truth.
 | 1992 | [`win31/`](win31/) | Program Manager. Redmond WM; no Start, no X |
 | 1994 | [`os2/`](os2/) | OQ!2 Warp 4 Workplace Shell with Win-OQ!2 and DOS guests |
 | 1995 | [`next/`](next/) | NeXTSTEP 3.3 Workspace. Four grays, dock, TeX Gyre Heros |
+| 1995 | [`win95/`](win95/) | Windows 95 desktop with optional Welcome Desk sled-dog guide |
 | 1998 | [`mac8/`](mac8/) | Mac OS 8.1 Platinum. [`classic.css`](https://github.com/npjg/classic.css) |
 | 1998 | [`win98/`](win98/) | 98 desktop. [`98.css`](https://github.com/jdan/98.css) dist |
 | 2000 | [`beos/`](beos/) | BeOS R5 Personal Edition. Yellow tab, Deskbar. Own WM; tab slant from [NovusGFX](https://github.com/NovusGFX/retro-design-system) (MIT) |
