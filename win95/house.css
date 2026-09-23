@@ -1,0 +1,168 @@
+/* Mikisoq's house, inside the optional Welcome Desk window.
+   Rooms are 320x180 paintings scaled up. The dog does not bob. */
+
+.welcome-desk-body {
+  display: grid;
+  place-items: center;
+  padding: 0 !important;
+  overflow: hidden;
+  background: #24180f;
+  container-type: size;
+}
+
+.bob-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-height: 100%;
+  background: #1a120c;
+  overflow: hidden;
+}
+
+@supports (width: 1cqw) {
+  .bob-stage {
+    width: min(100cqw, calc(100cqh * 16 / 9));
+    max-height: 100cqh;
+  }
+}
+
+.bob-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.bob-stage[data-light="lamp"] .bob-bg { filter: sepia(0.35) saturate(0.9); }
+.bob-stage[data-light="evening"] .bob-bg { filter: brightness(0.62) sepia(0.15); }
+
+.bob-hit,
+.bob-sprite,
+.sled-dog {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  min-width: 0;
+  min-height: 0;
+  line-height: 0;
+}
+
+.bob-hit { transform: translate(0, 0); }
+
+.bob-sprite { transform: translate(-50%, -78%); }
+
+.bob-sprite img,
+.sled-dog img {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.bob-stage.is-marks .bob-hit,
+.bob-stage.is-marks .bob-sprite {
+  outline: 1px dashed #000080;
+  outline-offset: 1px;
+}
+
+.bob-blocker {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: transparent;
+  border: 0;
+}
+
+.bob-sheet {
+  position: absolute;
+  z-index: 3;
+  left: 2%;
+  top: 3%;
+  right: 20%;
+  bottom: 6%;
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 0.6rem;
+  background: #f3efe4;
+  color: #1a120c;
+  border: 2px solid #2a2118;
+  font-size: 16px;
+}
+
+.bob-sheet h2 { margin: 0 0 0.4rem; font-size: 1rem; }
+.bob-sheet p { margin: 0.3rem 0; }
+.bob-sheet input,
+.bob-sheet textarea {
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.bob-sheet textarea { min-height: 6rem; }
+.bob-sheet table { width: 100%; border-collapse: collapse; }
+.bob-sheet td { padding: 0.15rem 0.3rem; vertical-align: top; }
+.bob-row { display: flex; gap: 0.35rem; align-items: center; margin: 0.25rem 0; }
+.bob-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.bob-cal button { min-height: 1.6rem; font-size: 12px; }
+.bob-cal .is-on { outline: 1px solid #000080; }
+
+.bob-guide {
+  position: absolute;
+  z-index: 6;
+  right: 1%;
+  bottom: 1%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: min(18rem, 48%);
+  pointer-events: none;
+}
+
+.bob-guide > * { pointer-events: auto; }
+
+.bob-balloon,
+.bob-menu {
+  width: 100%;
+  margin-bottom: 0.35rem;
+  padding: 0.45rem;
+  box-sizing: border-box;
+  background: #fffef8;
+  color: #1a120c;
+  border: 2px solid #1a120c;
+  font-size: 16px;
+}
+
+.bob-balloon p { margin: 0 0 0.35rem; }
+.bob-balloon input { font-size: 16px; width: 100%; box-sizing: border-box; }
+.bob-balloon button,
+.bob-menu button,
+.bob-lang button { font-size: 16px; min-height: 1.8rem; }
+.bob-menu { display: flex; flex-direction: column; gap: 0.25rem; }
+
+.sled-dog {
+  position: relative;
+  width: 7.2rem;
+  height: 8.6rem;
+  animation: none;
+}
+
+.sled-dog img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+}
+
+.bob-lang { display: flex; gap: 0.25rem; margin-top: 0.2rem; }
+
+@media (max-width: 760px) {
+  .bob-sheet { right: 2%; bottom: 28%; }
+  .sled-dog { width: 5.2rem; height: 6.2rem; }
+  .bob-guide { width: min(16rem, 70%); }
+}

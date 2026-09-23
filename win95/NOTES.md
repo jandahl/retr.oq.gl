@@ -1,10 +1,23 @@
 # win95/ — internal notes
 
 This is a Windows 95 scaffold derived from the Win98 shell. The default
-desktop remains ordinary Windows 95; the optional Welcome Desk opens an
-original sled-dog guide with a small animated CSS prototype. Replace the
-prototype with an original sprite sheet when the art pass begins; do not copy
-Microsoft BOB artwork or animation frames.
+desktop remains ordinary Windows 95. Start, or the desktop icon
+**Mikisoq's house**, opens an optional fullscreen house (a Bob-style
+shell: rooms, things, a sled dog in the corner). It is not the boot
+shell and it is not a second theme. Escape on the front step, or
+"Back to Windows", returns to the desktop. Do not copy Microsoft Bob
+artwork. The paintings and the dog are original, 320×180, at most 256
+colours, scaled up with `image-rendering: pixelated`.
+
+The knock target is the painted door on `house/stoop.png`
+(`KNOCK_SPOT` in `house-data.mjs`), not the window above it.
+
+The book is OQ!. Opening it sets `?screen=oq&filter=` and uses
+`OqDictSource`, so the real dictionary window is the same search,
+under the house. Closing the book clears that route only if the house
+opened it. The magnifying glass is a stem shelf, not Word
+Deconstructor — that stays the OQ! tab. Glosses stay English; the
+house UI is English or Danish. There is no password.
 
 See root `CLAUDE.md` → Theme invariants → `win95/`/`xp/`/`win7/`. Redmond
 WM via `shared/redmond/window-manager.js`. 98.css dist build vendored,

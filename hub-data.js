@@ -311,8 +311,8 @@ window.OqHubMachines = [
     year: "1995",
     category: "redmond",
     hasGames: false,
-    meta: "Start / Welcome Desk",
-    iconNote: "Teal desktop, Windows 95 shell, optional sled-dog guide",
+    meta: "Start / Mikisoq",
+    iconNote: "Teal desktop, Windows 95 shell, optional sled-dog house",
     icon: `
       <rect width="32" height="32" fill="#008080"/>
       <rect x="4" y="6" width="24" height="18" fill="#c0c0c0"/>
