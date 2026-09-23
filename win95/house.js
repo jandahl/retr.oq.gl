@@ -299,6 +299,8 @@ function renderRoom() {
   const light = (user && room && user.lights[room]) || "day";
   stage.dataset.light = light;
   stage.classList.toggle("is-marks", marks);
+  stage.classList.toggle("is-stoop", !room);
+  stage.style.setProperty("--bob-door-right", String((KNOCK_SPOT.x + KNOCK_SPOT.w) / 100));
   if (!room) {
     bg.src = "house/stoop.png?v=1";
     door.hidden = false;

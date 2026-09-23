@@ -73,8 +73,15 @@ test("the house is the optional win95 shell and the book is OQ", () => {
   assert.match(house, /OqDictSource\.loadDictEntries/);
   assert.match(house, /screen: "mikisoq"/);
   assert.match(house, /room: id/);
+  assert.match(house, /is-stoop/);
+  assert.match(house, /--bob-door-right/);
   assert.match(app, /screen: "mikisoq"/);
-  assert.match(read("win95/house.css"), /42%/);
+  assert.match(app, /room: null/);
+  const css = read("win95/house.css");
+  assert.match(css, /max-width: 40%/);
+  assert.match(css, /is-stoop \.bob-world/);
+  assert.match(css, /--bob-door-right/);
+  assert.match(read("win95/index.html"), /class="bob-world"/);
   assert.doesNotMatch(house, /screen: "oq"/);
   assert.doesNotMatch(house, /type = "password"/);
   assert.match(read("win95/style.css"), /width: 100vw !important;/);

@@ -11,8 +11,10 @@ colours, scaled up with `image-rendering: pixelated`.
 
 The knock target is the painted door on `house/stoop.png`
 (`KNOCK_SPOT` in `house-data.mjs`), not the window above it. On a
-narrow screen the guide stays in the right 42% so it does not cover
-that door.
+narrow screen the guide stays in the right 40% so it does not cover
+that door. In portrait the stoop fills the screen and pans with the
+door (still the same `KNOCK_SPOT` percentages, inside `.bob-world`)
+instead of letterboxing the panorama into a short band.
 
 The house is on the router: `?screen=mikisoq` is the front step,
 `?screen=mikisoq&room=family` (or `study`, `kitchen`, `den`) is that
