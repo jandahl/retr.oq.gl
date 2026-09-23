@@ -173,7 +173,25 @@
 .bob-lang { display: flex; gap: 0.25rem; margin-top: 0.2rem; }
 
 @media (max-width: 760px) {
+  /* The red door sits in the left third. The guide stays in the right
+     42% so it cannot cover the door, and the picture uses the visible
+     viewport (dvh) instead of being cropped under the browser bar. */
+  .welcome-desk-window.assistant-fullscreen {
+    height: 100dvh !important;
+  }
   .bob-sheet { right: 2%; bottom: 28%; }
-  .sled-dog { width: 5.2rem; height: 6.2rem; }
-  .bob-guide { width: min(16rem, 70%); }
+  .bob-guide {
+    width: min(11rem, 42%);
+    max-height: 62%;
+  }
+  .bob-balloon,
+  .bob-menu {
+    max-height: 8.5rem;
+    overflow: auto;
+  }
+  .sled-dog { width: 4.4rem; height: 5.2rem; }
+  #bob-door {
+    min-width: 48px;
+    min-height: 48px;
+  }
 }

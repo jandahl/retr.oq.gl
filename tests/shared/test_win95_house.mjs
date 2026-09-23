@@ -71,7 +71,11 @@ test("the house is the optional win95 shell and the book is OQ", () => {
   assert.match(app, /welcomeDesk\.classList\.remove\("assistant-fullscreen"\)/);
   assert.match(app, /OqBobExit = exitAssistant/);
   assert.match(house, /OqDictSource\.loadDictEntries/);
-  assert.match(house, /OqRouter\.navigate\(\{ screen: "oq"/);
+  assert.match(house, /screen: "mikisoq"/);
+  assert.match(house, /room: id/);
+  assert.match(app, /screen: "mikisoq"/);
+  assert.match(read("win95/house.css"), /42%/);
+  assert.doesNotMatch(house, /screen: "oq"/);
   assert.doesNotMatch(house, /type = "password"/);
   assert.match(read("win95/style.css"), /width: 100vw !important;/);
   assert.doesNotMatch(read("win95/style.css"), /sled-dog-bob/);

@@ -24,7 +24,8 @@ let move = false;
 let marks = false;
 let muted = false;
 let houseOpen = false;
-let ownsRoute = false;
+let routedRoom = undefined;
+let pendingArrival = null;
 let dictQuery = "";
 let dictState = "idle";
 let quiz = null;
@@ -257,40 +258,26 @@ function chooseUser(id) {
   enter(user, false);
 }
 
+function validRoom(id) {
+  return ROOM_IDS.includes(id) ? id : null;
+}
+
 function enter(user, first) {
   activeId = user.id;
-  step = "idle";
-  room = "family";
-  move = false;
-  if (first || !user.tourDone) {
+  pendingArrival = first || !user.tourDone ? "tour" : "back";
+  if (pendingArrival === "tour") {
     user.tourDone = true;
     save();
-    sayTexts(tourLines(locale), true);
-  } else {
-    sayTexts([t(locale, "welcomeBack", { name: user.name })], false);
   }
-  renderRoom();
+  window.OqRouter.navigate({ screen: "mikisoq", room: "family" });
 }
 
 function goRoom(id) {
-  step = "idle";
-  room = id;
-  move = false;
-  closeSheet();
-  clearSpeech();
-  renderRoom();
+  window.OqRouter.navigate({ screen: "mikisoq", room: id });
 }
 
 function stepOutside() {
-  if (sheet) closeSheet();
-  activeId = null;
-  room = null;
-  step = "idle";
-  move = false;
-  menuOpen = false;
-  renderRoom();
-  greet();
-  renderMenu();
+  window.OqRouter.navigate({ screen: "mikisoq", room: null });
 }
 
 function leaveWindows() {
@@ -411,12 +398,7 @@ function openThing(program) {
 
 function openDict() {
   const params = window.OqRouter.getParams();
-  if (params.get("screen") !== "oq") {
-    ownsRoute = true;
-    window.OqRouter.navigate({ screen: "oq", filter: dictQuery || null, word: null });
-  } else {
-    dictQuery = params.get("filter") || "";
-  }
+  dictQuery = params.get("filter") || dictQuery;
   sheet = "dict";
   sheetBuilt = "";
   dictState = "loading";
@@ -433,15 +415,10 @@ function openDict() {
 }
 
 function closeSheet() {
-  const was = sheet;
   sheet = null;
   sheetBuilt = "";
   $("bob-sheet").hidden = true;
   $("bob-sheet").replaceChildren();
-  if (was === "dict" && ownsRoute) {
-    ownsRoute = false;
-    window.OqRouter.navigate({ screen: null, filter: null, word: null, order: null });
-  }
 }
 
 function renderSheet() {
@@ -497,7 +474,8 @@ function fillDict() {
   const results = document.createElement("div");
   input.addEventListener("input", () => {
     dictQuery = input.value;
-    if (window.OqRouter.getParams().get("screen") === "oq") {
+    const screen = window.OqRouter.getParams().get("screen");
+    if (screen === "mikisoq" || screen === "oq") {
       window.OqRouter.navigate({ filter: dictQuery || null }, { replace: true });
     }
     paintDict(status, results);
@@ -1068,24 +1046,50 @@ function handleEscape() {
   return false;
 }
 
-function openHouse() {
+function applyRoute(params) {
+  if (!params || params.get("screen") !== "mikisoq") return;
   houseOpen = true;
   document.documentElement.lang = locale === "da" ? "da-DK" : "en";
   $("bob-lang-en").setAttribute("aria-pressed", locale === "en" ? "true" : "false");
   $("bob-lang-da").setAttribute("aria-pressed", locale === "da" ? "true" : "false");
-  if (!room) greet();
+  const next = validRoom(params.get("room"));
+  const same = routedRoom === next;
+  routedRoom = next;
+  if (same && !pendingArrival) return;
+  room = next;
+  step = "idle";
+  move = false;
+  menuOpen = false;
+  closeSheet();
+  if (!next) {
+    activeId = null;
+    greet();
+  } else if (pendingArrival === "tour") {
+    pendingArrival = null;
+    sayTexts(tourLines(locale), true);
+  } else if (pendingArrival === "back") {
+    pendingArrival = null;
+    const who = current();
+    if (who) sayTexts([t(locale, "welcomeBack", { name: who.name })], false);
+    else clearSpeech();
+  } else {
+    clearSpeech();
+  }
   renderRoom();
-  const screen = window.OqRouter.getParams().get("screen");
-  if (screen === "oq") openDict();
+  renderMenu();
+}
+
+function openHouse() {
+  applyRoute(window.OqRouter.getParams());
 }
 
 function closeHouse() {
+  if (!houseOpen && routedRoom === undefined) return;
   houseOpen = false;
-  if (ownsRoute) {
-    ownsRoute = false;
-    window.OqRouter.navigate({ screen: null, filter: null, word: null, order: null });
-  }
+  routedRoom = undefined;
+  pendingArrival = null;
   sheet = null;
+  sheetBuilt = "";
   speech = null;
   menuOpen = false;
   room = null;
@@ -1111,4 +1115,5 @@ $("bob-lang-da").addEventListener("click", () => setLocale("da"));
 window.addEventListener("keydown", onKey);
 pose();
 
-window.OqBob = { open: openHouse, close: closeHouse, handleEscape };
+window.OqBob = { open: openHouse, close: closeHouse, handleEscape, applyRoute };
+if (window.OqWin95SyncRoute) window.OqWin95SyncRoute();

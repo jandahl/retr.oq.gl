@@ -10,14 +10,18 @@ artwork. The paintings and the dog are original, 320×180, at most 256
 colours, scaled up with `image-rendering: pixelated`.
 
 The knock target is the painted door on `house/stoop.png`
-(`KNOCK_SPOT` in `house-data.mjs`), not the window above it.
+(`KNOCK_SPOT` in `house-data.mjs`), not the window above it. On a
+narrow screen the guide stays in the right 42% so it does not cover
+that door.
 
-The book is OQ!. Opening it sets `?screen=oq&filter=` and uses
-`OqDictSource`, so the real dictionary window is the same search,
-under the house. Closing the book clears that route only if the house
-opened it. The magnifying glass is a stem shelf, not Word
-Deconstructor — that stays the OQ! tab. Glosses stay English; the
-house UI is English or Danish. There is no password.
+The house is on the router: `?screen=mikisoq` is the front step,
+`?screen=mikisoq&room=family` (or `study`, `kitchen`, `den`) is that
+room. Leaving the house clears both. The book still searches through
+`OqDictSource`; its `filter` stays on the mikisoq URL instead of
+stealing `?screen=oq`. The desktop dictionary is still `?screen=oq`.
+The magnifying glass is a stem shelf, not Word Deconstructor — that
+stays the OQ! tab. Glosses stay English; the house UI is English or
+Danish. There is no password.
 
 See root `CLAUDE.md` → Theme invariants → `win95/`/`xp/`/`win7/`. Redmond
 WM via `shared/redmond/window-manager.js`. 98.css dist build vendored,
