@@ -13,7 +13,11 @@ const read = (rel) => readFileSync(path.join(root, rel), "utf8");
 test("knock target matches the painted door", () => {
   assert.deepEqual(KNOCK_SPOT, STOOP_DOOR);
   assert.equal(overlapRatio(KNOCK_SPOT, STOOP_DOOR), 1);
-  assert.ok(KNOCK_SPOT.h > KNOCK_SPOT.w, "the door is taller than the window pane");
+  assert.ok(KNOCK_SPOT.x < 35, "the red door is on the left, not the fish racks");
+  assert.ok(KNOCK_SPOT.x > 15);
+  assert.ok(KNOCK_SPOT.y > 30 && KNOCK_SPOT.y < 55);
+  assert.ok(KNOCK_SPOT.h > KNOCK_SPOT.w, "the door is taller than it is wide");
+  assert.match(read("win95/house.css"), /\.bob-menu\[hidden\]/);
 });
 
 test("Danish catalog covers every English string", () => {

@@ -145,6 +145,17 @@
 .bob-lang button { font-size: 16px; min-height: 1.8rem; }
 .bob-menu { display: flex; flex-direction: column; gap: 0.25rem; }
 
+/* 98.css and our own display:flex beat the user-agent [hidden] rule.
+   Same fix as .start-menu[hidden] in style.css. An unhidden empty menu
+   is the white bar under the balloon. */
+.bob-menu[hidden],
+.bob-balloon[hidden],
+.bob-sheet[hidden],
+.bob-blocker[hidden],
+#bob-door[hidden] {
+  display: none !important;
+}
+
 .sled-dog {
   position: relative;
   width: 7.2rem;

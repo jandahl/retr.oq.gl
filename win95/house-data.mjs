@@ -8,11 +8,12 @@ export const ROOMS = [
   { id: "den", src: "house/den.png?v=1" },
 ];
 
-/** Painted front door, percent of the stoop image. */
-export const STOOP_DOOR = { x: 50, y: 57, w: 8, h: 22 };
+/** Painted front door on the red house, percent of stoop.png (320×180).
+ *  Measured on the door leaf: x 75, y 73, 22×32 px. Not the fish racks. */
+export const STOOP_DOOR = { x: 23.5, y: 40.5, w: 7, h: 18 };
 
 /** Knock target. Kept equal to the painted door. */
-export const KNOCK_SPOT = { x: 50, y: 57, w: 8, h: 22 };
+export const KNOCK_SPOT = { x: 23.5, y: 40.5, w: 7, h: 18 };
 
 export function overlapRatio(hit, target) {
   const width = Math.max(0, Math.min(hit.x + hit.w, target.x + target.w) - Math.max(hit.x, target.x));

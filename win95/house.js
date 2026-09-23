@@ -2,7 +2,7 @@
 // The dictionary is OQ!: same OqDictSource, and ?screen=oq stays in sync.
 // Original paintings. Not a Microsoft Bob asset.
 
-import { KNOCK_SPOT, ROOMS, THINGS, pickQuestion, t, tourLines } from "./house-data.mjs";
+import { KNOCK_SPOT, ROOMS, THINGS, pickQuestion, t, tourLines } from "./house-data.mjs?v=2";
 
 const STORE = "retr-oq-win95-mikisoq";
 const LIGHTS = ["day", "lamp", "evening"];
