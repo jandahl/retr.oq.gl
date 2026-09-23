@@ -8,7 +8,8 @@
 <meta http-equiv="Expires" content="0" />
 <title>retr-oq — OQ!95 desktop</title>
 <link rel="stylesheet" href="../vendor/win98/98.css" />
-<link rel="stylesheet" href="style.css?v=1" />
+<link rel="stylesheet" href="style.css?v=2" />
+<link rel="stylesheet" href="house.css?v=1" />
 </head>
 <body>
   <section class="boot-screen" id="boot-screen" aria-label="OQ!95 startup" aria-live="polite">
@@ -50,13 +51,13 @@
       </div>
       <div class="desktop-icon" role="button" tabindex="0" data-open="win-welcome-desk">
         <span class="desktop-icon-glyph icon-welcome-desk" aria-hidden="true"></span>
-        <span class="desktop-icon-label">Mikisoq's Office</span>
+        <span class="desktop-icon-label">Mikisoq's house</span>
       </div>
     </div>
 
     <section class="window win95-window welcome-desk-window" id="win-welcome-desk" data-icon="welcome-desk" style="top: 4rem; left: 8rem; width: 34rem; height: 24rem;">
       <div class="title-bar">
-        <div class="title-bar-text">Mikisoq's Office Desk</div>
+        <div class="title-bar-text">Mikisoq's house</div>
         <div class="title-bar-controls">
           <button aria-label="Minimize" class="win-minimize"></button>
           <button aria-label="Maximize" class="win-maximize"></button>
@@ -64,26 +65,22 @@
         </div>
       </div>
       <div class="window-body win95-window-body welcome-desk-body">
-        <div class="welcome-desk-banner">
-          <span class="welcome-desk-banner-mark">OQ!</span>
-          <div><strong>OQ!95</strong><small>Mikisoq's office</small></div>
-        </div>
-        <div class="welcome-desk-main">
-          <div class="office-set" aria-hidden="true">
-            <div class="office-bookcase office-bookcase-left"><i></i><i></i><i></i></div>
-            <div class="office-window"><i></i><b></b></div>
-            <div class="office-clock"><span></span><b></b></div>
-            <div class="office-wall-calendar"><span>OQ!95</span><b>SEP</b><i>22</i></div>
-            <div class="office-lamp"><span></span><b></b></div>
-            <div class="office-phone"><span></span></div>
-            <div class="office-inbox"><i></i><b>INBOX</b></div>
-            <div class="office-desk-surface"></div>
-          </div>
-          <div class="assistant-stage">
-            <div class="sled-dog" id="sled-dog" aria-label="Mikisoq, a friendly sled dog assistant" role="img">
-              <span class="sled-dog-tail"></span><span class="sled-dog-ear sled-dog-ear-left"></span><span class="sled-dog-ear sled-dog-ear-right"></span><span class="sled-dog-face"><span class="sled-dog-eye sled-dog-eye-left"></span><span class="sled-dog-eye sled-dog-eye-right"></span><span class="sled-dog-brow sled-dog-brow-left"></span><span class="sled-dog-brow sled-dog-brow-right"></span><span class="sled-dog-nose"></span><span class="sled-dog-mouth"></span></span><span class="sled-dog-scarf"></span>
+        <div class="bob-stage" id="bob-stage">
+          <img class="bob-bg" id="bob-bg" alt="" width="320" height="180" />
+          <button type="button" class="bob-hit" id="bob-door" hidden></button>
+          <div class="bob-sprites" id="bob-sprites"></div>
+          <div class="bob-blocker" id="bob-blocker" hidden></div>
+          <div class="bob-sheet" id="bob-sheet" hidden></div>
+          <div class="bob-guide" id="bob-guide">
+            <div class="bob-balloon" id="bob-balloon" hidden></div>
+            <div class="bob-menu" id="bob-menu" hidden></div>
+            <button type="button" class="sled-dog" id="sled-dog" aria-label="Mikisoq, a Greenland sled dog">
+              <img id="bob-dog" alt="" width="240" height="300" />
+            </button>
+            <div class="bob-lang">
+              <button type="button" id="bob-lang-en" aria-pressed="true">English</button>
+              <button type="button" id="bob-lang-da" aria-pressed="false">Dansk</button>
             </div>
-            <div class="assistant-nameplate"><strong>Mikisoq</strong></div>
           </div>
         </div>
       </div>
@@ -280,7 +277,7 @@
       <span class="start-menu-icon icon-recyclebin" aria-hidden="true"></span> Recycle Bin
     </li>
     <li role="menuitem" class="start-menu-item" data-open="win-welcome-desk">
-      <span class="start-menu-icon icon-welcome-desk" aria-hidden="true"></span> Mikisoq's Office
+      <span class="start-menu-icon icon-welcome-desk" aria-hidden="true"></span> Mikisoq's house
     </li>
     <li class="start-menu-divider"></li>
     <li role="menu-item" class="start-menu-item start-menu-item--disabled">
@@ -368,6 +365,7 @@
        call, never destructured at the top like window.OqDictSource is. -->
   <script type="module" src="../shared/oq-analysis.js"></script>
   <script src="../shared/decon-app.js"></script>
-  <script src="app.js?v=1"></script>
+  <script type="module" src="house.js?v=1"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>

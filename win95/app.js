@@ -58,7 +58,10 @@
     },
     onOpen(win) {
       if (win.id === "win-oq") startOqLoad();
-      if (win.id === "win-welcome-desk") win.classList.add("assistant-fullscreen");
+      if (win.id === "win-welcome-desk") {
+        win.classList.add("assistant-fullscreen");
+        if (window.OqBob) window.OqBob.open();
+      }
     },
     // Desktop icon / Start menu / taskbar-restore clicks on OQ! or DECON
     // all funnel through this one openWindow() (see shared/redmond/
@@ -82,6 +85,10 @@
       if (win.id === "win-oq") {
         window.OqRouter.navigate({ screen: null, filter: null, word: null, order: null });
       }
+      if (win.id === "win-welcome-desk") {
+        win.classList.remove("assistant-fullscreen");
+        if (window.OqBob) window.OqBob.close();
+      }
     },
   });
 
@@ -101,18 +108,19 @@
     });
   }
 
-  // Welcome Desk actions use the same real window manager path as desktop
-  // icons and Start-menu entries; the assistant is optional, never a boot
-  // gate or replacement shell. Guide copy/poses are local UI state only.
+  // The house is optional and never the boot shell. Escape dismisses
+  // Mikisoq's balloon or a program first; from the front step it leaves
+  // the house and the Windows 95 desktop comes back.
   const welcomeDesk = document.getElementById("win-welcome-desk");
   function exitAssistant() {
     welcomeDesk.classList.remove("assistant-fullscreen");
     closeWindow(welcomeDesk);
   }
+  window.OqBobExit = exitAssistant;
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && welcomeDesk.classList.contains("assistant-fullscreen")) {
-      exitAssistant();
-    }
+    if (event.key !== "Escape" || !welcomeDesk.classList.contains("assistant-fullscreen")) return;
+    if (window.OqBob && window.OqBob.handleEscape()) return;
+    exitAssistant();
   });
 
   window.OqRedmond.initDesktopIcons({
