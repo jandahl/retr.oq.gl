@@ -19,6 +19,13 @@
   overflow: hidden;
 }
 
+/* Painting coordinate space. Door and sprites are percentages of this,
+   so a mobile crop can scale it without the hotspot drifting off the door. */
+.bob-world {
+  position: absolute;
+  inset: 0;
+}
+
 @supports (width: 1cqw) {
   .bob-stage {
     width: min(100cqw, calc(100cqh * 16 / 9));
@@ -145,6 +152,17 @@
 .bob-lang button { font-size: 16px; min-height: 1.8rem; }
 .bob-menu { display: flex; flex-direction: column; gap: 0.25rem; }
 
+/* 98.css and our own display:flex beat the user-agent [hidden] rule.
+   Same fix as .start-menu[hidden] in style.css. An unhidden empty menu
+   is the white bar under the balloon. */
+.bob-menu[hidden],
+.bob-balloon[hidden],
+.bob-sheet[hidden],
+.bob-blocker[hidden],
+#bob-door[hidden] {
+  display: none !important;
+}
+
 .sled-dog {
   position: relative;
   width: 7.2rem;
@@ -162,7 +180,50 @@
 .bob-lang { display: flex; gap: 0.25rem; margin-top: 0.2rem; }
 
 @media (max-width: 760px) {
+  /* The red door sits in the left third. The guide stays in the right
+     40% so it cannot cover the door. dvh, not 100vh, so the browser
+     bar does not crop the picture. */
+  .welcome-desk-window.assistant-fullscreen {
+    height: 100dvh !important;
+  }
+  .welcome-desk-window.assistant-fullscreen .welcome-desk-body {
+    margin: 0;
+  }
   .bob-sheet { right: 2%; bottom: 28%; }
-  .sled-dog { width: 5.2rem; height: 6.2rem; }
-  .bob-guide { width: min(16rem, 70%); }
+  .bob-guide {
+    width: min(10rem, 40%);
+    max-width: 40%;
+    min-width: 0;
+    max-height: 46%;
+  }
+  .bob-lang { flex-wrap: wrap; justify-content: flex-end; }
+  .bob-balloon,
+  .bob-menu {
+    max-height: 8.5rem;
+    overflow: auto;
+  }
+  .sled-dog { width: 4.4rem; height: 5.2rem; }
+  #bob-door {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+/* A portrait phone letterboxes 16:9 into a short band, and the painted
+   door shrinks to a slit. Fill the screen with the stoop and pan so the
+   door's right edge sits at 46% — left of the guide. Rooms stay 16:9. */
+@media (max-width: 760px) and (orientation: portrait) {
+  .bob-stage.is-stoop {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+  .bob-stage.is-stoop .bob-world {
+    inset: auto;
+    top: 0;
+    bottom: 0;
+    width: calc(100cqh * 16 / 9);
+    left: min(0px, calc(46cqw - var(--bob-door-right, 0.305) * 100cqh * 16 / 9));
+  }
 }

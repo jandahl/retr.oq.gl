@@ -69,6 +69,20 @@
     // instead of opening directly keeps the URL and the visible window in
     // sync no matter which of those three triggered it.
     routeOpen(win) {
+      if (win.id === "win-welcome-desk") {
+        const params = window.OqRouter.getParams();
+        if (params.get("screen") !== "mikisoq") {
+          window.OqRouter.navigate({
+            screen: "mikisoq",
+            room: null,
+            filter: null,
+            word: null,
+            order: null,
+          });
+          return true;
+        }
+        return false;
+      }
       if (win.id === "win-oq") {
         const screen = pendingOqScreen === "decon" ? "decon" : "oq";
         pendingOqScreen = null;
@@ -87,7 +101,12 @@
       }
       if (win.id === "win-welcome-desk") {
         win.classList.remove("assistant-fullscreen");
-        if (window.OqBob) window.OqBob.close();
+        const screen = window.OqRouter.getParams().get("screen");
+        if (screen === "mikisoq") {
+          window.OqRouter.navigate({ screen: null, room: null, filter: null, word: null, order: null });
+        } else if (window.OqBob) {
+          window.OqBob.close();
+        }
       }
     },
   });
@@ -114,7 +133,7 @@
   const welcomeDesk = document.getElementById("win-welcome-desk");
   function exitAssistant() {
     welcomeDesk.classList.remove("assistant-fullscreen");
-    closeWindow(welcomeDesk);
+    window.OqRouter.navigate({ screen: null, room: null, filter: null, word: null, order: null });
   }
   window.OqBobExit = exitAssistant;
   document.addEventListener("keydown", (event) => {
@@ -493,8 +512,16 @@
     },
   });
 
-  window.OqRouter.onChange((params) => {
+  function syncRoute(params) {
     const screen = params.get("screen");
+    if (screen === "mikisoq") {
+      if (welcomeDesk.classList.contains("minimized")) forceOpenWindow(welcomeDesk);
+      if (window.OqBob) window.OqBob.applyRoute(params);
+    } else {
+      welcomeDesk.classList.remove("assistant-fullscreen");
+      closeWindow(welcomeDesk);
+      if (window.OqBob) window.OqBob.close();
+    }
     if (screen === "oq" || screen === "decon") {
       if (winOq.classList.contains("minimized")) forceOpenWindow(winOq);
       oqShell.applyView(screen);
@@ -517,10 +544,13 @@
           deconController.search(word);
         }
       }
-    } else {
-      if (!winOq.classList.contains("minimized")) closeWindow(winOq);
+    } else if (!winOq.classList.contains("minimized")) {
+      closeWindow(winOq);
     }
-  });
+  }
+
+  window.OqRouter.onChange(syncRoute);
+  window.OqWin95SyncRoute = () => syncRoute(window.OqRouter.getParams());
 
   // Boot screen: purely cosmetic overlay, dismissed on click or after a
   // timeout. The desktop underneath initializes normally regardless --

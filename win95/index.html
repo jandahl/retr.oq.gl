@@ -8,8 +8,8 @@
 <meta http-equiv="Expires" content="0" />
 <title>retr-oq — OQ!95 desktop</title>
 <link rel="stylesheet" href="../vendor/win98/98.css" />
-<link rel="stylesheet" href="style.css?v=2" />
-<link rel="stylesheet" href="house.css?v=1" />
+<link rel="stylesheet" href="style.css?v=3" />
+<link rel="stylesheet" href="house.css?v=5" />
 </head>
 <body>
   <section class="boot-screen" id="boot-screen" aria-label="OQ!95 startup" aria-live="polite">
@@ -66,9 +66,11 @@
       </div>
       <div class="window-body win95-window-body welcome-desk-body">
         <div class="bob-stage" id="bob-stage">
-          <img class="bob-bg" id="bob-bg" alt="" width="320" height="180" />
-          <button type="button" class="bob-hit" id="bob-door" hidden></button>
-          <div class="bob-sprites" id="bob-sprites"></div>
+          <div class="bob-world" id="bob-world">
+            <img class="bob-bg" id="bob-bg" alt="" width="320" height="180" />
+            <button type="button" class="bob-hit" id="bob-door" hidden></button>
+            <div class="bob-sprites" id="bob-sprites"></div>
+          </div>
           <div class="bob-blocker" id="bob-blocker" hidden></div>
           <div class="bob-sheet" id="bob-sheet" hidden></div>
           <div class="bob-guide" id="bob-guide">
@@ -365,7 +367,7 @@
        call, never destructured at the top like window.OqDictSource is. -->
   <script type="module" src="../shared/oq-analysis.js"></script>
   <script src="../shared/decon-app.js"></script>
-  <script type="module" src="house.js?v=1"></script>
-  <script src="app.js?v=2"></script>
+  <script type="module" src="house.js?v=5"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

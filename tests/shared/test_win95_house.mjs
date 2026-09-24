@@ -13,7 +13,11 @@ const read = (rel) => readFileSync(path.join(root, rel), "utf8");
 test("knock target matches the painted door", () => {
   assert.deepEqual(KNOCK_SPOT, STOOP_DOOR);
   assert.equal(overlapRatio(KNOCK_SPOT, STOOP_DOOR), 1);
-  assert.ok(KNOCK_SPOT.h > KNOCK_SPOT.w, "the door is taller than the window pane");
+  assert.ok(KNOCK_SPOT.x < 35, "the red door is on the left, not the fish racks");
+  assert.ok(KNOCK_SPOT.x > 15);
+  assert.ok(KNOCK_SPOT.y > 30 && KNOCK_SPOT.y < 55);
+  assert.ok(KNOCK_SPOT.h > KNOCK_SPOT.w, "the door is taller than it is wide");
+  assert.match(read("win95/house.css"), /\.bob-menu\[hidden\]/);
 });
 
 test("Danish catalog covers every English string", () => {
@@ -67,7 +71,23 @@ test("the house is the optional win95 shell and the book is OQ", () => {
   assert.match(app, /welcomeDesk\.classList\.remove\("assistant-fullscreen"\)/);
   assert.match(app, /OqBobExit = exitAssistant/);
   assert.match(house, /OqDictSource\.loadDictEntries/);
-  assert.match(house, /OqRouter\.navigate\(\{ screen: "oq"/);
+  assert.match(house, /screen: "mikisoq"/);
+  assert.match(house, /room: id/);
+  assert.match(house, /filter: null/);
+  assert.match(house, /if \(rawRoom && !validRoom\(rawRoom\)\)/);
+  assert.match(house, /if \(next && params\.get\("filter"\)\) openDict\(\)/);
+  assert.match(house, /if \(room\) items\.push\(\["stepOutside"/);
+  assert.doesNotMatch(house, /activeId = null;\n\s*greet\(\)/);
+  assert.match(house, /is-stoop/);
+  assert.match(house, /--bob-door-right/);
+  assert.match(app, /screen: "mikisoq"/);
+  assert.match(app, /room: null/);
+  const css = read("win95/house.css");
+  assert.match(css, /max-width: 40%/);
+  assert.match(css, /is-stoop \.bob-world/);
+  assert.match(css, /--bob-door-right/);
+  assert.match(read("win95/index.html"), /class="bob-world"/);
+  assert.doesNotMatch(house, /screen: "oq"/);
   assert.doesNotMatch(house, /type = "password"/);
   assert.match(read("win95/style.css"), /width: 100vw !important;/);
   assert.doesNotMatch(read("win95/style.css"), /sled-dog-bob/);
