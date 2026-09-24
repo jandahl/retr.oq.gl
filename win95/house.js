@@ -1,5 +1,6 @@
 // Mikisoq's house. Optional fullscreen shell inside the Windows 95 theme.
-// The dictionary is OQ!: same OqDictSource, and ?screen=oq stays in sync.
+// The book uses OqDictSource. Its filter stays on ?screen=mikisoq.
+// Do not navigate the desktop dictionary from here — that closes the house.
 // Original paintings. Not a Microsoft Bob asset.
 
 import { KNOCK_SPOT, ROOMS, THINGS, pickQuestion, t, tourLines } from "./house-data.mjs?v=2";
@@ -269,15 +270,15 @@ function enter(user, first) {
     user.tourDone = true;
     save();
   }
-  window.OqRouter.navigate({ screen: "mikisoq", room: "family" });
+  window.OqRouter.navigate({ screen: "mikisoq", room: "family", filter: null });
 }
 
 function goRoom(id) {
-  window.OqRouter.navigate({ screen: "mikisoq", room: id });
+  window.OqRouter.navigate({ screen: "mikisoq", room: id, filter: null });
 }
 
 function stepOutside() {
-  window.OqRouter.navigate({ screen: "mikisoq", room: null });
+  window.OqRouter.navigate({ screen: "mikisoq", room: null, filter: null });
 }
 
 function leaveWindows() {
@@ -400,7 +401,7 @@ function openThing(program) {
 
 function openDict() {
   const params = window.OqRouter.getParams();
-  dictQuery = params.get("filter") || dictQuery;
+  dictQuery = params.get("filter") || "";
   sheet = "dict";
   sheetBuilt = "";
   dictState = "loading";
@@ -423,6 +424,17 @@ function closeSheet() {
   $("bob-sheet").replaceChildren();
 }
 
+function dismissSheet() {
+  const was = sheet;
+  closeSheet();
+  if (was !== "dict") return;
+  dictQuery = "";
+  const params = window.OqRouter.getParams();
+  if (params.get("screen") === "mikisoq" && params.has("filter")) {
+    window.OqRouter.navigate({ filter: null }, { replace: true });
+  }
+}
+
 function renderSheet() {
   const host = $("bob-sheet");
   if (!sheet) {
@@ -441,7 +453,7 @@ function renderSheet() {
   back.type = "button";
   back.textContent = t(locale, "back");
   back.addEventListener("click", () => {
-    closeSheet();
+    dismissSheet();
     clearSpeech();
   });
   head.append(title, back);
@@ -930,7 +942,7 @@ function renderMenu() {
     menuOpen = false;
     renderMenu();
   }]);
-  if (room || current()) items.push(["stepOutside", stepOutside]);
+  if (room) items.push(["stepOutside", stepOutside]);
   items.push(["toWindows", leaveWindows]);
   for (const [key, fn] of items) {
     const b = document.createElement("button");
@@ -1041,7 +1053,7 @@ function handleEscape() {
     return true;
   }
   if (sheet) {
-    closeSheet();
+    dismissSheet();
     return true;
   }
   if (room) return true;
@@ -1050,11 +1062,16 @@ function handleEscape() {
 
 function applyRoute(params) {
   if (!params || params.get("screen") !== "mikisoq") return;
+  const rawRoom = params.get("room");
+  if (rawRoom && !validRoom(rawRoom)) {
+    window.OqRouter.navigate({ room: null }, { replace: true });
+    return;
+  }
   houseOpen = true;
   document.documentElement.lang = locale === "da" ? "da-DK" : "en";
   $("bob-lang-en").setAttribute("aria-pressed", locale === "en" ? "true" : "false");
   $("bob-lang-da").setAttribute("aria-pressed", locale === "da" ? "true" : "false");
-  const next = validRoom(params.get("room"));
+  const next = validRoom(rawRoom);
   const same = routedRoom === next;
   routedRoom = next;
   if (same && !pendingArrival) return;
@@ -1064,7 +1081,8 @@ function applyRoute(params) {
   menuOpen = false;
   closeSheet();
   if (!next) {
-    activeId = null;
+    // Keep activeId. Back from the step into a room must still be this
+    // person — clearing it here left their sprites and programs behind.
     greet();
   } else if (pendingArrival === "tour") {
     pendingArrival = null;
@@ -1079,6 +1097,7 @@ function applyRoute(params) {
   }
   renderRoom();
   renderMenu();
+  if (next && params.get("filter")) openDict();
 }
 
 function openHouse() {

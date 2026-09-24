@@ -18,9 +18,12 @@ instead of letterboxing the panorama into a short band.
 
 The house is on the router: `?screen=mikisoq` is the front step,
 `?screen=mikisoq&room=family` (or `study`, `kitchen`, `den`) is that
-room. Leaving the house clears both. The book still searches through
-`OqDictSource`; its `filter` stays on the mikisoq URL instead of
-stealing `?screen=oq`. The desktop dictionary is still `?screen=oq`.
+room. A room name that is not one of those is dropped. Leaving the
+house clears both. Stepping outside keeps the person, so Back into a
+room still has their things. The book still searches through
+`OqDictSource`. A `filter` on a room URL opens the book and stays on
+the mikisoq URL; closing the book removes it. It must not steal
+`?screen=oq`. The desktop dictionary is still `?screen=oq`.
 The magnifying glass is a stem shelf, not Word Deconstructor — that
 stays the OQ! tab. Glosses stay English; the house UI is English or
 Danish. There is no password.

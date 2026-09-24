@@ -73,6 +73,11 @@ test("the house is the optional win95 shell and the book is OQ", () => {
   assert.match(house, /OqDictSource\.loadDictEntries/);
   assert.match(house, /screen: "mikisoq"/);
   assert.match(house, /room: id/);
+  assert.match(house, /filter: null/);
+  assert.match(house, /if \(rawRoom && !validRoom\(rawRoom\)\)/);
+  assert.match(house, /if \(next && params\.get\("filter"\)\) openDict\(\)/);
+  assert.match(house, /if \(room\) items\.push\(\["stepOutside"/);
+  assert.doesNotMatch(house, /activeId = null;\n\s*greet\(\)/);
   assert.match(house, /is-stoop/);
   assert.match(house, /--bob-door-right/);
   assert.match(app, /screen: "mikisoq"/);
