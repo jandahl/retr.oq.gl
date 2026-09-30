@@ -9,8 +9,10 @@ the lineage's default "outline" style.
 
 - Taskbar clock (`#taskbar-clock`) respects the browser's 24-hour
   preference the same way `win98/`'s does — see `win98/NOTES.md`.
-- Bare-desktop right-click is suppressed by `initWindowManager()`; no
-  custom context menu of its own here.
+- Bare-desktop right-click opens `#desktop-context-menu`: **Refresh**
+  (icon flash) and **Show desktop icons** (checkbox, persisted under
+  `retr-oq:win7-desktop-icons`). No Properties / Display Properties panel
+  yet (unlike `win98/` / `win95/`).
 - Shut Down → `../`, same reference pattern as `win98/`.
 - 3D Pipes remake (`vendor/screensavers/pipes/`, MIT) on idle (45s) and Start → 3D Pipes.
 

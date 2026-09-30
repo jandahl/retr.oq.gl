@@ -1,9 +1,10 @@
-// Start → Run across win98 / xp / win7: a real themed dialog, not a
+// Start → Run across win95 / win98 / xp / win7: a real themed dialog, not a
 // browser prompt. Commands are case-insensitive; .exe, paths, and
 // internal spaces are ignored (so "WinVer.EXE" and "3D Pipes" match).
 (function (global) {
   function themeKey() {
     const p = location.pathname;
+    if (p.includes("/win95/")) return "win95";
     if (p.includes("/win98/")) return "win98";
     if (p.includes("/xp/")) return "xp";
     if (p.includes("/win7/")) return "win7";
@@ -16,6 +17,9 @@
     }
     if (theme === "win7") {
       return { overlay: "win7-dialog-overlay", dialog: "window win7-dialog glass", body: "window-body win7-window-body" };
+    }
+    if (theme === "win95") {
+      return { overlay: "win95-dialog-overlay", dialog: "window win95-dialog", body: "window-body win95-window-body" };
     }
     return { overlay: "win98-dialog-overlay", dialog: "window win98-dialog", body: "window-body win98-window-body" };
   }
@@ -76,7 +80,7 @@
     let overlay = document.getElementById("winver-overlay");
     const api = (global.OqAnalysis && global.OqAnalysis.API_VERSION) || "v0.1-latest";
     const apiPath = String(api).indexOf("v") === 0 ? api : "v" + api;
-    const label = theme === "xp" ? "Oq!XP" : theme === "win7" ? "Oq!7" : "Oq!98";
+    const label = theme === "xp" ? "Oq!XP" : theme === "win7" ? "Oq!7" : theme === "win95" ? "Oq!95" : "Oq!98";
     if (!overlay) {
       const c = chrome(theme);
       overlay = document.createElement("div");

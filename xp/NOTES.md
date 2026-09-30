@@ -6,9 +6,10 @@ WM via `shared/redmond/window-manager.js`. XP.css dist build vendored.
 - Taskbar clock (`#taskbar-clock`) respects the browser's 24-hour
   preference the same way `win98/`'s does — see `win98/NOTES.md` for the
   detection detail, don't hardcode 12-hour AM/PM here again.
-- Bare-desktop right-click is suppressed by `initWindowManager()` in
-  `shared/redmond/window-manager.js`; this theme has no custom context
-  menu of its own layered on top (unlike `win98/`).
+- Bare-desktop right-click opens `#desktop-context-menu` layered on the
+  shared WM suppress: **Refresh** (icon flash) and **Show desktop icons**
+  (persisted under `retr-oq:xp-desktop-icons`). No Properties / Display
+  Properties panel yet (unlike `win98/` / `win95/`).
 - Shut Down → `../`, same reference pattern as `win98/`.
 - 3D Pipes remake (`vendor/screensavers/pipes/`, MIT) on idle (45s) and Start → Screen Savers → 3D Pipes.
 - Backrooms II (`vendor/screensavers/backrooms-ii/`) on Start → Screen Savers. Original OpenGL showroom drift; not maze-backrooms.

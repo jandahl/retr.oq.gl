@@ -1,7 +1,8 @@
 @font-face { font-family: os2-ui; src: url("../vendor/win98/fonts/ms_sans_serif.woff2") format("woff2"); }
 :root { --desktop: #0713b8; --bar: #c0c0c0; }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; font-family: os2-ui, Arial, sans-serif; font-size: 12px; }
+html, body { position: fixed; inset: 0; width: 100%; margin: 0; height: 100%; overflow: hidden; font-family: os2-ui, Arial, sans-serif; font-size: 12px; }
+input, textarea, select { font-size: max(16px, 1em); }
 button { font: inherit; cursor: default; }
 #desktop { position: relative; height: 100%; min-height: 430px; overflow: hidden; color: white; background: linear-gradient(145deg, #111bd0 0%, #080b75 52%, #02033b 100%); }
 .warp-wordmark { position: absolute; z-index: 1; top: 27%; left: 16%; display: flex; align-items: center; transform: rotate(-3deg) skewX(-8deg); filter: drop-shadow(9px 11px 0 rgba(0, 0, 0, .45)); pointer-events: none; user-select: none; }
@@ -35,14 +36,37 @@ button { font: inherit; cursor: default; }
 .dos-host { top: 125px; left: 295px; }
 .os2-titlebar { display: flex; align-items: center; height: 24px; padding: 2px; gap: 4px; color: #111; background: #fff; font-weight: bold; border-bottom: 1px solid #777; }
 .os2-window.active .os2-titlebar { color: #fff; background: #4b008f; }
-.os2-titlebar span { flex: 1; overflow: hidden; white-space: nowrap; cursor: text; user-select: text; }
+.os2-titlebar .os2-caption, .os2-titlebar span { flex: 1; overflow: hidden; white-space: nowrap; cursor: default; user-select: none; }
 .sysmenu, .minimize, .close-window { position: relative; width: 19px; height: 18px; padding: 0; color: #111; background: #c0c0c0; border: 2px outset #fff; line-height: 12px; }
 .pm-icon { position: relative; display: block; width: 12px; height: 12px; background: #c0c0c0; }
 .pm-icon::before, .pm-icon::after { content: ""; position: absolute; display: block; }
 .pm-folder::before { left: 1px; top: 3px; width: 10px; height: 7px; background: #ffd92f; border: 1px solid #111; }.pm-folder::after { left: 2px; top: 1px; width: 5px; height: 3px; background: #ffd92f; border: 1px solid #111; }
 .pm-oq::before { content: "OQ"; left: 0; top: 1px; color: #0055aa; font: bold 8px Georgia, serif; }.pm-win::before { left: 1px; top: 1px; width: 10px; height: 9px; background: #0055aa; border: 1px solid #111; }.pm-win::after { left: 4px; top: 4px; width: 4px; height: 4px; background: #ffeb00; }
 .pm-dos::before { left: 1px; top: 1px; width: 10px; height: 9px; background: #111; border: 1px solid #777; }.pm-dos::after { content: ">"; left: 3px; top: 0; color: #c0c0c0; font: bold 8px monospace; }
-.sysmenu { font-size: 9px; }.close-window { font-size: 16px; line-height: 11px; }.minimize { font-size: 13px; line-height: 9px; }
+.sysmenu { font-size: 9px; }
+/* PM-like Hide / Close gadgets — no Win9x "_" / "×" caption punctuation. */
+.minimize::before {
+  content: "";
+  position: absolute;
+  left: 3px; right: 3px; bottom: 3px;
+  height: 2px;
+  background: #111;
+}
+.close-window::before {
+  content: "";
+  position: absolute;
+  left: 4px; top: 3px;
+  width: 7px; height: 7px;
+  border: 2px solid #111;
+  box-sizing: border-box;
+}
+.close-window::after {
+  content: "";
+  position: absolute;
+  left: 4px; top: 3px;
+  width: 7px; height: 2px;
+  background: #111;
+}
 .active .sysmenu, .active .minimize, .active .close-window { color: #111; }
 .os2-menu { position: relative; display: flex; gap: 2px; height: 25px; padding: 2px 5px; border-bottom: 1px solid #808080; background: #d7d7d7; }
 .os2-menu > button { padding: 2px 6px; border: 0; background: transparent; }
@@ -55,3 +79,88 @@ button { font: inherit; cursor: default; }
 iframe { display: block; width: 100%; height: calc(100% - 24px); border: 0; background: #000; }
 .app-window iframe { height: calc(100% - 49px); }
 @media (max-width: 700px) { .warp-wordmark { left: 20%; top: 32%; } .oq-word { font-size: 72px; letter-spacing: -8px; } .warp-word { margin-left: 12px; font-size: 60px; letter-spacing: -5px; } .system-window, .app-window, .guest-window, .dos-host { left: 13%; top: 16%; width: 74%; height: 68%; } .desktop-icons { flex-direction: row; flex-wrap: wrap; width: 290px; gap: 8px; } }
+
+.icon-shutdown::before { inset: 5px; background: #c0c0c0; border: 2px outset #fff; }
+.icon-shutdown::after {
+  content: "";
+  left: 14px; top: 9px;
+  width: 10px; height: 10px;
+  border: 2px solid #800;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: linear-gradient(#800, #800) center top / 2px 6px no-repeat;
+}
+
+.minimized-tray {
+  position: absolute;
+  z-index: 4;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: calc(100% - 24px);
+  pointer-events: none;
+}
+.minimized-object {
+  pointer-events: auto;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 88px;
+  padding: 4px 2px;
+  border: 1px dotted transparent;
+  background: transparent;
+  color: #fff;
+  text-shadow: 1px 1px #000;
+}
+.minimized-object:focus,
+.minimized-object:focus-visible {
+  border-color: #fff;
+  outline: none;
+}
+.minimized-object .pm-icon {
+  width: 20px;
+  height: 18px;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+}
+.minimized-object span:last-child {
+  max-width: 84px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  text-align: center;
+}
+
+.folder-view.details-view {
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+}
+.folder-view.details-view .program-icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: #111;
+  text-shadow: none;
+}
+.folder-view.details-view .program-icon small {
+  max-width: none;
+  text-align: left;
+}
+
+.os2-dropdown .os2-sep {
+  height: 2px;
+  margin: 3px 4px;
+  background: #808080;
+  border-bottom: 1px solid #fff;
+  pointer-events: none;
+}
+.os2-dropdown li button.is-checked::before {
+  content: "✓ ";
+}

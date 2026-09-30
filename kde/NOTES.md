@@ -12,9 +12,10 @@ DejaVu Sans from `vendor/kde/fonts/`. No KDE "K" logo anywhere (trademark).
   24-hour — leaving `hour12` unset previously silently fell back to the
   locale default (12-hour for en-US) regardless of the visitor's actual OS
   setting. Don't drop the explicit option back out.
-- Bare-desktop (`#desktop`) right-click now suppresses the native browser
-  menu (`app.js`, right after the `MIN_W`/`MIN_H`/`zTop` consts). No
-  custom KDE context menu is built yet.
+- Bare-desktop (`#desktop`) right-click opens `#desktop-context-menu`:
+  **Refresh Desktop** (icon flash) and **Show Desktop Icons** (persisted
+  under `retr-oq:kde-desktop-icons`). Native browser menu is suppressed on
+  bare desktop.
 - Compiz rain and the desktop cube are real, discoverable features (not
   eggs) — `#pager-cube` etc.
 

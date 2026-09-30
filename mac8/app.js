@@ -464,6 +464,16 @@
     if (openMenuItem && !menuBar.contains(event.target)) closeMenu();
   });
 
+  // ---------- Restart ----------
+  // Era-plausible: reload the theme (boot again) rather than a silent no-op.
+  const restartItem = document.getElementById("menu-restart");
+  if (restartItem) {
+    restartItem.querySelector("a").addEventListener("click", (event) => {
+      event.preventDefault();
+      window.location.reload();
+    });
+  }
+
   // ---------- Shut Down ----------
   const shutdownOverlay = document.getElementById("shutdown-overlay");
   document.getElementById("menu-shutdown").querySelector("a").addEventListener("click", (event) => {

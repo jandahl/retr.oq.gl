@@ -248,6 +248,16 @@
         });
         continue;
       }
+      if (link.id === "mac1984-restart") {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          closeMenu();
+          // System 1.0 Restart rebooted the machine; here a full page
+          // reload re-runs the boot sequence without leaving the theme.
+          window.location.reload();
+        });
+        continue;
+      }
       link.addEventListener("click", (event) => {
         event.preventDefault(); // every other menu command here is a placeholder ("#")
         closeMenu();

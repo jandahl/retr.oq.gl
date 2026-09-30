@@ -52,7 +52,7 @@ Don't mix window managers across families.
 
 | Family | Dirs | WM |
 | --- | --- | --- |
-| Redmond | `win31/` `win98/` `xp/` `win7/` | `shared/redmond/window-manager.js` |
+| Redmond | `win31/` `win95/` `win98/` `xp/` `win7/` | `shared/redmond/window-manager.js` |
 | Mac-lineage (classic) | `mac1984/` `mac8/` `amiga/` | each theme's own `app.js` — do not share |
 | OS X | `aqua/` (+ future Tiger/Leopard) | `shared/osx/` — not classic Mac, not Redmond |
 | Own WM | `next/` `kde/` `beos/` | each theme's own `app.js` — not Redmond |
@@ -73,7 +73,7 @@ Don't mix window managers across families.
 - `router.js` — query-string router. Static hosting has no path
   rewrites, so `?screen=oq&filter=` not `/oq/`.
 - `redmond/window-manager.js` — drag/resize/focus/min/max/close/taskbar
-  for the Redmond family only.
+  for the Redmond family only (`win31/` `win95/` `win98/` `xp/` `win7/`).
 - `osx/` — OS X family shell (WM, menu bar, Dock helpers) for `aqua/`
   and later OS X skins. Not for `mac1984/`/`mac8`.
 - `decon-app.js` — DECON UI, reused as-is.
@@ -147,6 +147,14 @@ debugger is an undocumented egg.
 is an icon on the teal desktop. No X; close lives in the Control-menu
 (double-click the box). Don't add a title-bar close "for touch." Font
 reused from `vendor/win98/fonts/`.
+
+**`win95/`** — Redmond WM. Shell derived from Win98; chrome via
+`vendor/win98/98.css` (acknowledged fork — do not treat as a separate
+98.css dist). Optional Mikisoq house on the router (`?screen=mikisoq`,
+rooms via `&room=`). One OQ! tab shell (Dictionary ↔ Word Deconstructor);
+no second desktop/Start OQ icon. Greenlandic flag, not a Windows logo.
+Start extras in `start-extra.js` stay Win95-shaped (no Favorites /
+Windows Update). Run + screensavers load via `shared/router.js`.
 
 **`win98/` `xp/` `win7/`** — Redmond WM. 98.css / XP.css / 7.css dist
 builds under `vendor/`. Don't vendor the SCSS sources (they need a

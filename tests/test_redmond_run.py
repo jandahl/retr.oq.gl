@@ -1,4 +1,4 @@
-"""Start → Run across win98 / xp / win7 via router query params.
+"""Start → Run across win95 / win98 / xp / win7 via router query params.
 
 ?nosplash=1 skips the boot overlay.
 ?run=CMD runs that command through OqRedmondRun (empty ?run= opens the dialog).
@@ -6,7 +6,7 @@
 
 import pytest
 
-THEMES = ("win98", "xp", "win7")
+THEMES = ("win95", "win98", "xp", "win7")
 
 
 def goto_theme(page, base_url, theme, extra=""):
@@ -36,6 +36,7 @@ def test_run_query_opens_dialog(page, base_url, theme):
 @pytest.mark.parametrize(
     "theme,needle",
     [
+        ("win95", "maze-backrooms"),
         ("win98", "maze-backrooms"),
         ("xp", "backrooms-ii"),
         ("win7", "maze-backrooms"),

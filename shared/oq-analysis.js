@@ -29,7 +29,7 @@
   let api;
   try {
     // Pin the deployed oq-api release so this app does not silently drift.
-    api = await import("https://api.oq.gl/api/v0.3.55/public-api.js");
+    api = await import("https://jandahl.github.io/api.oq.gl/api/v0.3.55/public-api.js");
   } catch (err) {
     // window.OqAnalysis.analyzeWord still exists and is still a function
     // that returns a rejected Promise -- callers (dos/app.js's

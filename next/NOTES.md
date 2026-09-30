@@ -10,10 +10,10 @@ default }` set deliberately.
 - Dock clock (`#dock-clock`) respects the browser's 24-hour preference —
   same detection pattern as `win98/`'s taskbar clock, see
   `win98/NOTES.md`.
-- Bare-desktop (`#desktop`) right-click now suppresses the native browser
-  menu (`app.js`, right after the `desktop`/`windows` consts) — there's no
-  custom NeXTSTEP context menu built yet; add one there if that's ever
-  wanted instead of duplicating the suppress-only listener.
+- Bare-desktop (`#desktop`) right-click opens `#desktop-context-menu`:
+  **Clean Up** (clears icon selection) and **Show Icons** (checkbox,
+  persisted under `retr-oq:next-desktop-icons`). Native browser menu is
+  suppressed on bare desktop.
 - Kernel panic is an undocumented egg — don't reveal the trigger in
   comments or docs.
 - Font is TeX Gyre Heros, not real Helvetica (licensing).

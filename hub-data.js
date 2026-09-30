@@ -281,6 +281,24 @@ window.OqHubMachines = [
     `,
   },
   {
+    href: "win95/",
+    name: "Windows 95",
+    year: "1995",
+    category: "redmond",
+    hasGames: false,
+    meta: "Start / Mikisoq",
+    iconNote: "Teal desktop, Windows 95 shell, optional sled-dog house",
+    icon: `
+      <rect width="32" height="32" fill="#008080"/>
+      <rect x="4" y="6" width="24" height="18" fill="#c0c0c0"/>
+      <rect x="5" y="7" width="22" height="3" fill="#000080"/>
+      <rect x="6" y="11" width="20" height="11" fill="#fff"/>
+      <circle cx="16" cy="16" r="4" fill="#c98c57" stroke="#43281e"/>
+      <circle cx="14.5" cy="15.5" r=".6" fill="#201510"/><circle cx="17.5" cy="15.5" r=".6" fill="#201510"/>
+      <rect x="5" y="24" width="22" height="4" fill="#c0c0c0"/>
+    `,
+  },
+  {
     href: "mac8/",
     name: "Mac OS 8.1",
     year: "1998",
@@ -303,24 +321,6 @@ window.OqHubMachines = [
       <rect x="14" y="20" width="4" height="1" fill="#1a1a1a"/>
       <rect x="12" y="16" width="2" height="2" fill="#e24b4b"/>
       <rect x="18" y="16" width="2" height="2" fill="#f0c030"/>
-    `,
-  },
-  {
-    href: "win95/",
-    name: "Windows 95",
-    year: "1995",
-    category: "redmond",
-    hasGames: false,
-    meta: "Start / Mikisoq",
-    iconNote: "Teal desktop, Windows 95 shell, optional sled-dog house",
-    icon: `
-      <rect width="32" height="32" fill="#008080"/>
-      <rect x="4" y="6" width="24" height="18" fill="#c0c0c0"/>
-      <rect x="5" y="7" width="22" height="3" fill="#000080"/>
-      <rect x="6" y="11" width="20" height="11" fill="#fff"/>
-      <circle cx="16" cy="16" r="4" fill="#c98c57" stroke="#43281e"/>
-      <circle cx="14.5" cy="15.5" r=".6" fill="#201510"/><circle cx="17.5" cy="15.5" r=".6" fill="#201510"/>
-      <rect x="5" y="24" width="22" height="4" fill="#c0c0c0"/>
     `,
   },
   {

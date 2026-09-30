@@ -3,7 +3,7 @@ window.OqWin95Start = function (menu) {
   if (!document.querySelector('link[href*="start-extra.css"]')) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "start-extra.css?v=1";
+    link.href = "start-extra.css?v=2";
     document.head.appendChild(link);
   }
   const banner = document.createElement("li");
@@ -29,23 +29,12 @@ window.OqWin95Start = function (menu) {
     return li;
   }
 
+  // Classic Win95 Start shape: Programs, Documents, Settings, Find, Help,
+  // Run, Shut Down. Favorites / Windows Update belong to IE4 / Win98 — do
+  // not inject them here. Run is inserted by shared/redmond/run.js.
   const shutdown = menu.querySelector("#start-menu-shutdown");
-  const firstReal = menu.querySelector(".start-menu-item");
-  const update = addItem("Windows Update", "icon-update", {
-    onClick: function () {
-      window.open("https://www.debian.org/", "_blank", "noopener");
-    },
-  });
-  const div0 = document.createElement("li");
-  div0.className = "start-menu-divider";
-  menu.insertBefore(div0, firstReal);
-  menu.insertBefore(update, div0);
-
-  const programs = menu.querySelector(".icon-programs");
-  const programsItem = programs && programs.closest("li");
   const settings = menu.querySelector('[data-open="win-settings"]');
-  const afterPrograms = programsItem && programsItem.nextSibling;
-  menu.insertBefore(addItem("Favorites", "icon-favorites", { disabled: true }), afterPrograms || settings || shutdown);
+
   menu.insertBefore(addItem("Documents", "icon-documents", { disabled: true }), settings || shutdown);
 
   const afterSettings = settings && settings.nextSibling;
