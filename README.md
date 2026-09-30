@@ -26,7 +26,7 @@ stays the cross-theme source of truth.
 | 1987 | [`compy/`](compy/) | Beige cartoon CRT. DIR as SELECT, contrast wheels, IBM EGA from `vendor/dos/` |
 | 1988 | [`amiga/`](amiga/) | Workbench 1.3. Four-pen chrome, OCS art, TopazPlus |
 | 1989 | [`gb/`](gb/) | DMG-01 brick. Hand-drawn; Press Start 2P from `vendor/nes/` |
-| 1990 | [`gg/`](gg/) | Game Gear. Pocket Master System: 160×144, 32/4096. Landscape; 1/2, no Select |
+| 1990 | [`gg/`](gg/) | Game Gear. Pocket Master System: 160×144, 32/4096. Landscape; 1/2, no Select. **Direct URL only — delisted from the hub** (still in-tree + tests) |
 | 1991 | [`snes/`](snes/) | Super Nintendo (PAL). Gray dogbone, rainbow YXBA, Super OQ! wordmark |
 | 1992 | [`win31/`](win31/) | Program Manager. Redmond WM; no Start, no X |
 | 1994 | [`os2/`](os2/) | OQ!2 Warp 4 Workplace Shell with Win-OQ!2 and DOS guests |
@@ -55,7 +55,7 @@ audio demo, or an easter egg. Source of truth: `shared/games.js`.
 | `nes/` | Konami Code, CRT starfield attract |
 | `amiga/` | Boing Ball, Copper bars, Boing idle |
 | `gb/` | MORPH!, Konami Code, LCD fox attract |
-| `gg/` | Konami Code, LCD plasma attract |
+| `gg/` (direct URL) | Konami Code, LCD plasma attract |
 | `compy/` | Konami Code, CGA starfield attract, 400/486 chassis eggs |
 | `snes/` | Super KAL-Q! (Klax), Konami Code, Mode 7 attract |
 | `win31/` | Solitaire (joke), hidden credits |
