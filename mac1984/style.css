@@ -106,6 +106,17 @@ html, body {
 }
 #reopen.visible { display: block; }
 
+
+/* Kill vendor system.css ul[role]{cursor:pointer} — System 1.0 chrome
+   used an arrow, not a modern hand, on the menu bar and menu items. */
+.desktop-menu-bar,
+.desktop-menu-bar [role="menu-item"],
+.desktop-menu-bar [role="menu"] a,
+.desktop-menu-bar a,
+.desktop-menu-bar a:link {
+  cursor: var(--cursor-arrow);
+}
+
 .desktop-menu-bar {
   position: fixed;
   top: 0;

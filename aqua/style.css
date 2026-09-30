@@ -1552,7 +1552,7 @@ select {
 .about-body a {
   color: #1a4e98;
   text-decoration: underline;
-  cursor: pointer;
+  cursor: default;
 }
 
 .about-actions {
