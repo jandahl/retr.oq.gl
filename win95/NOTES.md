@@ -50,9 +50,10 @@ not the SCSS source. Greenlandic flag, not a Windows logo.
   a hardcoded 12-hour AM/PM format.
 - Hot Dog Stand scheme is a real, selectable Display Properties option,
   not an egg.
+- **Start menu**: `start-extra.js` keeps the Win95 shape (Documents / Find / Help stubs). Favorites and Windows Update are deliberately omitted (Win98-era). Start → Run is injected by `shared/redmond/run.js` via the router (same as win98/xp/win7).
 - Screen saver idle (45s) is Aquarium (`vendor/screensavers/aquarium/`, MIT,
   original Plus!-style remake). Start → Screen Savers flyout lists Aquarium,
-  3D Pipes, 3D Maze, Backrooms (same host injects the flyout on xp/win7).
+  3D Pipes, 3D Maze, Backrooms. Saver host loads from `shared/router.js` (not duplicate script tags).
 
 - **OQ!/DECON chrome:** one main window + **98.css property-sheet tabs**
   (`menu[role=tablist]` overlapping raised tabs on a `.window[role=tabpanel]`
