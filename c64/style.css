@@ -50,27 +50,30 @@ html, body {
   overscroll-behavior: none;
   position: fixed;
   width: 100%;
-  background: #7c70da;
+  background: var(--c64-lightblue);
 }
 
 :root {
-  --c64-blue: #40318d; /* default screen background */
-  --c64-lightblue: #7c70da; /* default screen text + border */
-  --c64-white: #ffffff;
+  /* Pepto VIC-II palette (pepto.de / VICE pepto-pal) -- the measured
+     16-color table, not a brighter web approximation. Border (POKE 53280 /
+     color 14 light blue) and screen (POKE 53281 / color 6 blue) stay two
+     different defaults, the way a real C64 powers on. */
   --c64-black: #000000;
-  /* KALQ.PRG's four tile colors -- same 16-value VIC-II table as
-     .c64-palette-cycle below (POKE 53280/53281 order), named here because
-     app.js needs to read them via getComputedStyle the same way the
-     values above already are. Not the whole 16: only the ones this theme
-     actually reuses as a real UI color get a name, same rule as the four
-     above. */
-  --c64-yellow: #bfce72;
-  --c64-green: #55a049;
-  --c64-red: #883932;
-  --c64-cyan: #67b6bd;
-  --c64-orange: #8b5429;
-  --c64-lightgreen: #94e089;
-  --c64-darkgrey: #505050;
+  --c64-white: #ffffff;
+  --c64-red: #68372b;
+  --c64-cyan: #70a4b2;
+  --c64-purple: #6f3d86;
+  --c64-green: #588d43;
+  --c64-blue: #352879; /* default screen background (53281) */
+  --c64-yellow: #b8c76f;
+  --c64-orange: #6f4f25;
+  --c64-brown: #433900;
+  --c64-lightred: #9a6759;
+  --c64-darkgrey: #444444;
+  --c64-grey: #6c6c6c;
+  --c64-lightgreen: #9ad284;
+  --c64-lightblue: #6c5eb5; /* default text + border (53280) */
+  --c64-lightgrey: #959595;
   /* The real C64's border (POKE 53280) and screen background (POKE 53281)
      are two DIFFERENT default colors, not one -- light blue border, blue
      background. Drawn as a real CSS `border` on .c64-screen/.c64-app below
@@ -82,10 +85,20 @@ html, body {
      barely-there line on a narrow phone screen instead of a fixed em value
      eating a chunk of already-scarce width there. */
   --c64-border: clamp(4px, 1.5vw, 14px);
-  /* Keep the BASIC display on one fixed 40-column character grid. */
+  /* Keep the BASIC display on one fixed 40-column character grid.
+     16px on desktop; stepped down on narrow viewports so all 40 columns
+     fit without horizontal scroll (integer px only -- never fluid ch). */
   --c64-font-size: 16px;
   /* GEOS-style blocky diagonal pointer: 1-bit black/white, C64 gamut only. */
   --cursor-arrow: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgdmlld0JveD0iMCAwIDEyIDEyIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPjxwYXRoIGQ9Ik0xIDEgTDEgOSBMMyA3LjIgTDQuMyAxMC41IEw2IDkuOCBMNC43IDYuNSBMOCA2LjUgWiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEuMyIvPjwvc3ZnPgo=") 1 1, default;
+}
+
+/* Phone/narrow: 40 columns at 16px need ~700px with border+padding.
+   Drop to 8px (still square 8×8 cells) so the whole BASIC screen fits. */
+@media (max-width: 719px) {
+  :root {
+    --c64-font-size: 8px;
+  }
 }
 
 /* The real C64 16-color palette, in BASIC's own POKE 646/53280/53281 color
@@ -98,20 +111,20 @@ html, body {
 @keyframes c64-border-cycle {
   0%   { background: #000000; } /* black */
   6.25%  { background: #ffffff; } /* white */
-  12.5%  { background: #883932; } /* red */
-  18.75% { background: #67b6bd; } /* cyan */
-  25%  { background: #8b3f96; } /* purple */
-  31.25% { background: #55a049; } /* green */
-  37.5%  { background: #40318d; } /* blue */
-  43.75% { background: #bfce72; } /* yellow */
-  50%  { background: #8b5429; } /* orange */
-  56.25% { background: #574200; } /* brown */
-  62.5%  { background: #b86962; } /* light red */
-  68.75% { background: #505050; } /* dark grey */
-  75%  { background: #787878; } /* grey */
-  81.25% { background: #94e089; } /* light green */
-  87.5%  { background: #7c70da; } /* light blue */
-  93.75% { background: #a3a3a3; } /* light grey */
+  12.5%  { background: #68372b; } /* red */
+  18.75% { background: #70a4b2; } /* cyan */
+  25%  { background: #6f3d86; } /* purple */
+  31.25% { background: #588d43; } /* green */
+  37.5%  { background: #352879; } /* blue */
+  43.75% { background: #b8c76f; } /* yellow */
+  50%  { background: #6f4f25; } /* orange */
+  56.25% { background: #433900; } /* brown */
+  62.5%  { background: #9a6759; } /* light red */
+  68.75% { background: #444444; } /* dark grey */
+  75%  { background: #6c6c6c; } /* grey */
+  81.25% { background: #9ad284; } /* light green */
+  87.5%  { background: #6c5eb5; } /* light blue */
+  93.75% { background: #959595; } /* light grey */
   100% { background: #000000; }
 }
 
@@ -143,7 +156,13 @@ html, body {
      .c64-app-attribution included) shares this one value; nothing here
      sets its own smaller font-size. */
   font-size: var(--c64-font-size);
-  line-height: 1.25;
+  /* 1, not 1.25 -- PETSCII cells are square 8×8 (dos/ uses line-height:1
+     for the same reason). Soft antialiasing fights the pixel font. */
+  line-height: 1;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
   /* pre, not pre-wrap -- same reasoning as dos/style.css's .dos-dir: a real
      40-column disk listing's fixed-width columns never mid-line-wrapped.
      overflow: auto above already makes both axes scrollable as needed. */
@@ -194,8 +213,8 @@ html, body {
 }
 .c64-cmd-entry {
   display: inline-flex;
-  align-items: baseline;
-  min-height: 1.25em;
+  align-items: stretch;
+  min-height: 1em;
 }
 .c64-cmd-input {
   background: none;
@@ -205,6 +224,7 @@ html, body {
   margin: 0;
   color: inherit;
   font: inherit;
+  line-height: 1;
   caret-color: transparent;
   /* Visual backup for the real uppercasing app.js's forceUppercase() does
      to the input's actual value (needed there so the echoed history line
@@ -213,13 +233,14 @@ html, body {
   text-transform: uppercase;
 }
 .c64-block-caret {
+  /* Reverse-video cell the size of one PETSCII character -- not a thin
+     I-beam. Blink ~20 jiffies on/off at PAL 50Hz ≈ 0.8s full cycle. */
   display: inline-block;
   width: 1ch;
-  height: 1.05em;
+  height: 1em;
   flex: 0 0 1ch;
   background: var(--c64-lightblue);
-  vertical-align: -0.12em;
-  animation: c64-caret-blink 1s steps(1, end) infinite;
+  animation: c64-caret-blink 0.8s steps(1, end) infinite;
 }
 @keyframes c64-caret-blink {
   0%, 49% { opacity: 1; }
@@ -245,8 +266,12 @@ html, body {
      each scroll container's own real computed line-height (see its own
      comment); without this, .c64-app-results (DICT.EXE's results pane)
      would resolve to the unset default "normal" and silently fall back to
-     a hardcoded guess instead of a real measurement. */
-  line-height: 1.25;
+     a hardcoded guess instead of a real measurement. Square cells match
+     .c64-screen. */
+  line-height: 1;
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
 }
 .c64-app[hidden] {
   display: none;
@@ -565,12 +590,21 @@ html, body {
   outline: 1px solid var(--c64-lightblue);
 }
 .decon-card {
-  margin: 0 0 1.5em;
-  padding-bottom: 1em;
-  border-bottom: 1px dashed var(--c64-lightblue);
-}
-.decon-card:last-child {
+  margin: 0 0 1em;
+  padding-bottom: 0;
   border-bottom: none;
+}
+.decon-card::after {
+  /* Hyphen row, not a CSS border -- closest text-mode stand-in for a
+     PETSCII separator without pulling in graphics-charset code points. */
+  content: "----------------------------------------";
+  display: block;
+  margin-top: 1em;
+  overflow: hidden;
+  max-width: 40ch;
+}
+.decon-card:last-child::after {
+  content: none;
 }
 .decon-tag {
   font-weight: bold;
