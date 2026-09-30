@@ -28,7 +28,15 @@
   // so dos/mac1984 keep the real Unicode punctuation; only c64/ needs the
   // period-accurate downgrade.
   function petsciiSafe(text) {
-    return text.replace(/–/g, "-").replace(/—/g, "--").replace(/…/g, "...");
+    // Default C64 charset is uppercase/graphics -- force uppercase after
+    // folding punctuation PETSCII never had (en/em dash, ellipsis, curly
+    // quotes). Applied at display time only; upstream data stays untouched.
+    return String(text)
+      .replace(/[–—]/g, "-")
+      .replace(/…/g, "...")
+      .replace(/[‘’]/g, "'")
+      .replace(/[“”]/g, '"')
+      .toUpperCase();
   }
 
   function renderRows(rows) {
@@ -130,17 +138,18 @@
       const rows = deconRootFirst.checked ? match.breakdown : [...match.breakdown].reverse();
       for (const { marker, text: rowText, changedRanges, gloss, leftPad, rightPad } of rows) {
         const row = document.createElement("div");
+        const safe = petsciiSafe(rowText);
         row.appendChild(document.createTextNode(`${".".repeat(leftPad || 0)}${marker}`));
         let cursor = 0;
         for (const { start, end } of changedRanges) {
-          if (start > cursor) row.appendChild(document.createTextNode(rowText.slice(cursor, start)));
+          if (start > cursor) row.appendChild(document.createTextNode(safe.slice(cursor, start)));
           const changed = document.createElement("span");
           changed.className = "decon-changed";
-          changed.textContent = rowText.slice(start, end);
+          changed.textContent = safe.slice(start, end);
           row.appendChild(changed);
           cursor = end;
         }
-        if (cursor < rowText.length) row.appendChild(document.createTextNode(rowText.slice(cursor)));
+        if (cursor < safe.length) row.appendChild(document.createTextNode(safe.slice(cursor)));
         row.appendChild(document.createTextNode(`${".".repeat(rightPad || 0)} - ${petsciiSafe(gloss)}`));
         breakdown.appendChild(row);
       }
@@ -653,7 +662,7 @@
       const cx = klaxColumnX(c, KLAX_STACK);
       const highlighted = state.paddle.length > 0 && klaxCol === c;
       klaxPx(cx - stackColW / 2 + 1, KLAX_STACK.top, stackColW - 2, KLAX_STACK.bottom - KLAX_STACK.top,
-        highlighted ? "rgba(191,206,114,.15)" : "rgba(0,0,0,.3)");
+        highlighted ? "rgba(184,199,111,.15)" : "rgba(0,0,0,.3)");
       const lane = state.stacks[c];
       const tileH = (KLAX_STACK.bottom - KLAX_STACK.top) / state.stackCap;
       lane.forEach((tile, i) => {
@@ -688,7 +697,7 @@
     const wellH = KLAX_WELL.bottom - KLAX_WELL.top;
     for (let y = KLAX_WELL.top + 8; y < KLAX_WELL.bottom; y += 12) {
       const span = klaxWellSpanAt((y - KLAX_WELL.top) / wellH);
-      klaxPx(span.x + 4, y, span.w - 8, 2, "rgba(103,182,189,.5)");
+      klaxPx(span.x + 4, y, span.w - 8, 2, "rgba(112,164,178,.5)");
     }
     // Column dividers slant outward toward the floor instead of running
     // straight down, same convergence as the track lines above. A dotted

@@ -22,3 +22,9 @@ hand-drawn chrome, C64 Pro Mono).
 
 - DIR listing rows are single inline `<button class="c64-link">` / `<span class="c64-dim">` elements holding the full padded line (`blocks + "NAME" + type`). Avoid `display:grid` (or any block layout) on those rows: `#c64-output` is `white-space: pre`, so a block box plus the newline between entries doubles line spacing. Leading block counts share one column across linked and dim rows.
 
+- **Looks (fix/c64-looks):** Pepto VIC-II 16-color table for border
+  (53280 / light blue `#6c5eb5`) vs screen (53281 / blue `#352879`).
+  Square PETSCII cells (`line-height: 1`), crisp pixel font smoothing,
+  0.8s block caret, uppercase display via `petsciiSafe()`, and an 8px
+  stepped font under 720px so all 40 columns fit on a phone. No CRT
+  scanlines (those live on `compy/`, not here).
