@@ -67,13 +67,13 @@ GAMUT_INFO = {
     "c64": "VIC-II: exactly 16 fixed colors, full stop -- gamut-checked below across the whole theme (a real C64's screen, border included, truly could not show anything else)",
 }
 
-# Pepto VIC-II palette -- the same table in c64/style.css's
-# .c64-palette-cycle keyframes and :root --c64-* vars (POKE 53280/53281
-# order). Ground truth for this check; keep in lockstep with style.css.
+# Muted CRT VIC-II palette -- same table as c64/style.css :root --c64-*
+# vars (POKE 53280/53281 order). Softened from Pepto for LCD; keep in
+# lockstep with style.css.
 C64_PALETTE = [
-    "#000000", "#ffffff", "#68372b", "#70a4b2", "#6f3d86", "#588d43",
-    "#352879", "#b8c76f", "#6f4f25", "#433900", "#9a6759", "#444444",
-    "#6c6c6c", "#9ad284", "#6c5eb5", "#959595",
+    "#000000", "#ffffff", "#5e3b32", "#7ba0aa", "#684478", "#608651",
+    "#352c66", "#b8c384", "#675032", "#3f380f", "#906b61", "#444444",
+    "#6c6c6c", "#a3cb93", "#6c62a1", "#959595",
 ]
 
 # The original DMG-01's 4 fixed LCD shades (lightest to darkest) -- the

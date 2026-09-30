@@ -54,25 +54,25 @@ html, body {
 }
 
 :root {
-  /* Pepto VIC-II palette (pepto.de / VICE pepto-pal) -- the measured
-     16-color table, not a brighter web approximation. Border (POKE 53280 /
-     color 14 light blue) and screen (POKE 53281 / color 6 blue) stay two
-     different defaults, the way a real C64 powers on. */
+  /* Muted CRT take on the VIC-II 16 -- Pepto hues desaturated ~28% toward
+     luma so sRGB LCDs don't punch like neon, while border (53280 / light
+     blue) vs screen (53281 / blue) stay recognizably C64. Same POKE order
+     as tools/check_palette.py's C64_PALETTE. */
   --c64-black: #000000;
   --c64-white: #ffffff;
-  --c64-red: #68372b;
-  --c64-cyan: #70a4b2;
-  --c64-purple: #6f3d86;
-  --c64-green: #588d43;
-  --c64-blue: #352879; /* default screen background (53281) */
-  --c64-yellow: #b8c76f;
-  --c64-orange: #6f4f25;
-  --c64-brown: #433900;
-  --c64-lightred: #9a6759;
+  --c64-red: #5e3b32;
+  --c64-cyan: #7ba0aa;
+  --c64-purple: #684478;
+  --c64-green: #608651;
+  --c64-blue: #352c66; /* default screen background (53281) */
+  --c64-yellow: #b8c384;
+  --c64-orange: #675032;
+  --c64-brown: #3f380f;
+  --c64-lightred: #906b61;
   --c64-darkgrey: #444444;
   --c64-grey: #6c6c6c;
-  --c64-lightgreen: #9ad284;
-  --c64-lightblue: #6c5eb5; /* default text + border (53280) */
+  --c64-lightgreen: #a3cb93;
+  --c64-lightblue: #6c62a1; /* default text + border (53280) */
   --c64-lightgrey: #959595;
   /* The real C64's border (POKE 53280) and screen background (POKE 53281)
      are two DIFFERENT default colors, not one -- light blue border, blue
@@ -101,31 +101,29 @@ html, body {
   }
 }
 
-/* The real C64 16-color palette, in BASIC's own POKE 646/53280/53281 color
-   numbers 0-15 order -- used by #c64-loading's border-cycling animation
-   below (the loading flicker was VIC-II stepping through these as fast as
-   the disk drive could feed it, not a smooth gradient). */
+/* LOAD/RUN flicker: coarse horizontal stripe bands (tape/disk load vibe),
+   not a rapid full-frame rainbow or pixel noise. ~2 PETSCII rows per band,
+   stepped vertical scroll through the muted VIC-II tokens above -- slow
+   enough to read as era CRT bars, not a modern strobe. */
 .c64-palette-cycle {
-  animation: c64-border-cycle 1.4s steps(16) infinite;
+  background-color: var(--c64-black);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--c64-black) 0 24px,
+    var(--c64-blue) 24px 48px,
+    var(--c64-lightblue) 48px 72px,
+    var(--c64-cyan) 72px 96px,
+    var(--c64-purple) 96px 120px,
+    var(--c64-green) 120px 144px,
+    var(--c64-yellow) 144px 168px,
+    var(--c64-red) 168px 192px
+  );
+  background-size: 100% 192px;
+  animation: c64-load-stripes 3.2s steps(8) infinite;
 }
-@keyframes c64-border-cycle {
-  0%   { background: #000000; } /* black */
-  6.25%  { background: #ffffff; } /* white */
-  12.5%  { background: #68372b; } /* red */
-  18.75% { background: #70a4b2; } /* cyan */
-  25%  { background: #6f3d86; } /* purple */
-  31.25% { background: #588d43; } /* green */
-  37.5%  { background: #352879; } /* blue */
-  43.75% { background: #b8c76f; } /* yellow */
-  50%  { background: #6f4f25; } /* orange */
-  56.25% { background: #433900; } /* brown */
-  62.5%  { background: #9a6759; } /* light red */
-  68.75% { background: #444444; } /* dark grey */
-  75%  { background: #6c6c6c; } /* grey */
-  81.25% { background: #9ad284; } /* light green */
-  87.5%  { background: #6c5eb5; } /* light blue */
-  93.75% { background: #959595; } /* light grey */
-  100% { background: #000000; }
+@keyframes c64-load-stripes {
+  from { background-position: 0 0; }
+  to { background-position: 0 192px; }
 }
 
 .c64-screen {
@@ -543,12 +541,12 @@ html, body {
 }
 
 /* The RUN loading flicker (issue #27 piece 2) -- a real LOAD/RUN blanked
-   the whole screen to the border color while the drive worked; there was
-   no listing or prompt visible underneath, hence its own full-screen
-   element rather than an overlay on #c64-dir. app.js adds/removes
-   .c64-palette-cycle to actually animate it and swaps in the "READY."/RUN
-   text afterward via #c64-dir's own output, not this element -- this is
-   only ever the blank flicker itself. */
+   the screen while the drive/tape worked; there was no listing or prompt
+   visible underneath, hence its own full-screen element rather than an
+   overlay on #c64-dir. app.js adds/removes .c64-palette-cycle (coarse
+   horizontal stripe bands, slow cadence) and swaps in the "READY."/RUN
+   text afterward via #c64-dir's own output -- this element is only ever
+   the blank flicker itself. */
 .c64-loading {
   position: fixed;
   top: var(--app-top, 0);

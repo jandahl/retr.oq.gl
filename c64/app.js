@@ -999,11 +999,10 @@
   });
 
   // The RUN loading-screen flicker (issue #27 piece 2): a real LOAD/RUN
-  // blanked the screen and cycled the border through the VIC-II palette
-  // while the drive worked (style.css's .c64-palette-cycle does the actual
-  // color stepping) -- this just times how long that blank screen shows
-  // before the loaded program takes over.
-  const LOAD_FLICKER_MS = 1400;
+  // blanked the screen with coarse horizontal stripe bands cycling the
+  // VIC-II palette (style.css's .c64-palette-cycle) -- slow tape/disk
+  // cadence, not a rapid rainbow. Duration matches one full stripe cycle.
+  const LOAD_FLICKER_MS = 3200;
   function flickerThenRun(after) {
     return new Promise((resolve) => {
       loadingScreen.hidden = false;
