@@ -323,7 +323,7 @@ window.OqHubMachines = [
       <rect x="18" y="16" width="2" height="2" fill="#f0c030"/>
     `,
   },
-    {
+  {
     href: "win98/",
     name: "Windows 98",
     year: "1998",
