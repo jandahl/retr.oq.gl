@@ -90,9 +90,10 @@
     let active = null;
     let paddle = []; // tiles the catcher is currently carrying, LIFO -- paddle[paddle.length-1] is the one place()/discard() acts on
     let stacks = []; // stacks[c] = array of placed tiles in lane c, bottom to top
-    // roundIds with a root already placed in some stack but no correct
-    // affix placed yet -- see spawnActive()'s pity weighting below.
-    let pendingRoots = new Set();
+    // roundId -> how many unmatched roots of that round are on the board.
+    // A Set collapsed two copies of the same root, so matching one stopped
+    // the pity spawn while the other was still stacked.
+    let pendingRoots = new Map();
     let lives = startLives;
     let score = 0;
     let gameOver = false;
@@ -126,7 +127,7 @@
       // they're already holding. Once a root is on the board waiting for
       // its affix, most spawns bias toward finally giving it to them.
       if (pendingRoots.size > 0 && rng() < PITY_AFFIX_CHANCE) {
-        const ids = Array.from(pendingRoots);
+        const ids = Array.from(pendingRoots.keys());
         const roundId = ids[Math.floor(rng() * ids.length)];
         const round = rounds[roundId];
         active = { roundId, kind: "affix-correct", marker: round.correct, col: Math.floor(rng() * columns), y: 0 };
@@ -156,7 +157,7 @@
       score = 0;
       gameOver = false;
       paddle = [];
-      pendingRoots = new Set();
+      pendingRoots = new Map();
       stacks = Array.from({ length: columns }, () => []);
       active = null;
       spawnActive();
@@ -181,7 +182,8 @@
             const affix = stacks[d][i];
             stacks[c] = stacks[c].filter((t) => t !== tile);
             stacks[d] = stacks[d].filter((t) => t !== affix);
-            pendingRoots.delete(tile.roundId);
+            pendingRoots.set(tile.roundId, (pendingRoots.get(tile.roundId) || 1) - 1);
+            if (pendingRoots.get(tile.roundId) <= 0) pendingRoots.delete(tile.roundId);
             score += 20;
             return {
               marker: tile.marker,
@@ -242,10 +244,15 @@
      */
     function place(col) {
       if (!paddle.length || gameOver) return { placed: false };
+      if (!stacks[col]) return { placed: false };
       const tile = paddle[paddle.length - 1];
       if (tile.kind === "power-lane") {
         paddle.pop();
-        for (const t of stacks[col]) if (t.kind === "root") pendingRoots.delete(t.roundId);
+        for (const t of stacks[col]) {
+          if (t.kind !== "root") continue;
+          pendingRoots.set(t.roundId, (pendingRoots.get(t.roundId) || 1) - 1);
+          if (pendingRoots.get(t.roundId) <= 0) pendingRoots.delete(t.roundId);
+        }
         const cleared = stacks[col].map((t) => t.marker);
         const cells = stacks[col].map((t, row) => ({ col, row, marker: t.marker, kind: t.kind }));
         stacks[col] = [];
@@ -256,7 +263,7 @@
         const cleared = stacks.flat().map((t) => t.marker);
         const cells = stacks.flatMap((lane, c) => lane.map((t, row) => ({ col: c, row, marker: t.marker, kind: t.kind })));
         stacks = stacks.map(() => []);
-        pendingRoots = new Set();
+        pendingRoots = new Map();
         return { placed: true, event: "power-screen", cleared, cells };
       }
       if (tile.kind === "power-1up") {
@@ -271,7 +278,7 @@
       if (stacks[col].length >= stackCap) return { placed: false, full: true };
       paddle.pop();
       stacks[col].push(tile);
-      if (tile.kind === "root") pendingRoots.add(tile.roundId);
+      if (tile.kind === "root") pendingRoots.set(tile.roundId, (pendingRoots.get(tile.roundId) || 0) + 1);
       const matched = tryMatch();
       return matched
         ? { placed: true, event: "match", cleared: [matched.marker, matched.other], cells: matched.cells, score }

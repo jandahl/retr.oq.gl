@@ -133,8 +133,38 @@ test("morph-game.js: a step's wrong option costs a life and never wins", () => {
       const result = game.choose(wrongIndex);
       assert.equal(result.outcome, "wrong");
       assert.equal(result.lives, 2); // startLives (3) - 1
+      const again = game.choose(wrongIndex);
+      assert.equal(again.outcome, "ignored");
+      assert.equal(game.getState().lives, 2);
     }
   }
+});
+
+test("morph-game.js: a second choose or a choose after timeout does not apply twice", () => {
+  const puzzle = puzzles.find((p) => p.steps[0].wrong.length > 0 && p.steps[0].correct.type !== "suffix");
+  assert.ok(puzzle, "need a puzzle whose first step continues");
+  const game = sandbox.window.OqMorphGame.createGame({ puzzles: [puzzle], deterministicOrder: true });
+  const state = game.start();
+  const correctIndex = state.options.findIndex((opt) => opt.marker === puzzle.steps[0].correct.marker);
+  const first = game.choose(correctIndex);
+  assert.equal(first.outcome, "continue");
+  const word = game.getState().word;
+  const second = game.choose(correctIndex);
+  assert.equal(second.outcome, "ignored");
+  assert.equal(game.getState().word, word);
+  assert.equal(game.getState().score, 0);
+
+  const timed = sandbox.window.OqMorphGame.createGame({ puzzles: [puzzle], deterministicOrder: true });
+  timed.start();
+  const timeout = timed.timeout();
+  assert.equal(timeout.outcome, "timeout");
+  assert.equal(timeout.lives, 2);
+  const after = timed.choose(0);
+  assert.equal(after.outcome, "ignored");
+  assert.equal(timed.getState().lives, 2);
+  const retried = timed.retryStep();
+  const idx = retried.options.findIndex((opt) => opt.marker === puzzle.steps[0].correct.marker);
+  assert.equal(timed.choose(idx).outcome, "continue");
 });
 
 // --- deterministicOrder (2026-08) -------------------------------------------
@@ -195,6 +225,54 @@ test("klax-game.js: builds exactly one round per puzzle, using each puzzle's own
       `root tile "${tile}" is not one of the puzzles' own verified roots -- looks like a synthesized word-so-far string`,
     );
   }
+});
+
+test("klax-game.js: matching one of two copies of a root still pities the leftover", () => {
+  const puzzle = puzzles[0];
+  const correct = puzzle.steps[0].correct.marker;
+  // Each spawn consumes a fixed rng prefix. A pending root adds a pity roll.
+  const rngValues = [
+    // start: root, nothing pending
+    1, 0, 0, 0,
+    // catch 1 spawns root 2 before that root is placed
+    1, 0, 0, 0,
+    // catch 2, one root already placed: pity affix
+    1, 0, 0, 0,
+    // catch of that affix, both roots still stacked: not a pity spawn
+    1, 1, 0, 0, 0,
+    // miss after the match. Pity must still feed the leftover root.
+    // A Set would have deleted the round id, and these same rolls spawn a root.
+    1, 0, 0, 0,
+  ];
+  let rngAt = 0;
+  const game = sandbox.window.OqKlaxGame.createGame({
+    puzzles: [puzzle],
+    columns: 2,
+    riseSpeed: 1,
+    rng() {
+      if (rngAt >= rngValues.length) throw new Error(`rng exhausted at ${rngAt}`);
+      return rngValues[rngAt++];
+    },
+  });
+  game.start();
+  assert.equal(game.tick(1, game.getState().active.col, 1).event, "caught");
+  assert.equal(game.place(9).placed, false);
+  assert.equal(game.getState().paddle.length, 1);
+  assert.equal(game.place(0).event, "placed");
+  assert.equal(game.tick(1, game.getState().active.col, 1).event, "caught");
+  assert.equal(game.place(1).event, "placed");
+  assert.equal(game.getState().active.kind, "affix-correct");
+  assert.equal(game.tick(1, game.getState().active.col, 1).event, "caught");
+  const matched = game.place(0);
+  assert.equal(matched.event, "match");
+  const rootsLeft = game.getState().stacks.flat().filter((tile) => tile.kind === "root");
+  assert.equal(rootsLeft.length, 1);
+  const active = game.getState().active;
+  const missed = game.tick(1, active.col === 0 ? 1 : 0, 1);
+  assert.equal(missed.event, "missed");
+  const next = game.getState().active;
+  assert.equal(next.kind, "affix-correct");
+  assert.equal(next.marker, correct);
 });
 
 test("klax-game.js: multi-step puzzles (illu/qimmeq/inuuik) never leak a synthesized intermediate word as a tile", () => {
