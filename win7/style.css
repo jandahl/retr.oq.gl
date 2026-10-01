@@ -362,7 +362,18 @@ html, body {
   left: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  /* Aero maximized: drop the outer glass border + drop-shadow so the frame
+     is flush with the work area; title bar loses side radii/borders too. */
   border-radius: 0;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.win7-window.maximized .title-bar {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
 }
 
 .win7-window.minimized {

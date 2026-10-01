@@ -168,7 +168,11 @@ a:active {
   left: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  padding: 2px;
+  /* Maximized Win 3.1 is flush with the desktop (no outer bevel/border).
+     Restore glyph on .win-maximize is era-correct overlapping squares. */
+  padding: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .win31-window.minimized {
@@ -689,6 +693,21 @@ a:active {
   width: 100% !important;
   height: 100% !important;
   box-shadow: none;
+  border: none;
+}
+
+/* MDI restore glyph (overlapping squares), same idea as top-level maximize. */
+.mdi-child.mdi-maximized .mdi-maximize::before {
+  border: none;
+  width: 4px;
+  height: 4px;
+  left: 4px;
+  top: 2px;
+  background:
+    linear-gradient(var(--dk), var(--dk)) 0 0 / 4px 2px no-repeat,
+    linear-gradient(var(--dk), var(--dk)) 0 0 / 2px 4px no-repeat,
+    linear-gradient(var(--dk), var(--dk)) 2px 0 / 2px 2px no-repeat,
+    linear-gradient(var(--dk), var(--dk)) 1px 2px / 3px 2px no-repeat;
 }
 
 .mdi-child .window-body {

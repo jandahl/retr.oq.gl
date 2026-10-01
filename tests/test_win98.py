@@ -326,7 +326,9 @@ def test_window_maximize_and_restore(page, base_url):
     goto_win98(page, base_url)
     open_via_dblclick(page, "win-about")
     win = page.query_selector("#win-about")
+    btn = page.query_selector("#win-about .win-maximize")
     before = win.bounding_box()
+    assert btn.get_attribute("aria-label") == "Maximize"
     page.click("#win-about .win-maximize")
     # Maximize/restore now animates (win98's own profile: 120ms) rather than
     # snapping instantly -- wait past that so the assertion checks the
@@ -334,11 +336,25 @@ def test_window_maximize_and_restore(page, base_url):
     page.wait_for_timeout(300)
     maxed = win.bounding_box()
     assert maxed["width"] > before["width"]
+    assert "maximized" in win.get_attribute("class")
+    # Vendor 98.css paints Restore from aria-label; glyph must flip.
+    assert btn.get_attribute("aria-label") == "Restore"
+    # Flush chrome: outer raised bevel + padding gone while maximized.
+    chrome = page.evaluate(
+        """() => {
+          const s = getComputedStyle(document.getElementById('win-about'));
+          return { boxShadow: s.boxShadow, padding: s.padding };
+        }"""
+    )
+    assert chrome["boxShadow"] in ("none", "")
+    assert chrome["padding"] in ("0px", "0")
     page.click("#win-about .win-maximize")
     page.wait_for_timeout(300)
     restored = win.bounding_box()
     assert abs(restored["width"] - before["width"]) < 2
     assert abs(restored["height"] - before["height"]) < 2
+    assert btn.get_attribute("aria-label") == "Maximize"
+    assert "maximized" not in (win.get_attribute("class") or "")
 
 
 def test_window_minimize_and_restore_via_taskbar(page, base_url):

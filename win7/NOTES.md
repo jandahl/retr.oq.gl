@@ -24,3 +24,9 @@ the lineage's default "outline" style.
 
 - **DECON label:** user-visible name is **Word Deconstructor** (tab label
   inside the OQ! shell). Ids stay `win-decon` / `screen=decon`.
+
+- **Maximize / Restore:** shared WM toggles `.maximized` and sets the
+  caption button `aria-label` to `Restore` (7.css Aero overlapping
+  squares) or `Maximize`. Maximized windows drop the outer glass border /
+  drop-shadow and title-bar side radii so the frame is flush with the
+  work area; restore brings the chrome back.

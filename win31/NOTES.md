@@ -24,3 +24,10 @@ teal desktop, close lives only in the Control-menu (double-click the box).
 - **Chrome metrics (fine pointer):** `SM_CYCAPTION` / `SM_CYMENU` ≈ **18px**. Caption buttons are 16×14 with ~2px vertical inset in the title bar. Menu-bar labels use `box-sizing: border-box` + fixed `height: 18px` (not only `min-height`) so padding + font line-box cannot grow the strip past the caption; `.menubar` has no bottom margin — the menu sits flush under the caption. Touch enlargements stay behind `@media (pointer: coarse)` only.
 
 - **Control-menu box:** gray **face** field forced as literal `#c0c0c0` (+ `background-color`, `appearance: none`) so UA button styles / stale CDN CSS cannot leave a white field; **1px black** outline (no `box-shadow` bevel — min/max keep `--bevel-out`). Centered **white** horizontal dash with black outline (`#ffffff` / `#000000`). **Larger** on top-level `.win-sysmenu` (16×14 with the 18px caption); **smaller** on shorter MDI child captions (`.mdi-child .title-bar` / `.mdi-title-bar` ≈ 15px; `.mdi-child .mdi-sysmenu` / `.mdi-sysmenu` / `.mdi-child .win-sysmenu` 10×10; MDI min/max 12×11).
+
+- **Maximize / Restore:** era-correct — maximize is the up-triangle;
+  when `.maximized`, the caption button becomes overlapping squares
+  (restore) via CSS, and the shared WM sets `aria-label="Restore"`.
+  Maximized top-level windows strip outer bevel/border/padding so the
+  client is flush with the teal desktop. MDI children use the same
+  restore glyph under `.mdi-maximized`.

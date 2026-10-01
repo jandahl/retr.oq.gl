@@ -421,6 +421,18 @@
       }
     }
 
+    // 98.css / XP.css / 7.css paint Maximize vs Restore from aria-label
+    // (overlapping squares for Restore). Theme CSS keys flush-chrome off
+    // .maximized; keep the button glyph in sync whenever that class flips.
+    function syncMaximizeButton(win) {
+      const btn = win.querySelector(".win-maximize");
+      if (!btn) return;
+      btn.setAttribute(
+        "aria-label",
+        win.classList.contains("maximized") ? "Restore" : "Maximize"
+      );
+    }
+
     function toggleMaximize(win) {
       const s = state.get(win);
       if (win.classList.contains("maximized")) {
@@ -444,6 +456,7 @@
           win.classList.add("maximized");
         });
       }
+      syncMaximizeButton(win);
       focus(win);
     }
 
@@ -457,6 +470,7 @@
       if (!s.taskbarButton) return; // already closed -- a routed window's own onChange handler can reach an already-closed window (see routeClose), this makes that a safe no-op
       win.classList.add("minimized");
       win.classList.remove("maximized");
+      syncMaximizeButton(win);
       s.taskbarButton.remove();
       s.taskbarButton = null;
     }

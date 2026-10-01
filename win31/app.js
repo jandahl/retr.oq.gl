@@ -607,6 +607,8 @@
     for (const c of mdiChildren) {
       if (c.classList.contains("mdi-minimized")) continue;
       c.classList.remove("mdi-maximized");
+      const max = c.querySelector(".mdi-maximize");
+      if (max) max.setAttribute("aria-label", "Maximize");
       c.style.top = `${8 + i * 22}px`;
       c.style.left = `${8 + i * 22}px`;
       c.style.width = "18rem";
@@ -626,6 +628,8 @@
     const h = Math.floor(rect.height / rows);
     open.forEach((child, i) => {
       child.classList.remove("mdi-maximized");
+      const max = child.querySelector(".mdi-maximize");
+      if (max) max.setAttribute("aria-label", "Maximize");
       const col = i % cols;
       const row = Math.floor(i / cols);
       child.style.left = `${col * w}px`;
@@ -675,6 +679,7 @@
         e.stopPropagation();
         child.classList.add("mdi-minimized");
         child.classList.remove("mdi-maximized");
+        if (maxBtn) maxBtn.setAttribute("aria-label", "Maximize");
       });
     }
     if (maxBtn) {

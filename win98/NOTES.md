@@ -36,3 +36,9 @@ not the SCSS source. Greenlandic flag, not a Windows logo.
 
 - **DECON label:** user-visible name is **Word Deconstructor** (tab label
   inside the OQ! shell). Ids stay `win-decon` / `screen=decon`.
+
+- **Maximize / Restore:** shared WM toggles `.maximized` and sets the
+  caption button `aria-label` to `Restore` (98.css overlapping-squares
+  glyph) or `Maximize`. Maximized windows strip the outer raised bevel +
+  padding so the client is flush with the desktop work area; restore
+  brings the chrome back.
