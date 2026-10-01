@@ -272,6 +272,12 @@ body {
   left: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  /* Real Win98 maximized windows drop the outer raised bevel + padding so
+     the client is flush with the desktop work area (above the taskbar).
+     Restore (aria-label toggle in shared/redmond/window-manager.js) brings
+     98.css's .window inset bevel back. */
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 .win98-window.minimized {

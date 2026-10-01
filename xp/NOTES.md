@@ -22,3 +22,9 @@ WM via `shared/redmond/window-manager.js`. XP.css dist build vendored.
 
 - **DECON label:** user-visible name is **Word Deconstructor** (tab label
   inside the OQ! shell). Ids stay `win-decon` / `screen=decon`.
+
+- **Maximize / Restore:** shared WM toggles `.maximized` and sets the
+  caption button `aria-label` to `Restore` (XP.css Luna overlapping
+  squares) or `Maximize`. Maximized windows drop Luna’s blue inset frame,
+  top corner radii, and padding so the client is flush with the work
+  area; restore brings the frame back.

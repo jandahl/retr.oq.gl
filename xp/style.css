@@ -287,6 +287,17 @@ body {
   left: 0 !important;
   width: 100% !important;
   height: 100% !important;
+  /* Luna maximized: no blue inset frame, no top corner radius, no bottom
+     padding -- flush with the work area. Restore reverts to XP.css .window. */
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.xp-window.maximized .title-bar {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
 }
 
 .xp-window.minimized {
