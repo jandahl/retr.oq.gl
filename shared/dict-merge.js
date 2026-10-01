@@ -163,8 +163,11 @@
           }
         }
         const { entries, katersatLoaded } = mergeDictEntries(chicago, katRows);
-        loaded = { entries, attributions, katersatLoaded };
-        return loaded;
+        const result = { entries, attributions, katersatLoaded };
+        // A failed katersat fetch must not stick. Chicago is already cached
+        // by loadChicagoOnly, so the next call retries the lexicon only.
+        if (katResult.ok) loaded = result;
+        return result;
       })
       .finally(() => {
         loading = null;

@@ -45,7 +45,6 @@
     resizeHandleSelector: ".win31-resize-handle",
     minWidth: MIN_WIN_WIDTH,
     minHeight: MIN_WIN_HEIGHT,
-    pointerScale: 2,
     // 3.1's minimize animation was the same outline-rectangle as 95/98,
     // just flying to a desktop icon instead of a taskbar button.
     animation: {
@@ -660,8 +659,9 @@
     });
     handle.addEventListener("pointermove", (event) => {
       if (event.pointerId !== activePointerId) return;
-      const dx = (event.clientX - startX) / 2; // win31 pointerScale
-      const dy = (event.clientY - startY) / 2;
+      const zoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+      const dx = (event.clientX - startX) / zoom;
+      const dy = (event.clientY - startY) / zoom;
       child.style.left = `${Math.max(0, origX + dx)}px`;
       child.style.top = `${Math.max(0, origY + dy)}px`;
     });

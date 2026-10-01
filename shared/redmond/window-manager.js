@@ -71,6 +71,13 @@
   function initWindowManager({ desktop, taskbarWindows, windows, resizeHandleSelector, minWidth, minHeight, onOpen, routeOpen, routeClose, animation, pointerScale = 1 }) {
     let zTop = 10;
     const pointerScaleValue = Number(pointerScale) || 1;
+    // html { zoom } (win31 at min-width 700px) changes under the pointer.
+    // Read it per event. pointerScale stays an extra factor, default 1;
+    // a frozen 2 was wrong below that breakpoint and across a live resize.
+    function eventScale() {
+      const zoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+      return zoom * pointerScaleValue;
+    }
 
     // Real Windows never showed a browser's own right-click menu over the
     // desktop -- capture it here for every Redmond theme so the illusion
@@ -499,8 +506,8 @@
 
       function onPointerMove(event) {
         if (event.pointerId !== activePointerId) return;
-        const dx = (event.clientX - startX) / pointerScaleValue;
-        const dy = (event.clientY - startY) / pointerScaleValue;
+        const dx = (event.clientX - startX) / eventScale();
+        const dy = (event.clientY - startY) / eventScale();
         target.style.left = `${Math.max(0, origX + dx)}px`;
         target.style.top = `${Math.max(0, origY + dy)}px`;
       }
@@ -545,8 +552,8 @@
 
       function onPointerMove(event) {
         if (event.pointerId !== activePointerId) return;
-        const dx = (event.clientX - startX) / pointerScaleValue;
-        const dy = (event.clientY - startY) / pointerScaleValue;
+        const dx = (event.clientX - startX) / eventScale();
+        const dy = (event.clientY - startY) / eventScale();
 
         if (dir.includes("e")) {
           target.style.width = `${Math.max(minW, startW + dx)}px`;

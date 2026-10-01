@@ -270,6 +270,21 @@ test("loadMergedDictEntries survives katersat failure", async () => {
   assert.ok(merged.attributions.chicago);
   assert.equal(merged.attributions.katersat, undefined);
   assert.ok(merged.entries.every((e) => e.source === "chicago"));
+
+  let calls = 0;
+  sb.window.OqKatersatSource.loadKatersatLexemes = () => {
+    calls += 1;
+    if (calls === 1) return Promise.reject(new Error("blip"));
+    return Promise.resolve([{ id: "k", lexeme: "kujannippoq", gloss_en: "is happy" }]);
+  };
+  sb.window.OqDictMerge.resetMergeState();
+  const first = await sb.window.OqDictMerge.loadMergedDictEntries();
+  assert.equal(first.katersatLoaded, false);
+  assert.equal(calls, 1);
+  const second = await sb.window.OqDictMerge.loadMergedDictEntries();
+  assert.equal(calls, 2);
+  assert.equal(second.katersatLoaded, true);
+  assert.ok(second.entries.some((e) => e.lexeme === "kujannippoq"));
 });
 
 test("TM preferred four are selectable from merged entries", () => {
