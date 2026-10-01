@@ -54,7 +54,7 @@ test("every vendored saver has period metadata", () => {
 test("router loads catalog before the saver host and preserves script order", () => {
   const src = read("shared/router.js");
   const catalog = src.indexOf('redmond/screensaver-catalog.js?v=1');
-  const host = src.indexOf('redmond/screensaver.js?v=35');
+  const host = src.indexOf('redmond/screensaver.js?v=36');
   assert.ok(catalog >= 0 && host > catalog, "catalog must load before host");
   assert.match(src, /s\.async\s*=\s*false/);
 });
