@@ -42,10 +42,28 @@
   // moment a deep link fires. oq-analysis.js dispatches "oq-analysis-ready"
   // on window right after setting the global, so this just waits for
   // whichever already happened.
-  function waitForOqAnalysis() {
+  function waitForOqAnalysis(signal) {
+    if (signal && signal.aborted) {
+      return Promise.reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+    }
     if (window.OqAnalysis) return Promise.resolve(window.OqAnalysis);
-    return new Promise((resolve) => {
-      window.addEventListener("oq-analysis-ready", () => resolve(window.OqAnalysis), { once: true });
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        window.removeEventListener("oq-analysis-ready", onReady);
+        reject(new Error("oq-analysis.js did not load"));
+      }, 8000);
+      function onReady() {
+        clearTimeout(timer);
+        resolve(window.OqAnalysis);
+      }
+      if (signal) {
+        signal.addEventListener("abort", () => {
+          clearTimeout(timer);
+          window.removeEventListener("oq-analysis-ready", onReady);
+          reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+        }, { once: true });
+      }
+      window.addEventListener("oq-analysis-ready", onReady, { once: true });
     });
   }
 
@@ -94,7 +112,8 @@
       const { signal } = searchAbort;
       onStatus("Analyzing...");
       try {
-        const analysis = await waitForOqAnalysis();
+        const analysis = await waitForOqAnalysis(signal);
+        if (signal.aborted) return;
         const result = await analysis.analyzeWord(trimmed, { signal });
         if (signal.aborted) return; // a newer search already took over
         lastAnalysis = result;
@@ -106,8 +125,9 @@
             : `No parse found (${result.evalCount.toLocaleString()} combinations tried in ${Math.round(result.elapsedMs)}ms).`,
         );
       } catch (err) {
-        if (err.name === "AbortError") return; // superseded, not a real failure
-        onStatus(`Could not analyze (${err.message}).`);
+        if (err && err.name === "AbortError") return; // superseded, not a real failure
+        const message = err && err.message ? err.message : String(err);
+        onStatus(`Could not analyze (${message}).`);
       }
     }
 

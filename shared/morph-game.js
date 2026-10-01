@@ -61,6 +61,7 @@
     let stepIndex = 0;
     let wordSoFar = "";
     let options = [];
+    let awaitingChoice = false;
     let lives = startLives;
     let score = 0;
 
@@ -89,6 +90,7 @@
         { ...step.correct, isCorrect: true },
         ...step.wrong.map((w) => ({ ...w, isCorrect: false })),
       ]);
+      awaitingChoice = true;
       return {
         word: wordSoFar,
         stepType: step.correct.type,
@@ -121,8 +123,10 @@
      * @param {number} optionIndex index into the `options` from the last beginStep()/beginPuzzle()
      */
     function choose(optionIndex) {
+      if (!awaitingChoice) return { outcome: "ignored", lives, score, gameOver: lives <= 0 };
       const opt = options[optionIndex];
       if (!opt) throw new Error(`choose: no option at index ${optionIndex}`);
+      awaitingChoice = false;
       if (!opt.isCorrect) {
         lives -= 1;
         return { outcome: "wrong", marker: opt.marker, gloss: opt.gloss, lives, gameOver: lives <= 0 };
@@ -149,6 +153,8 @@
      * caller can show "TOO SLOW" instead of "NOT THERE".
      */
     function timeout() {
+      if (!awaitingChoice) return { outcome: "ignored", lives, gameOver: lives <= 0 };
+      awaitingChoice = false;
       lives -= 1;
       return { outcome: "timeout", lives, gameOver: lives <= 0 };
     }
