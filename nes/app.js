@@ -1014,6 +1014,8 @@
     }
     const dest = screen || "title";
     if (dest === "oq") {
+      if (currentScreen === "decon") exitDecon();
+      if (currentScreen === "klax") exitKlax();
       if (currentScreen !== "oq" || SCREENS.oq.hidden) {
         launchOq(params.get("filter") || "");
       } else if (oqFilter.value !== (params.get("filter") || "")) {
@@ -1021,6 +1023,7 @@
         renderOqResults();
       }
     } else if (dest === "decon") {
+      if (currentScreen === "klax") exitKlax();
       const orderParam = params.get("order");
       const rootFirst = orderParam ? orderParam !== "final" : getStoredRootFirst();
       if (deconRootFirst.checked !== rootFirst) {
@@ -1394,7 +1397,13 @@
     if (!btn) return;
     event.preventDefault();
     const raw = btn.dataset.input;
-    if (raw === "up" && currentScreen === "klax") klaxUpHeld = true;
+    if (raw === "up" && currentScreen === "klax") {
+      // A finger that slides off the button fires pointerup on something
+      // else, so the fast-drop flag would stick. Capture keeps pointerup
+      // on this button, same as c64/app.js.
+      try { btn.setPointerCapture(event.pointerId); } catch (err) { /* old browser */ }
+      klaxUpHeld = true;
+    }
     handleInput(raw);
   });
   window.addEventListener("pointerup", (event) => {

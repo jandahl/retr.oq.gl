@@ -436,7 +436,14 @@
   window.OqRouter.onChange((params) => {
     const screen = params.get("screen");
     if (screen === "dict") {
-      deconApp.hidden = true;
+      // Hiding the panel is not enough: an in-flight analysis would still
+      // land on the reset UI. exitDecon aborts it, same as the other branch
+      // and c64/app.js. It also unhides the directory; launchDict covers
+      // that when DICT was not already open.
+      if (!deconApp.hidden) {
+        exitDecon();
+        if (!dictApp.hidden) dirScreen.hidden = true;
+      }
       if (dictApp.hidden) {
         launchDict(params.get("filter") || "");
       } else if (dictFilter.value !== (params.get("filter") || "")) {

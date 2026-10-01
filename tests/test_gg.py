@@ -180,6 +180,15 @@ def test_select_cycles_menu(page, base_url):
     assert "is-selected" in page.locator("#menu-about").get_attribute("class")
 
 
+def test_tab_on_title_does_not_open_menu(page, base_url):
+    """Tab is Select. On the title it must not act as Start."""
+    goto_gg(page, base_url)
+    assert page.locator("#title-screen").is_visible()
+    page.keyboard.press("Tab")
+    assert page.locator("#title-screen").is_visible()
+    assert page.locator("#menu-screen").is_hidden()
+
+
 def test_attract_is_in_lcd_not_fullscreen(page, base_url):
     """Attract paints the LCD only -- the landscape slab stays on screen."""
     goto_gg(page, base_url)

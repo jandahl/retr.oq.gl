@@ -717,6 +717,8 @@
     }
     const dest = screen || "title";
     if (dest === "oq") {
+      if (currentScreen === "decon") exitDecon();
+      if (currentScreen === "morph") stopMorphAnim();
       if (currentScreen !== "oq" || SCREENS.oq.hidden) {
         launchOq(params.get("filter") || "");
       } else if (oqFilter.value !== (params.get("filter") || "")) {
@@ -724,6 +726,7 @@
         renderOqResults();
       }
     } else if (dest === "decon") {
+      if (currentScreen === "morph") stopMorphAnim();
       const orderParam = params.get("order");
       const rootFirst = orderParam ? orderParam !== "final" : getStoredRootFirst();
       if (deconRootFirst.checked !== rootFirst) {
@@ -737,6 +740,7 @@
         deconController.search(deconWord.value);
       }
     } else if (dest === "morph") {
+      if (currentScreen === "decon") exitDecon();
       if (currentScreen !== "morph" || SCREENS.morph.hidden) launchMorph();
     } else if (dest === "menu" || dest === "about" || dest === "gameover" || dest === "title") {
       if (currentScreen === "decon") exitDecon();
