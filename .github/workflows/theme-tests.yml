@@ -86,6 +86,14 @@ jobs:
               - "tests/requirements.txt"
               - "shared/*.js"
               - ".github/workflows/theme-tests.yml"
+            compy:
+              - "compy/**"
+              - "vendor/dos/fonts/**"
+              - "tests/test_compy.py"
+              - "tests/conftest.py"
+              - "tests/requirements.txt"
+              - "shared/*.js"
+              - ".github/workflows/theme-tests.yml"
             gb:
               - "gb/**"
               - "vendor/nes/fonts/**"
