@@ -15,6 +15,9 @@ find . -type f -name '*.js' \
   -not -path './.git/*' \
   -print0 | xargs -0 -n1 node --check
 
+echo "pre-push: shared script cache-bust"
+node --test tests/shared/test_cache_bust.mjs
+
 python_bin="python3"
 if [[ -x .venv/bin/python ]]; then
   python_bin=".venv/bin/python"

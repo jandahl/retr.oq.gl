@@ -70,6 +70,9 @@ jobs:
       - name: JavaScript syntax validate
         run: git ls-files -z -- '*.js' ':(exclude)vendor/**' | xargs -0 -n1 node --check
 
+      - name: Shared script cache-bust versions agree
+        run: node --test tests/shared/test_cache_bust.mjs
+
       - name: HTML validate
         # Pin the CLI: resolving latest made the check depend on a moving
         # registry target and recently selected an unavailable tarball.
