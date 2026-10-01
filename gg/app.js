@@ -661,12 +661,15 @@
           konamiProgress = KONAMI[0] === action ? 1 : 0;
         }
       }
-      if (action === "start" || action === "select") {
+      if (action === "start") {
         konamiProgress = 0;
         sfx("start");
         goMenu();
         return;
       }
+      // Tab is select. There is no Select button; Tab cycles the menu
+      // once you are in it, and must not start the game from the title.
+      if (action === "select") return;
       if (action === "a" && konamiProgress === 0) {
         sfx("start");
         goMenu();

@@ -1467,6 +1467,8 @@
     }
     const dest = screen || "title";
     if (dest === "oq") {
+      if (currentScreen === "decon") exitDecon();
+      if (currentScreen === "klax") exitKlax();
       if (currentScreen !== "oq" || SCREENS.oq.hidden) {
         launchOq(params.get("filter") || "");
       } else if (oqFilter.value !== (params.get("filter") || "")) {
@@ -1474,6 +1476,7 @@
         renderOqResults();
       }
     } else if (dest === "decon") {
+      if (currentScreen === "klax") exitKlax();
       const orderParam = params.get("order");
       const rootFirst = orderParam ? orderParam !== "final" : getStoredRootFirst();
       if (deconRootFirst.checked !== rootFirst) {
@@ -1733,7 +1736,12 @@
     // actions nes/ uses.
     const alias = { x: "a", y: "b", l: "select", r: "start" };
     const resolved = alias[raw] || raw;
-    if (resolved === "up" && currentScreen === "klax") klaxUpHeld = true;
+    if (resolved === "up" && currentScreen === "klax") {
+      // Same stuck fast-drop as c64/app.js: pointerup only clears the flag
+      // when its target is still this button. Capture keeps it so.
+      try { btn.setPointerCapture(event.pointerId); } catch (err) { /* old browser */ }
+      klaxUpHeld = true;
+    }
     handleInput(resolved);
   });
   window.addEventListener("pointerup", (event) => {
