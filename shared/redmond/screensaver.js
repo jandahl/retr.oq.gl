@@ -164,17 +164,32 @@
     function setIdleMs(next) {
       requestedIdleMs = Math.max(0, Number(next) || 0);
       idleMs = motionQuery && motionQuery.matches ? 0 : requestedIdleMs;
-      if (idleMs) ping();
+      // ping() clears an already-armed timeout. Skipping it when the new
+      // delay is 0 left KDE's "0 seconds" control on the previous timer.
+      ping();
     }
 
     function destroy() {
       clearTimeout(timer);
+      timer = 0;
       running = false;
       launchGeneration += 1;
       if (motionQuery && motionQuery.removeEventListener) {
         motionQuery.removeEventListener("change", syncReducedMotion);
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      overlay.removeEventListener("pointerdown", tapOut);
+      overlay.removeEventListener("click", tapOut);
+      overlay.removeEventListener("touchstart", tapOut);
+      frame.removeEventListener("load", onFrameLoad);
+      window.removeEventListener("resize", layoutOverlay);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", layoutOverlay);
+        window.visualViewport.removeEventListener("scroll", layoutOverlay);
+      }
+      window.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("pointerdown", onPointerActivity, true);
+      window.removeEventListener("pointermove", onPointerActivity, true);
       overlay.hidden = true;
       frame.removeAttribute("src");
       frame.setAttribute("aria-busy", "false");
@@ -184,25 +199,30 @@
       if (Date.now() < ignoreUntil) return;
       stop(event);
     }
-    overlay.addEventListener("pointerdown", tapOut);
-    overlay.addEventListener("click", tapOut);
-    overlay.addEventListener("touchstart", tapOut, { passive: false });
-    frame.addEventListener("load", () => {
+    function onFrameLoad() {
       try {
         frame.contentWindow.dispatchEvent(new Event("resize"));
       } catch (e) {}
-    });
+    }
+    function onKeyDown(event) {
+      if (running) stop(event);
+      else ping();
+    }
+    function onPointerActivity() {
+      ping();
+    }
+    overlay.addEventListener("pointerdown", tapOut);
+    overlay.addEventListener("click", tapOut);
+    overlay.addEventListener("touchstart", tapOut, { passive: false });
+    frame.addEventListener("load", onFrameLoad);
     window.addEventListener("resize", layoutOverlay);
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", layoutOverlay);
       window.visualViewport.addEventListener("scroll", layoutOverlay);
     }
-    window.addEventListener("keydown", (event) => {
-      if (running) stop(event);
-      else ping();
-    }, true);
-    window.addEventListener("pointerdown", ping, true);
-    window.addEventListener("pointermove", ping, true);
+    window.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("pointerdown", onPointerActivity, true);
+    window.addEventListener("pointermove", onPointerActivity, true);
     function handleVisibilityChange() {
       if (document.hidden) {
         pausedForVisibility = running;
@@ -333,8 +353,11 @@
     let theme = themeKey();
     if (!theme) return;
     document.body.classList.add("theme-" + theme);
-    // Windows 95 uses the Win98-compatible saver menu surface while the
-    // desktop shell remains its own theme.
+    // Windows 95 uses the Win98 saver menu. It does not use Win98 Start
+    // extras: win95/index.html already loads start-extra.js?v=2, which
+    // defines OqWin95Start. Injecting start-extra.js?v=1 here fetched that
+    // same file again and looked for OqWin98Start.
+    const pageTheme = theme;
     if (theme === "win95") theme = "win98";
 
     if (theme === "win31") {
@@ -384,12 +407,14 @@
     if (theme === "win98") {
       const host = attach({ src: vendor("aquarium"), idleMs: 45000 });
       const menu = document.getElementById("start-menu");
-      const extra = document.createElement("script");
-      extra.src = "start-extra.js?v=1";
-      extra.onload = function () {
-        if (window.OqWin98Start) window.OqWin98Start(menu);
-      };
-      document.head.appendChild(extra);
+      if (pageTheme === "win98") {
+        const extra = document.createElement("script");
+        extra.src = "start-extra.js?v=1";
+        extra.onload = function () {
+          if (window.OqWin98Start) window.OqWin98Start(menu);
+        };
+        document.head.appendChild(extra);
+      }
       addStartItem(menu, "Aquarium", () => {
         host.setSrc(vendor("aquarium"));
         host.start();
@@ -467,16 +492,15 @@
       var aquaGl = catalogEntries("aqua", [
         ["flux", "Flux"], ["fieldlines", "Field Lines"], ["solarwinds", "Solar Winds"]
       ]).map(function (entry) { return entry[0]; });
-      var aquaReduced = false;
-      try {
-        aquaReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      } catch (e) {}
       var aquaHost = attach({
         src: function () {
           return vendor(aquaGl[Math.floor(Math.random() * aquaGl.length)]);
         },
-        // Peers use 45s; Aqua idles a bit longer (~75s). Reduced motion → no idle.
-        idleMs: aquaReduced ? 0 : 75000
+        // Peers use 45s. Aqua idles a bit longer. attach() already drops
+        // the idle timer while prefers-reduced-motion is set and restores
+        // this delay when that preference turns off. Passing 0 here made
+        // the restore a no-op.
+        idleMs: 75000
       });
       global.OqScreensaver.aqua = aquaHost;
       return;
