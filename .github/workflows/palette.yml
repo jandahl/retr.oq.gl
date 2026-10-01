@@ -1,7 +1,8 @@
 name: palette
 
-# Palette validation is intentionally not a PR check. Run it locally (or use
-# manual dispatch for an explicit full verification).
+# Pull requests run this check from html-lint.yml (it already triggers on
+# tools/check_palette.py and tools/palette-baseline.json). This workflow
+# is the manual full run.
 on:
   workflow_dispatch:
 
