@@ -6,8 +6,5 @@
     "html-validate": "10.17.0",
     "linkinator": "8.1.0",
     "wait-on": "9.1.0"
-  },
-  "dependencies": {
-    "three": "^0.180.0"
   }
 }
