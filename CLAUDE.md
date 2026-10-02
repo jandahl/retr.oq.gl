@@ -88,8 +88,9 @@ Only what the code won't tell you. Cache-bust and router apply everywhere.
 
 **`dos/`** — Single-tasking: `#dos-dir` and `#dict-app` swap via
 `hidden`. Movement snaps to character cells. `visualViewport` height
-*and* `offsetTop` go into `--app-height` / `--app-top`;
-`KEYBOARD_THRESHOLD_PX` (150) ignores the mobile Chrome address bar.
+*and* `offsetTop` go into `--app-height` / `--app-top` on every resize
+and scroll. There is no keyboard-size threshold: `100vh` is the layout
+viewport and overcounts browser chrome even with the keyboard closed.
 Don't call `launchDict()` / `exitDict()` except from the router
 listener. Commands: `DICT`, `DIR`, `CLS`, `VER`, `DOSKEY`, `FORMAT`,
 plus undocumented `DOOM`. `BUILD`/`DECON` in `DIR` are placeholders.
@@ -186,9 +187,12 @@ an open PR, say so in the description and check both actually reached
 ## Tests
 
 `tests/test_win98.py`, `test_nes.py`, `test_gb.py`, `test_snes.py`,
-`test_gg.py`, `test_redmond_run.py`, `test_screensavers.py` run in GitHub
-Actions when those themes (or the shared screensaver host) change.
-`tests/shared/*.mjs` always runs (Node, no browser).
+`test_gg.py`, `test_redmond_run.py` (win95, win98, xp, win7),
+`test_screensavers.py` run in GitHub Actions when those themes (or the
+shared screensaver host) change. A `win95/**` change selects
+`test_redmond_run.py`. `tests/shared/*.mjs` runs in that same workflow
+when `shared/` JavaScript, those tests, or `vendor/screensavers/`
+change — not on every pull request.
 
 ```bash
 pip install -r tests/requirements.txt
@@ -200,8 +204,9 @@ ad hoc Playwright against a local `http.server`. Simulate a mobile
 keyboard by stubbing `visualViewport.height` / `offsetTop` and firing
 `resize` — you cannot drive a real IME from CI.
 
-`tools/check_palette.py` (CI: `.github/workflows/palette.yml`) covers
-`nes/` `gb/` `gg/` `snes/` `c64/` `compy/` — the themes that declare a canon
+`tools/check_palette.py` runs on pull requests from
+`.github/workflows/html-lint.yml`. `.github/workflows/palette.yml` is
+manual dispatch. It covers `nes/` `gb/` `gg/` `snes/` `c64/` `compy/` — the themes that declare a canon
 palette as `--<theme>-*` CSS custom properties. Two different checks,
 because "the palette" means two different sizes: the *possible* gamut
 (everything the hardware could produce -- C64: exactly 16 colors; DMG

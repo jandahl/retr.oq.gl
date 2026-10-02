@@ -8,11 +8,11 @@
 // directly (browser ES module or Node)"). This repo targets http(s)
 // hosting, not file://, so that's not a constraint here.
 //
-// Imported from oq-api's pinned 0.3.55 release rather than vendored —
+// Imported from oq-api's pinned 0.4.5 release rather than vendored —
 // public-api.js's whole point is to be a stable import boundary;
 // vendoring a copy would defeat that and silently drift stale.
 //
-// The 0.3.55 API exposes the standardized example
+// The 0.4.5 API exposes the standardized example
 // catalog consumed below. Keep this pinned so the catalog and its schema do
 // not silently drift.
 //
@@ -25,11 +25,12 @@
 // settles the promise it's awaiting. Wrapping the whole thing in an async
 // IIFE lets a genuine load failure be caught and turned into a real error
 // state instead.
+import { restoreGlossItemPresetReferences } from "./oq-api-compat.mjs";
 (async () => {
   let api;
   try {
     // Pin the deployed oq-api release so this app does not silently drift.
-    api = await import("https://jandahl.github.io/api.oq.gl/api/v0.3.55/public-api.js");
+    api = await import("https://api.oq.gl/api/v0.4.5/public-api.js");
   } catch (err) {
     // window.OqAnalysis.analyzeWord still exists and is still a function
     // that returns a rejected Promise -- callers (dos/app.js's
@@ -139,7 +140,7 @@
     return {
       query,
       matches: matches.map((m) => {
-        const items = glossSummaryItems(m.seq);
+        const items = restoreGlossItemPresetReferences(glossSummaryItems(m.seq), m.seq);
         // The last item's shortGloss usually already reads as the whole
         // word's composed meaning (oq's own chain-glossing threads the
         // running stem through each step) -- but not always the truly last

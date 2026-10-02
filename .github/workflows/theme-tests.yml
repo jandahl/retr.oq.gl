@@ -29,6 +29,7 @@ on:
       - "nes/**"
       - "snes/**"
       - "win98/**"
+      - "win95/**"
       - "os2/**"
       - "win31/**"
       - "dos/**"
@@ -85,6 +86,14 @@ jobs:
               - "tests/requirements.txt"
               - "shared/*.js"
               - ".github/workflows/theme-tests.yml"
+            compy:
+              - "compy/**"
+              - "vendor/dos/fonts/**"
+              - "tests/test_compy.py"
+              - "tests/conftest.py"
+              - "tests/requirements.txt"
+              - "shared/*.js"
+              - ".github/workflows/theme-tests.yml"
             gb:
               - "gb/**"
               - "vendor/nes/fonts/**"
@@ -134,6 +143,7 @@ jobs:
             redmond_run:
               - "shared/redmond/**"
               - "shared/router.js"
+              - "win95/**"
               - "win98/**"
               - "xp/**"
               - "win7/**"
@@ -169,6 +179,7 @@ jobs:
             shared:
               - "shared/**/*.js"
               - "tests/shared/**"
+              - "vendor/screensavers/**"
               - ".github/workflows/theme-tests.yml"
       - name: Keep only runnable theme filters
         id: theme_list

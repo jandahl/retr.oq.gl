@@ -67,6 +67,9 @@ jobs:
       - name: CSS syntax validate
         run: git ls-files -z -- '*.css' ':(exclude)vendor/**' | xargs -0 python3 tools/check_css.py
 
+      - name: Palette
+        run: python3 tools/check_palette.py
+
       - name: JavaScript syntax validate
         run: git ls-files -z -- '*.js' ':(exclude)vendor/**' | xargs -0 -n1 node --check
 

@@ -15,13 +15,16 @@ find . -type f -name '*.js' \
   -not -path './.git/*' \
   -print0 | xargs -0 -n1 node --check
 
-echo "pre-push: shared script cache-bust"
-node --test tests/shared/test_cache_bust.mjs
+echo "pre-push: shared node tests"
+node --test tests/shared/*.mjs
 
 python_bin="python3"
 if [[ -x .venv/bin/python ]]; then
   python_bin=".venv/bin/python"
 fi
+
+echo "pre-push: palette"
+"$python_bin" tools/check_palette.py
 
 echo "pre-push: checking CSS syntax"
 "$python_bin" tools/check_css.py $(find . -type f -name 'style.css' \
