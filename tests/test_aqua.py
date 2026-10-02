@@ -89,7 +89,7 @@ def mock_tm_dict_source(page, *, with_katersat=True):
     else:
         page.route(
             "**/Oqaasileriffik-katersat/**",
-            lambda route: route.fulfill(status=404, body="missing"),
+            lambda route: route.abort("failed"),
         )
 
 

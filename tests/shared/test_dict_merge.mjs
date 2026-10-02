@@ -287,6 +287,24 @@ test("loadMergedDictEntries survives katersat failure", async () => {
   assert.ok(second.entries.some((e) => e.lexeme === "kujannippoq"));
 });
 
+test("loadKatersatLexemes rejects promptly when every URL 404s", async () => {
+  let inFlight = 0;
+  let maxInFlight = 0;
+  const sb = makeSandbox(async () => {
+    inFlight += 1;
+    maxInFlight = Math.max(maxInFlight, inFlight);
+    await Promise.resolve();
+    inFlight -= 1;
+    return { ok: false, status: 404, json: async () => ({}), body: null };
+  });
+  sb.window.OqKatersatSource.resetKatersatState();
+  await assert.rejects(
+    () => sb.window.OqKatersatSource.loadKatersatLexemes(),
+    /HTTP 404|unavailable/,
+  );
+  assert.ok(maxInFlight > 8, `letter shards must overlap, saw max ${maxInFlight}`);
+});
+
 test("TM preferred four are selectable from merged entries", () => {
   // Mirrors aqua/timemachine.js pickPreviewEntries preference order.
   const PREFERRED = ["kujannippoq", "qulluk", "usuk", "aalajavoq"];
