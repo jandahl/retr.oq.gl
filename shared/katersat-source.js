@@ -127,34 +127,39 @@
       // continue
     }
 
-    // 3) Letter shards — try .json.gz then .json per letter; merge lexemes
+    // Letter shards in parallel. Sequential 404s through 29×2 URLs is
+    // what made Aqua's "katersat is down" Time Machine preview sit on
+    // "Loading dictionary…" past Playwright's 5s wait: Chicago was
+    // already in memory, but Promise.all waited on this whole walk.
+    let lastErr;
+    const shardResults = await Promise.all(
+      KATERSAT_LETTERS.map(async (letter) => {
+        const urls = [
+          `${KATERSAT_BASE}/by-letter/${letter}.json.gz`,
+          `${KATERSAT_BASE}/by-letter/${letter}.json`,
+        ];
+        for (const url of urls) {
+          try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = url.endsWith(".gz")
+              ? await decodeGzipResponse(res)
+              : await res.json();
+            if (!isLexiconShape(data)) throw new Error(`Bad shard shape ${url}`);
+            return data.lexemes;
+          } catch (err) {
+            lastErr = err;
+          }
+        }
+        return null;
+      }),
+    );
     const all = [];
     let anyOk = false;
-    let lastErr;
-    for (const letter of KATERSAT_LETTERS) {
-      const urls = [
-        `${KATERSAT_BASE}/by-letter/${letter}.json.gz`,
-        `${KATERSAT_BASE}/by-letter/${letter}.json`,
-      ];
-      let shard = null;
-      for (const url of urls) {
-        try {
-          const res = await fetch(url);
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = url.endsWith(".gz")
-            ? await decodeGzipResponse(res)
-            : await res.json();
-          if (!isLexiconShape(data)) throw new Error(`Bad shard shape ${url}`);
-          shard = data;
-          break;
-        } catch (err) {
-          lastErr = err;
-        }
-      }
-      if (shard) {
-        anyOk = true;
-        all.push(...shard.lexemes);
-      }
+    for (const lexemes of shardResults) {
+      if (!lexemes) continue;
+      anyOk = true;
+      all.push(...lexemes);
     }
     if (!anyOk) {
       throw lastErr || new Error("katersat lexicon unavailable");
