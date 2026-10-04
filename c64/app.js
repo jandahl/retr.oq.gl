@@ -110,8 +110,72 @@
   const deconStatus = document.getElementById("decon-status");
   const deconResults = document.getElementById("decon-results");
 
-  function renderDeconResults({ matches, dictMatch }) {
+  function renderDeconResults(result) {
     deconResults.textContent = "";
+    if (!result) return;
+
+    if (result.type === "sentence") {
+      if (result.clause && result.clause.text) {
+        const clauseBanner = document.createElement("div");
+        clauseBanner.className = "decon-sentence-header";
+        const modeLabel = result.clause.mode ? `[${result.clause.mode.toUpperCase()}] ` : "";
+        clauseBanner.textContent = petsciiSafe(`${modeLabel}${result.clause.text}`);
+        deconResults.appendChild(clauseBanner);
+      }
+
+      for (const token of (result.tokens || [])) {
+        const card = document.createElement("div");
+        card.className = "decon-card";
+
+        const header = document.createElement("div");
+        const tag = document.createElement("span");
+        const band = token.reading?.band;
+        tag.className = band === "approximate" ? "decon-tag decon-tag--approximate" : "decon-tag";
+        tag.textContent = petsciiSafe(band ? `[${band.toUpperCase()}]` : "[TOKEN]");
+        const word = document.createElement("span");
+        word.className = "decon-word";
+        word.textContent = ` ${petsciiSafe(token.surface)}`;
+        header.append(tag, word);
+        card.appendChild(header);
+
+        if (token.reading && token.reading.headline) {
+          const meaning = document.createElement("div");
+          meaning.className = "decon-meaning";
+          meaning.textContent = petsciiSafe(token.reading.headline);
+          card.appendChild(meaning);
+        }
+
+        if (token.breakdown && token.breakdown.length > 0) {
+          const breakdown = document.createElement("div");
+          breakdown.className = "decon-breakdown";
+          const rows = deconRootFirst.checked ? token.breakdown : [...token.breakdown].reverse();
+          for (const { marker, text: rowText, changedRanges, gloss, leftPad, rightPad } of rows) {
+            const row = document.createElement("div");
+            const safe = petsciiSafe(rowText);
+            row.appendChild(document.createTextNode(`${".".repeat(leftPad || 0)}${marker}`));
+            let cursor = 0;
+            for (const { start, end } of (changedRanges || [])) {
+              if (start > cursor) row.appendChild(document.createTextNode(safe.slice(cursor, start)));
+              const changed = document.createElement("span");
+              changed.className = "decon-changed";
+              changed.textContent = safe.slice(start, end);
+              row.appendChild(changed);
+              cursor = end;
+            }
+            if (cursor < safe.length) row.appendChild(document.createTextNode(safe.slice(cursor)));
+            row.appendChild(document.createTextNode(`${".".repeat(rightPad || 0)} - ${petsciiSafe(gloss)}`));
+            breakdown.appendChild(row);
+          }
+          card.appendChild(breakdown);
+        }
+
+        deconResults.appendChild(card);
+      }
+      return;
+    }
+
+    const matches = result.matches || [];
+    const dictMatch = result.dictMatch;
     for (const match of matches) {
       const card = document.createElement("div");
       card.className = "decon-card";
