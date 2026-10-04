@@ -56,6 +56,9 @@ import { restoreGlossItemPresetReferences } from "./oq-api-compat.mjs";
     SCHEMA_MAJOR_VERSION,
     STANDARD_EXAMPLES,
     getStandardExamples,
+    tokenizeSentence,
+    analyzeSentence,
+    assembleClause,
   } = api;
 
   // oq's own gloss text can contain real single-glyph Unicode punctuation
@@ -216,12 +219,116 @@ import { restoreGlossItemPresetReferences } from "./oq-api-compat.mjs";
     };
   }
 
+  /**
+   * Analyzes multi-token sentence text into constituent tokens, closed readings,
+   * and assembled clause / compound / serial semantics.
+   * @param {string} text
+   * @param {{ signal?: AbortSignal, lang?: "en"|"da" }} [opts]
+   * @returns {Promise<{
+   *   type: "sentence",
+   *   query: string,
+   *   lattice: { text: string, tokens: Array<any> },
+   *   clause: { ok: boolean, reason: string|null, mode: "clause"|"compound"|"serial"|"empty", text: string, parts: Array<any> },
+   *   tokens: Array<{
+   *     raw: string,
+   *     surface: string,
+   *     reading: { headline: string, band: string, inflection: any } | null,
+   *     breakdown: Array<{ marker: string, text: string, gloss: string, leftPad: number, rightPad: number }>
+   *   }>,
+   *   elapsedMs: number
+   * }>}
+   */
+  async function analyzeSentenceAsync(text, { signal, lang = "en" } = {}) {
+    if (signal && signal.aborted) {
+      return Promise.reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+    }
+    const start = performance.now();
+    const presets = await loadPresets();
+    if (signal && signal.aborted) {
+      return Promise.reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+    }
+
+    const lattice = analyzeSentence(text, presets, { lang });
+    if (signal && signal.aborted) {
+      return Promise.reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+    }
+
+    const clause = assembleClause(lattice, { lang });
+    const elapsedMs = performance.now() - start;
+
+    const tokens = lattice.tokens.map((token) => {
+      const topReading = token.readings?.[0] ?? token.also?.[0] ?? null;
+      let breakdown = [];
+      if (topReading && Array.isArray(topReading.ids) && topReading.ids.length > 0) {
+        // Build breakdown rows from matched seq ids in presets if available
+        const seq = topReading.ids.map((id) => presets.find((p) => p.id === id)).filter(Boolean);
+        if (seq.length > 0) {
+          const items = restoreGlossItemPresetReferences(glossSummaryItems(seq), seq);
+          const rows = computeMorphemeBreakdownRows(items, token.surface, seq);
+          breakdown = rows.map((row) => ({
+            marker: row.marker,
+            text: row.text,
+            changedRanges: row.changedRanges,
+            gloss: toDosPunctuation(row.item.rawShortGloss),
+            leftPad: row.leftPad,
+            rightPad: row.rightPad,
+          }));
+        }
+      }
+      return {
+        raw: token.raw,
+        surface: token.surface,
+        reading: topReading ? {
+          headline: toDosPunctuation(topReading.headline),
+          band: topReading.band,
+          inflection: topReading.inflection,
+        } : null,
+        breakdown,
+      };
+    });
+
+    return {
+      type: "sentence",
+      query: text,
+      lattice,
+      clause: {
+        ...clause,
+        text: toDosPunctuation(clause.text),
+      },
+      tokens,
+      elapsedMs,
+    };
+  }
+
+  /**
+   * Dispatches input to analyzeWord (for single-word queries without spaces)
+   * or analyzeSentenceAsync (for multi-token sentences).
+   * @param {string} input
+   * @param {{ signal?: AbortSignal, lang?: "en"|"da" }} [opts]
+   */
+  async function analyzeInput(input, { signal, lang = "en" } = {}) {
+    const trimmed = String(input ?? "").trim();
+    const tokens = tokenizeSentence ? tokenizeSentence(trimmed) : [];
+    if (tokens.length > 1 || /\s/.test(trimmed)) {
+      return analyzeSentenceAsync(trimmed, { signal, lang });
+    }
+    const wordResult = await analyzeWord(trimmed, { signal });
+    return {
+      type: "word",
+      ...wordResult,
+    };
+  }
+
   // Keep the canonical public catalog behind the API boundary too. Consumers
   // that enrich or annotate examples must use getStandardExamples(), which
   // returns a defensive copy; STANDARD_EXAMPLES is the immutable source.
   window.OqAnalysis = {
     API_VERSION,
     analyzeWord,
+    analyzeSentence: analyzeSentenceAsync,
+    analyzeInput,
+    tokenizeSentence,
+    assembleClause,
     STANDARD_EXAMPLES,
     getStandardExamples,
   };

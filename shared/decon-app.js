@@ -114,16 +114,26 @@
       try {
         const analysis = await waitForOqAnalysis(signal);
         if (signal.aborted) return;
-        const result = await analysis.analyzeWord(trimmed, { signal });
+        const analyzeFn = analysis.analyzeInput || analysis.analyzeWord;
+        const result = await analyzeFn(trimmed, { signal });
         if (signal.aborted) return; // a newer search already took over
         lastAnalysis = result;
         onRender(result);
-        const found = result.matches.length || result.dictMatch;
-        onStatus(
-          found
-            ? `${result.evalCount.toLocaleString()} combinations tried in ${Math.round(result.elapsedMs)}ms.`
-            : `No parse found (${result.evalCount.toLocaleString()} combinations tried in ${Math.round(result.elapsedMs)}ms).`,
-        );
+        if (result.type === "sentence") {
+          const tokenCount = result.tokens ? result.tokens.length : 0;
+          const mode = result.clause?.mode ? `mode: ${result.clause.mode}` : "sentence";
+          onStatus(
+            `${tokenCount} token${tokenCount === 1 ? "" : "s"} (${mode}) in ${Math.round(result.elapsedMs)}ms.`,
+          );
+        } else {
+          const found = (result.matches && result.matches.length) || result.dictMatch;
+          const evalCount = typeof result.evalCount === "number" ? result.evalCount.toLocaleString() : "0";
+          onStatus(
+            found
+              ? `${evalCount} combinations tried in ${Math.round(result.elapsedMs)}ms.`
+              : `No parse found (${evalCount} combinations tried in ${Math.round(result.elapsedMs)}ms).`,
+          );
+        }
       } catch (err) {
         if (err && err.name === "AbortError") return; // superseded, not a real failure
         const message = err && err.message ? err.message : String(err);

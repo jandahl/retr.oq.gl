@@ -2,5 +2,9 @@ contract_version: 1
 api: oq-api
 api_version: 0.4.5
 consumer: jandahl/retr.oq.gl
-consumes: []
-evidence: {}
+consumes:
+  - id: sentence-analysis
+    available_since: 0.2.0
+evidence:
+  sentence-analysis:
+    - shared/oq-analysis.js

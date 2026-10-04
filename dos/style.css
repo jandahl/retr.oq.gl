@@ -388,6 +388,14 @@ html, body {
 /* DECON.EXE: one .decon-card per real match (usually one, sometimes more,
    sometimes none) -- see dos/index.html's comment on #decon-results for
    why these are built in JS rather than templated in markup. */
+.decon-sentence-header {
+  margin: 0 0 1em;
+  padding: 0.5em;
+  border: 1px solid #7777aa;
+  background-color: #0000aa;
+  color: #ffffff;
+  font-weight: bold;
+}
 .decon-card {
   margin: 0 0 1.5em;
   padding-bottom: 1em;
