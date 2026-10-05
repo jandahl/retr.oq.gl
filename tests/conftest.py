@@ -30,9 +30,16 @@ class TestHTTPServer(http.server.ThreadingHTTPServer):
     request_queue_size = 128
 
 
+class TestHTTPHandler(http.server.SimpleHTTPRequestHandler):
+    extensions_map = {
+        **http.server.SimpleHTTPRequestHandler.extensions_map,
+        ".mjs": "application/javascript",
+    }
+
+
 @pytest.fixture(scope="session")
 def base_url():
-    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(REPO_ROOT))
+    handler = functools.partial(TestHTTPHandler, directory=str(REPO_ROOT))
     server = TestHTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
