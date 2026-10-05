@@ -8,7 +8,8 @@
 <meta http-equiv="Expires" content="0" />
 <title>retr-oq — OQ!95 desktop</title>
 <link rel="stylesheet" href="../vendor/win98/98.css" />
-<link rel="stylesheet" href="style.css?v=4" />
+<link rel="stylesheet" href="style.css?v=5" />
+
 <link rel="stylesheet" href="house.css?v=5" />
 </head>
 <body>
@@ -53,7 +54,12 @@
         <span class="desktop-icon-glyph icon-welcome-desk" aria-hidden="true"></span>
         <span class="desktop-icon-label">Mikisoq's house</span>
       </div>
+      <div class="desktop-icon" role="button" tabindex="0" data-open="win-doom95">
+        <span class="desktop-icon-glyph icon-doom95" aria-hidden="true"></span>
+        <span class="desktop-icon-label">Doom 95</span>
+      </div>
     </div>
+
 
     <section class="window win95-window welcome-desk-window" id="win-welcome-desk" data-icon="welcome-desk" style="top: 4rem; left: 8rem; width: 34rem; height: 24rem;">
       <div class="title-bar">
@@ -250,7 +256,30 @@
       <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
       <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
     </section>
+
+    <section class="window win95-window" id="win-doom95" data-icon="doom95" style="top: 2rem; left: 3rem; width: 40rem; height: 30rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">Doom 95</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body doom95-window-body">
+        <iframe class="doom95-frame" id="doom95-frame" src="about:blank" title="Doom 95" allow="autoplay; fullscreen; gamepad"></iframe>
+      </div>
+      <div class="win95-resize-handle win95-resize-n" data-dir="n"></div>
+      <div class="win95-resize-handle win95-resize-s" data-dir="s"></div>
+      <div class="win95-resize-handle win95-resize-e" data-dir="e"></div>
+      <div class="win95-resize-handle win95-resize-w" data-dir="w"></div>
+      <div class="win95-resize-handle win95-resize-ne" data-dir="ne"></div>
+      <div class="win95-resize-handle win95-resize-nw" data-dir="nw"></div>
+      <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
+      <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
+    </section>
   </div>
+
 
   <footer class="taskbar" id="taskbar">
     <button type="button" class="start-button" id="start-button" aria-haspopup="true" aria-expanded="false">
@@ -281,10 +310,14 @@
     <li role="menuitem" class="start-menu-item" data-open="win-welcome-desk">
       <span class="start-menu-icon icon-welcome-desk" aria-hidden="true"></span> Mikisoq's house
     </li>
+    <li role="menu-item" class="start-menu-item" data-open="win-doom95">
+      <span class="start-menu-icon icon-doom95" aria-hidden="true"></span> Doom 95
+    </li>
     <li class="start-menu-divider"></li>
     <li role="menu-item" class="start-menu-item start-menu-item--disabled">
       <span class="start-menu-icon icon-programs" aria-hidden="true"></span> Programs
     </li>
+
     <li role="menu-item" class="start-menu-item" data-open="win-settings">
       <span class="start-menu-icon icon-settings" aria-hidden="true"></span> Settings
     </li>
@@ -366,6 +399,7 @@
   <script type="module" src="../shared/oq-analysis.js?v=14"></script>
   <script src="../shared/decon-app.js?v=6"></script>
   <script type="module" src="house.js?v=5"></script>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
+
 </body>
 </html>

@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <title>DOOM</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #ccc;
+      font-family: monospace;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #loading {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 10;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid #444;
+      border-top: 4px solid #c00;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #canvas {
+      display: none;
+      outline: none;
+      background-color: #000;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    #output {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      color: #0f0;
+      font-family: monospace;
+      font-size: 12px;
+      border: none;
+      padding: 8px;
+      box-sizing: border-box;
+      resize: none;
+      z-index: 20;
+    }
+    /* Touch controls toggle button if needed */
+    #touch-toggle {
+      display: none;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 99999;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: 1px solid #666;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div id="status">Loading DOOM...</div>
+    <progress id="progress" value="0" max="100" style="width: 180px;"></progress>
+  </div>
+  <textarea id="output" readonly></textarea>
+  <canvas id="canvas" oncontextmenu="event.preventDefault();" tabindex="-1"></canvas>
+  <button type="button" id="touch-toggle">Toggle Touch Controls</button>
+
+  <script>
+    const canvasElement = document.getElementById("canvas");
+    const outputElement = document.getElementById("output");
+    const statusElement = document.getElementById("status");
+    const progressElement = document.getElementById("progress");
+    const loadingElement = document.getElementById("loading");
+    const touchToggleBtn = document.getElementById("touch-toggle");
+
+    // Auto-detect touchscreen:
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceTouch = urlParams.get("touch");
+    let touchEnabled = forceTouch === "1" ? true :
+                       forceTouch === "0" ? false :
+                       (('maxTouchPoints' in navigator) && (navigator.maxTouchPoints > 0));
+
+    let userFileDict = {};
+
+    var Module = {
+      _canLockPointer: true,
+      _depsLastLeft: 0,
+      _depsDone: 0,
+      _depsTotal: 0,
+      canvas: (function() {
+        canvasElement.addEventListener('webglcontextlost', function(e) {
+          e.preventDefault();
+          console.error('WebGL context lost.');
+        }, false);
+        return canvasElement;
+      })(),
+      print: function(text) {
+        console.log(text);
+        if (outputElement) {
+          outputElement.value += text + '\n';
+          outputElement.scrollTop = outputElement.scrollHeight;
+        }
+      },
+      printErr: function(text) {
+        console.error(text);
+        if (outputElement) {
+          outputElement.value += '(!) ' + text + '\n';
+          outputElement.scrollTop = outputElement.scrollHeight;
+        }
+      },
+      setStatus: function(text) {
+        if (!statusElement) return;
+        if (!text) {
+          loadingElement.style.display = 'none';
+          return;
+        }
+        statusElement.innerHTML = text;
+      },
+      onRuntimeInitialized: function() {
+        for (let userFilename in userFileDict) {
+          const userFileData = userFileDict[userFilename][1];
+          const userFileSize = userFileData.length;
+          console.info('Writing to MemFS: ' + userFilename + ' (' + userFileSize + ' bytes)');
+          const userDestFile = FS.open('/' + userFilename, 'w');
+          FS.write(userDestFile, userFileData, 0, userFileSize, 0);
+          FS.close(userDestFile);
+        }
+        userFileDict = {};
+        this.hideConsole();
+        loadingElement.style.display = 'none';
+        canvasElement.style.display = 'block';
+        canvasElement.focus();
+      },
+      monitorRunDependencies: function(left) {
+        let depsDiff = Module._depsLastLeft - left;
+        if (depsDiff !== 0) {
+          if (depsDiff > 0) Module._depsDone += depsDiff;
+          else Module._depsTotal -= depsDiff;
+          Module._depsLastLeft = left;
+        }
+      },
+      hideConsole: function() {
+        if (touchEnabled && typeof olyOn === "function") olyOn();
+        outputElement.style.display = 'none';
+        canvasElement.style.display = 'block';
+        canvasElement.focus();
+      },
+      showConsole: function() {
+        if (touchEnabled && typeof olyOff === "function") olyOff();
+        canvasElement.style.display = 'none';
+        outputElement.style.display = 'block';
+        outputElement.scrollTop = outputElement.scrollHeight;
+        outputElement.focus();
+      },
+      captureMouse: function() {
+        if (!touchEnabled && Module._canLockPointer && !Module._attemptPointerLock()) {
+          Module._canLockPointer = false;
+          document.addEventListener('keydown', Module._lockPointerOnKey);
+        }
+      },
+      winResized: function() {
+        // Fits canvas cleanly in container
+      },
+      _attemptPointerLock: function() {
+        if (document.pointerLockElement === null) {
+          canvasElement.requestPointerLock();
+        }
+        return document.pointerLockElement !== null;
+      },
+      _lockPointerOnKey: function(event) {
+        if ((event.key === 'Escape') || Module._attemptPointerLock()) {
+          document.removeEventListener('keydown', Module._lockPointerOnKey);
+          Module._canLockPointer = true;
+        }
+      },
+      softExit: function(status) {
+        console.info('DOOM exited with code', status);
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'doom-exit', status: status }, '*');
+        }
+      },
+      arguments: ['-iwad', 'doom1.wad']
+    };
+
+    // Forward click to focus canvas
+    window.addEventListener('click', () => {
+      if (canvasElement.style.display !== 'none') {
+        canvasElement.focus();
+      }
+    });
+
+    async function initDoom() {
+      try {
+        statusElement.textContent = "Loading DOOM shareware data...";
+        const resp = await fetch("doom1.wad");
+        if (!resp.ok) throw new Error("Failed to load doom1.wad: " + resp.status);
+        
+        const contentLength = resp.headers.get("Content-Length");
+        let arrayBuffer;
+        if (contentLength && resp.body) {
+          const total = parseInt(contentLength, 10);
+          let loaded = 0;
+          const reader = resp.body.getReader();
+          const chunks = [];
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            loaded += value.length;
+            progressElement.value = Math.min(100, Math.round((loaded / total) * 100));
+            statusElement.textContent = `Loading DOOM data (${Math.round(loaded / 1024 / 1024 * 10) / 10} MB / ${Math.round(total / 1024 / 1024 * 10) / 10} MB)...`;
+          }
+          const allChunks = new Uint8Array(loaded);
+          let pos = 0;
+          for (const chunk of chunks) {
+            allChunks.set(chunk, pos);
+            pos += chunk.length;
+          }
+          arrayBuffer = allChunks.buffer;
+        } else {
+          arrayBuffer = await resp.arrayBuffer();
+        }
+
+        userFileDict["doom1.wad"] = ["i", new Uint8Array(arrayBuffer)];
+        statusElement.textContent = "Initializing DOOM engine...";
+
+        if (touchEnabled) {
+          const olyScript = document.createElement("script");
+          olyScript.src = "oly.js";
+          olyScript.async = true;
+          olyScript.onload = function() {
+            olySetup({
+              'Escape': { lbl: '&#8801;' },
+              'Enter': { lbl: '&#8617;', pos: [15, 0] },
+              'ArrowUp': { lbl: '&#8593;', pos: [0, 15] },
+              'ArrowDown': { lbl: '&#8595;', pos: [0, 30] },
+              'ArrowLeft': { lbl: '&#8592;', pos: [15, 15] },
+              'ArrowRight': { lbl: '&#8594;', pos: [15, 30] },
+              'Tab': { lbl: '&#8677;', anc: 'R', pos: [30, 0] },
+              'Minus': { lbl: '-', anc: 'R', pos: [15, 0] },
+              'Equal': { lbl: '+', anc: 'R' },
+              'KeyW': { lbl: 'W', anc: 'B', pos: [10, 20], shape: 'U' },
+              'KeyS': { lbl: 'S', anc: 'B', pos: [10, 0], shape: 'D' },
+              'KeyA': { lbl: 'A', anc: 'B', pos: [0, 10], shape: 'L' },
+              'KeyD': { lbl: 'D', anc: 'B', pos: [20, 10], shape: 'R' },
+              'ControlLeft': { lbl: '&#10753;', anc: 'RB', pos: [0, 10], shape: '' },
+              'Space': { lbl: '&#9251;', anc: 'RB', pos: [20, 10], shape: '' },
+              'KeyY': { lbl: 'Y', anc: 'R', pos: [0, 15] },
+              'KeyN': { lbl: 'N', anc: 'R', pos: [0, 30] },
+              'MWhlUp': { lbl: '&#9881;&#8593;', anc: 'R', pos: [15, 15] },
+              'MWhlDn': { lbl: '&#9881;&#8595;', anc: 'R', pos: [15, 30] }
+            }, 3);
+            loadWasm();
+          };
+          document.body.appendChild(olyScript);
+        } else {
+          loadWasm();
+        }
+      } catch (err) {
+        console.error(err);
+        statusElement.textContent = "Error loading DOOM: " + err.message;
+      }
+    }
+
+    function loadWasm() {
+      statusElement.textContent = "Starting WebAssembly engine...";
+      const script = document.createElement("script");
+      script.src = "index.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    // Launch immediately on page load:
+    initDoom();
+  </script>
+</body>
+</html>

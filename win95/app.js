@@ -62,6 +62,12 @@
         win.classList.add("assistant-fullscreen");
         if (window.OqBob) window.OqBob.open();
       }
+      if (win.id === "win-doom95") {
+        const frame = document.getElementById("doom95-frame");
+        if (frame && frame.src.endsWith("about:blank")) {
+          frame.src = "../vendor/dwasm/runner.html";
+        }
+      }
     },
     // Desktop icon / Start menu / taskbar-restore clicks on OQ! or DECON
     // all funnel through this one openWindow() (see shared/redmond/
@@ -96,6 +102,12 @@
       return false;
     },
     routeClose(win) {
+      if (win.id === "win-doom95") {
+        const frame = document.getElementById("doom95-frame");
+        if (frame) {
+          frame.src = "about:blank";
+        }
+      }
       if (win.id === "win-oq") {
         window.OqRouter.navigate({ screen: null, filter: null, word: null, order: null });
       }
@@ -110,6 +122,7 @@
       }
     },
   });
+
 
   // Start-menu items open their window on a single click -- a menu-item
   // convention, same as any real Windows Start menu, regardless of
