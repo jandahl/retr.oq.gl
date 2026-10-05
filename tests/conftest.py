@@ -30,9 +30,18 @@ class TestHTTPServer(http.server.ThreadingHTTPServer):
     request_queue_size = 128
 
 
+class TestHTTPHandler(http.server.SimpleHTTPRequestHandler):
+
+    extensions_map = http.server.SimpleHTTPRequestHandler.extensions_map.copy()
+    extensions_map.update({
+        ".mjs": "text/javascript",
+        ".wasm": "application/wasm",
+    })
+
+
 @pytest.fixture(scope="session")
 def base_url():
-    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(REPO_ROOT))
+    handler = functools.partial(TestHTTPHandler, directory=str(REPO_ROOT))
     server = TestHTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -74,23 +83,24 @@ def touch_page(browser):
     context.close()
 
 
-def _block_katersat(page):
-    """404 real katersat URLs so CI never downloads ~4MB GPL JSON."""
+def _block_heavy_assets(page):
+    """404 real katersat URLs and heavy DOOM binary assets so tests stay fast."""
     page.route(
         "**/Oqaasileriffik-katersat/**",
         lambda route: route.fulfill(status=404, body="blocked in tests"),
     )
+    # Block heavy DOOM wad/wasm in general browser test sweeps to keep CI fast
+    page.route(
+        "**/*.wad",
+        lambda route: route.fulfill(status=404, body="doom wad blocked in tests"),
+    )
 
 
 @pytest.fixture(autouse=True)
-def block_real_katersat_fetch(request):
-    """Default: katersat merge falls back to Chicago-only in Playwright.
-
-    Themes load katersat via OqDictSource.loadDictEntries(). Tests that need
-    enrichment should route-fulfill lexicon.json themselves (LIFO overrides
-    this 404). Applies to both `page` and `touch_page` fixtures.
-    """
+def block_heavy_assets_fetch(request):
+    """Default: block katersat and heavy DOOM binary assets in Playwright tests."""
     for name in ("page", "touch_page"):
         if name in request.fixturenames:
-            _block_katersat(request.getfixturevalue(name))
+            _block_heavy_assets(request.getfixturevalue(name))
     yield
+

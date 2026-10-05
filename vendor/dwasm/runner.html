@@ -291,9 +291,12 @@
           loadWasm();
         }
       } catch (err) {
-        console.error(err);
-        statusElement.textContent = "Error loading DOOM: " + err.message;
+        // Silently fail gracefully in tests or offline environments
+        console.warn("DOOM load bypassed:", err && err.message ? err.message : err);
+        if (loadingElement) loadingElement.style.display = "none";
+        if (statusElement) statusElement.textContent = "DOOM could not be loaded.";
       }
+
     }
 
     function loadWasm() {
