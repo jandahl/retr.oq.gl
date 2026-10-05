@@ -13,7 +13,7 @@
      the last deploy: markup referencing classes/behavior a cached
      stylesheet/script didn't have yet. Bump the number whenever either
      file actually changes. -->
-<link rel="stylesheet" href="style.css?v=20" />
+<link rel="stylesheet" href="style.css?v=21" />
 
 </head>
 <body>
@@ -47,9 +47,9 @@ DICT     DAT       892,928  03-14-89   2:15p
 BUILD    EXE        38,912  03-14-89   2:15p
 <button type="button" class="dos-link" id="launch-decon">DECON    EXE</button>        35,328  03-14-89   2:15p
 DECON    DAT        77,824  03-14-89   2:15p
-<button type="button" class="dos-link" id="launch-doom">DOOM     EXE</button>       709,632  02-01-95   1:09a
-DOOM1    WAD     4,196,020  02-01-95   1:09a
-        7 File(s)    5,992,116 bytes
+<button type="button" class="dos-link" id="launch-keen">KEEN     EXE</button>        51,200  12-14-90   1:14p
+KEEN1    DAT       287,000  12-14-90   1:14p
+        7 File(s)    1,387,740 bytes
                        487,424 bytes free
 </div>
     <!-- A real command line, not just a clickable filename -- DICT.EXE
@@ -60,14 +60,14 @@ DOOM1    WAD     4,196,020  02-01-95   1:09a
     <div class="dos-prompt-line">A:\OQ&gt;<input type="text" id="dos-cmd" class="dos-cmd-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" /></div>
   </div>
 
-  <!-- DOOM.EXE: a full-screen takeover, true to DOS single-tasking -->
-  <div class="dos-app dos-doom-app" id="doom-app" hidden>
-    <div class="dos-app-header dos-doom-header">
-      <span>A:\OQ\DOOM.EXE</span>
-      <button type="button" class="dos-doom-exit-btn" id="doom-exit">Esc=Exit to DOS</button>
+  <!-- KEEN.EXE: a full-screen takeover, true to DOS single-tasking -->
+  <div class="dos-app dos-keen-app" id="keen-app" hidden>
+    <div class="dos-app-header dos-keen-header">
+      <span>A:\OQ\KEEN.EXE</span>
+      <button type="button" class="dos-keen-exit-btn" id="keen-exit">Esc=Exit to DOS</button>
     </div>
-    <div class="dos-doom-body">
-      <iframe class="dos-doom-frame" id="dos-doom-frame" src="about:blank" title="DOOM" allow="autoplay; fullscreen; gamepad"></iframe>
+    <div class="dos-keen-body">
+      <iframe class="dos-keen-frame" id="dos-keen-frame" src="about:blank" title="Commander Keen" allow="autoplay; fullscreen; gamepad"></iframe>
     </div>
   </div>
 
@@ -161,7 +161,7 @@ DOOM1    WAD     4,196,020  02-01-95   1:09a
      the top like window.OqDictSource is. -->
 <script type="module" src="../shared/oq-analysis.js?v=14"></script>
 <script src="../shared/decon-app.js?v=6"></script>
-<script src="app.js?v=28"></script>
+<script src="app.js?v=29"></script>
 
 </body>
 </html>

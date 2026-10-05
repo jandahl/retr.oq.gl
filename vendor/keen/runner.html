@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <title>Commander Keen</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #ccc;
+      font-family: monospace;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    #loading {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 10;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+      text-align: center;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid #444;
+      border-top: 4px solid #00aa00;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #canvas {
+      outline: none;
+      background-color: #000;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    #controls {
+      display: none;
+      position: absolute;
+      bottom: 6px;
+      left: 0;
+      width: 100%;
+      z-index: 20;
+      pointer-events: auto;
+    }
+    /* Show touch controls on touch / coarse pointer devices or narrow screens */
+    @media (pointer: coarse), (max-width: 800px) {
+      #controls {
+        display: block;
+      }
+      #canvas {
+        max-height: calc(100% - 130px);
+      }
+    }
+    .touch-table {
+      width: calc(100% - 16px);
+      max-width: 500px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      text-align: center;
+    }
+    .touch-table img {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      cursor: pointer;
+      opacity: 0.85;
+    }
+    .touch-table img:active {
+      opacity: 1;
+      filter: brightness(1.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div id="status">Loading Commander Keen...</div>
+  </div>
+
+  <div id="game-container">
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+
+    <div id="controls">
+      <table class="touch-table">
+        <tr>
+          <td style="width: 40px;" rowspan="2"><img src="img/dpad-left.png" class="controls" data-key="ArrowLeft" data-which="37" alt="Left" /></td>
+          <td style="width: 46px;"><img src="img/dpad-up.png" style="display: block; margin: 0 auto;" class="controls" data-key="ArrowUp" data-which="38" alt="Up" /></td>
+          <td style="width: 39px;" rowspan="2"><img src="img/dpad-right.png" class="controls" data-key="ArrowRight" data-which="39" alt="Right" /></td>
+          <td style="width: auto; text-align: right;"><img src="img/button-fire.png" id="ctrlalt" alt="Fire" /></td>
+          <td style="width: auto; text-align: right;"><img src="img/button-special.png" class="controls" data-key="AltLeft" data-which="18" alt="Pogo" /></td>
+          <td style="width: auto; text-align: right;"><img src="img/button-up.png" class="controls" data-key="CtrlLeft" data-which="17" alt="Jump" /></td>
+        </tr>
+        <tr> 
+          <td style="width: 46px;"><img src="img/dpad-down.png" style="display: block; margin: 0 auto;" class="controls" data-key="ArrowDown" data-which="40" alt="Down" /></td>
+          <td>&nbsp;</td>
+          <td style="width: auto; text-align: right;"><img src="img/button-menu.png" class="controls" data-key="Space" data-which="32" alt="Menu" /></td>
+          <td style="width: auto; text-align: right;"><img src="img/button-accept.png" class="controls" data-key="Enter" data-which="13" alt="Enter" /></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const statusElement = document.getElementById("status");
+    const loadingElement = document.getElementById("loading");
+    const canvasElement = document.getElementById("canvas");
+
+    function create_and_fire_event(el, type) {
+      canvasElement.dispatchEvent(
+        new KeyboardEvent(type, {
+          code: el.dataset.key,
+          key: el.dataset.key,
+          keyCode: parseInt(el.dataset.which, 10),
+          which: parseInt(el.dataset.which, 10),
+          bubbles: true
+        })
+      );
+    }
+
+    function create_and_fire_ctrlalt_event(type) {
+      canvasElement.dispatchEvent(
+        new KeyboardEvent(type, {
+          code: "CtrlLeft",
+          key: "CtrlLeft",
+          keyCode: 17,
+          which: 17,
+          bubbles: true
+        })
+      );
+      canvasElement.dispatchEvent(
+        new KeyboardEvent(type, {
+          code: "AltLeft",
+          key: "AltLeft",
+          keyCode: 18,
+          which: 18,
+          bubbles: true
+        })
+      );
+    }
+
+    function register_controls() {
+      document.querySelectorAll(".controls").forEach((control) => {
+        control.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          create_and_fire_event(control, "keydown");
+        });
+        control.addEventListener("pointerup", (e) => {
+          e.preventDefault();
+          create_and_fire_event(control, "keyup");
+        });
+        control.addEventListener("pointercancel", (e) => {
+          e.preventDefault();
+          create_and_fire_event(control, "keyup");
+        });
+      });
+
+      const ctrlalt = document.getElementById("ctrlalt");
+      if (ctrlalt) {
+        ctrlalt.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          create_and_fire_ctrlalt_event("keydown");
+        });
+        ctrlalt.addEventListener("pointerup", (e) => {
+          e.preventDefault();
+          create_and_fire_ctrlalt_event("keyup");
+        });
+        ctrlalt.addEventListener("pointercancel", (e) => {
+          e.preventDefault();
+          create_and_fire_ctrlalt_event("keyup");
+        });
+      }
+    }
+
+    // Emscripten Module
+    var Module = {
+      preRun: [],
+      postRun: [
+        register_controls,
+        function() {
+          if (loadingElement) loadingElement.style.display = "none";
+          canvasElement.focus();
+        }
+      ],
+      canvas: canvasElement,
+      setStatus: function(text) {
+        if (!text) {
+          if (loadingElement) loadingElement.style.display = "none";
+          return;
+        }
+        if (statusElement) statusElement.textContent = text;
+      },
+      totalDependencies: 0,
+      monitorRunDependencies: function(left) {
+        this.totalDependencies = Math.max(this.totalDependencies, left);
+        if (statusElement) {
+          statusElement.textContent = left ? `Preparing... (${this.totalDependencies - left}/${this.totalDependencies})` : "All downloads complete.";
+        }
+      }
+    };
+
+    window.addEventListener("error", function(e) {
+      console.warn("Commander Keen load issue:", e);
+      if (loadingElement) loadingElement.style.display = "none";
+    });
+
+    async function initKeen() {
+      try {
+        const script = document.createElement("script");
+        script.src = "chocolate-keen.js";
+        script.async = true;
+        document.body.appendChild(script);
+      } catch (err) {
+        console.warn("Keen initialization bypassed:", err);
+        if (loadingElement) loadingElement.style.display = "none";
+      }
+    }
+
+    initKeen();
+  </script>
+</body>
+</html>
