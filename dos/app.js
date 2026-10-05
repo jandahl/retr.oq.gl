@@ -484,6 +484,28 @@
     dirScreen.hidden = false;
   }
 
+  const doomApp = document.getElementById("doom-app");
+  const doomFrame = document.getElementById("dos-doom-frame");
+
+  function launchDoom() {
+    dirScreen.hidden = true;
+    dictApp.hidden = true;
+    deconApp.hidden = true;
+    doomApp.hidden = false;
+    if (doomFrame && doomFrame.src.endsWith("about:blank")) {
+      doomFrame.src = "../vendor/dwasm/runner.html";
+    }
+  }
+
+  function exitDoom() {
+    doomApp.hidden = true;
+    if (doomFrame) {
+      doomFrame.src = "about:blank";
+    }
+    dirScreen.hidden = false;
+    dosCmd.focus();
+  }
+
   // window.OqRouter (shared/router.js) is the single source of truth for
   // "which screen is open" -- launchDict()/exitDict()/launchDecon()/
   // exitDecon() above stay plain UI functions with no URL knowledge of
@@ -534,11 +556,27 @@
         deconWord.value = params.get("word") || "";
         searchDecon(deconWord.value);
       }
+    } else if (screen === "doom") {
+      dictApp.hidden = true;
+      deconApp.hidden = true;
+      if (doomApp.hidden) {
+        launchDoom();
+      }
     } else {
       if (!dictApp.hidden) exitDict();
       if (!deconApp.hidden) exitDecon();
+      if (!doomApp.hidden) exitDoom();
     }
   });
+
+  document.getElementById("launch-doom").addEventListener("click", () => {
+    window.OqRouter.navigate({ screen: "doom" });
+  });
+  document.getElementById("doom-exit").addEventListener("click", () => {
+    window.OqRouter.navigate({ screen: null });
+  });
+
+
 
   // Not addEventListener("click", () => navigate(...)) directly -- that
   // would pass the click's PointerEvent through, same trap as launchDict
@@ -588,10 +626,17 @@
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden)) {
+    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden || !doomApp.hidden)) {
       window.OqRouter.navigate({ screen: null, filter: null, word: null });
     }
   });
+
+  window.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "doom-exit") {
+      window.OqRouter.navigate({ screen: null });
+    }
+  });
+
 
   // Command line: DOS programs took switches ("/?", "/F:word"), not clicks
   // -- the DICT.EXE filename above is still clickable (equivalent to typing
@@ -619,8 +664,11 @@ DICT     DAT       892,928  03-14-89   2:15p
 BUILD    EXE        38,912  03-14-89   2:15p
 DECON    EXE        35,328  03-14-89   2:15p
 DECON    DAT        77,824  03-14-89   2:15p
-        5 File(s)    1,086,464 bytes
+DOOM     EXE       709,632  02-01-95   1:09a
+DOOM1    WAD     4,196,020  02-01-95   1:09a
+        7 File(s)    5,992,116 bytes
                        487,424 bytes free`;
+
 
   // The real MS-DOS command was VER (built into COMMAND.COM, not a
   // standalone .EXE) -- VERSION.EXE was never a thing.
@@ -706,8 +754,15 @@ DOS/4GW fatal error (15): protected mode available only with 386 or 486`;
     } else if (cmd === "FORMAT" || cmd === "FORMAT.EXE") {
       printLine(FORMAT_WARNING);
     } else if (cmd === "DOOM" || cmd === "DOOM.EXE") {
-      printLine(DOOM_ERROR);
+      if (args[0] === "/?") {
+        printLine(`DOOM.EXE [/?] [/4GW]\n\n  /4GW      Display DOS/4GW protected mode banner\n  /?        Display this help`);
+      } else if (args[0] === "/4GW") {
+        printLine(DOOM_ERROR);
+      } else {
+        window.OqRouter.navigate({ screen: "doom" });
+      }
     } else if (cmd === "EXIT") {
+
       // Real MS-DOS EXIT left a nested COMMAND.COM shell -- there's no
       // shell underneath this one, so it's the way back to the hub.
       window.location.href = "../";

@@ -12,8 +12,9 @@ window.OqGames = {
     { id: "morph", name: "MORPH!", kind: "game" },
     { id: "kal-q", name: "Super KAL-Q! (Klax)", kind: "game" },
     { id: "konami", name: "Konami Code", kind: "egg" },
-    { id: "doom", name: "DOOM", kind: "egg" },
+    { id: "doom", name: "DOOM / Doom 95", kind: "game" },
     { id: "boing", name: "Boing Ball", kind: "demo" },
+
     { id: "copper", name: "Copper bars", kind: "demo" },
     { id: "panic", name: "Kernel panic", kind: "egg" },
     { id: "kde-rain", name: "Compiz rain", kind: "demo" },
@@ -46,7 +47,9 @@ window.OqGames = {
     compy: ["konami", "ss-attract"],
     snes: ["kal-q", "konami", "ss-attract"],
     win31: ["solitaire", "credits", "ss-flying"],
+    win95: ["doom"],
     next: ["panic", "ss-backspace"],
+
     mac8: ["ss-afterdark"],
     win98: ["hotdog", "ss-maze", "ss-pipes", "ss-backrooms"],
     beos: ["panic"],
