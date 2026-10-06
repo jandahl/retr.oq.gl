@@ -58,7 +58,13 @@ function loadHost({ pathname = "/win98/", readyState = "loading", reduced = fals
         this.children = [];
         if (String(html).includes("<iframe")) this.children.push(makeEl("iframe"));
       },
-      classList: { add() {}, remove() {}, toggle() {} },
+      classList: {
+        _classes: new Set(),
+        add(...names) { for (const n of names) this._classes.add(n); },
+        remove(...names) { for (const n of names) this._classes.delete(n); },
+        contains(name) { return this._classes.has(name); },
+        toggle(name) { if (this.contains(name)) this.remove(name); else this.add(name); }
+      },
     };
     let id = "";
     Object.defineProperty(el, "id", {
@@ -129,9 +135,14 @@ function loadHost({ pathname = "/win98/", readyState = "loading", reduced = fals
     timeouts,
     windowListeners,
     head,
+    body,
+    document,
+    makeEl,
     motion,
-    dispatch(type) {
-      for (const entry of windowListeners.filter((item) => item.type === type)) entry.fn({ preventDefault() {}, stopPropagation() {} });
+    dispatch(type, event = {}) {
+      for (const entry of windowListeners.filter((item) => item.type === type)) {
+        entry.fn({ preventDefault() {}, stopPropagation() {}, ...event });
+      }
     },
   };
 }
@@ -167,4 +178,49 @@ test("turning reduced motion off restores Aqua's 75s idle", () => {
   host.motion.matches = false;
   for (const fn of host.motion.listeners) fn();
   assert.deepEqual(host.timeouts.map((item) => item.ms), [75000]);
+});
+
+test("screensaver does not start when Keen or Doom 95 is active", () => {
+  const host = loadHost({ pathname: "/dos/", readyState: "loading" });
+  const keenEl = host.makeEl("section");
+  keenEl.id = "keen-app";
+  keenEl.hidden = false;
+  host.body.appendChild(keenEl);
+
+  const api = host.sandbox.OqScreensaver.attach({ src: "../vendor/screensavers/maze/index.html?v=ss4", idleMs: 45000 });
+  assert.equal(host.timeouts.length, 1);
+  const timeoutId = host.timeouts[0].id;
+  const timeoutFn = host.timeouts[0].fn;
+
+  // Running timeout when Keen is active should not start the overlay and should ping (reschedule)
+  timeoutFn();
+  const overlay = host.document.getElementById("oq-ss-overlay");
+  assert.equal(overlay.hidden, true);
+  // Timer should be re-scheduled
+  assert.equal(host.timeouts.length, 1);
+  assert.notEqual(host.timeouts[0].id, timeoutId);
+
+  // Doom 95 in win95
+  const hostWin95 = loadHost({ pathname: "/win95/", readyState: "loading" });
+  const doomEl = hostWin95.makeEl("section");
+  doomEl.id = "win-doom95";
+  doomEl.classList.add("window");
+  hostWin95.body.appendChild(doomEl);
+
+  const apiWin95 = hostWin95.sandbox.OqScreensaver.attach({ src: "../vendor/screensavers/maze/index.html?v=ss4", idleMs: 45000 });
+  const doomFn = hostWin95.timeouts[0].fn;
+  doomFn();
+  const doomOverlay = hostWin95.document.getElementById("oq-ss-overlay");
+  assert.equal(doomOverlay.hidden, true);
+});
+
+test("game-activity message pings the screensaver idle timer", () => {
+  const host = loadHost({ pathname: "/dos/", readyState: "loading" });
+  const api = host.sandbox.OqScreensaver.attach({ src: "../vendor/screensavers/maze/index.html?v=ss4", idleMs: 45000 });
+  assert.equal(host.timeouts.length, 1);
+  const initialId = host.timeouts[0].id;
+
+  host.dispatch("message", { data: { type: "game-activity" } });
+  assert.equal(host.timeouts.length, 1);
+  assert.notEqual(host.timeouts[0].id, initialId);
 });

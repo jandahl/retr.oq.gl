@@ -492,6 +492,9 @@
     dictApp.hidden = true;
     deconApp.hidden = true;
     keenApp.hidden = false;
+    if (window.OqScreensaver && window.OqScreensaver.host) {
+      window.OqScreensaver.host.setIdleMs(0);
+    }
     if (keenFrame && keenFrame.src.endsWith("about:blank")) {
       keenFrame.src = "../vendor/keen/runner.html";
     }
@@ -501,6 +504,9 @@
     keenApp.hidden = true;
     if (keenFrame) {
       keenFrame.src = "about:blank";
+    }
+    if (window.OqScreensaver && window.OqScreensaver.host) {
+      window.OqScreensaver.host.setIdleMs(45000);
     }
     dirScreen.hidden = false;
     dosCmd.focus();

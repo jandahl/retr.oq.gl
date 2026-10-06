@@ -63,6 +63,9 @@
         if (window.OqBob) window.OqBob.open();
       }
       if (win.id === "win-doom95") {
+        if (window.OqScreensaver && window.OqScreensaver.host) {
+          window.OqScreensaver.host.setIdleMs(0);
+        }
         const frame = document.getElementById("doom95-frame");
         if (frame && frame.src.endsWith("about:blank")) {
           frame.src = "../vendor/dwasm/runner.html";
@@ -103,6 +106,9 @@
     },
     routeClose(win) {
       if (win.id === "win-doom95") {
+        if (window.OqScreensaver && window.OqScreensaver.host) {
+          window.OqScreensaver.host.setIdleMs(45000);
+        }
         const frame = document.getElementById("doom95-frame");
         if (frame) {
           frame.src = "about:blank";
@@ -627,6 +633,15 @@
 
   window.OqRouter.onChange(syncRoute);
   window.OqWin95SyncRoute = () => syncRoute(window.OqRouter.getParams());
+
+  window.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "doom-exit") {
+      const doomWin = document.getElementById("win-doom95");
+      if (doomWin) {
+        closeWindow(doomWin);
+      }
+    }
+  });
 
   // Boot screen: purely cosmetic overlay, dismissed on click or after a
   // timeout. The desktop underneath initializes normally regardless --
