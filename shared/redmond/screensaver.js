@@ -125,11 +125,25 @@
       return url + join + "oqret=" + encodeURIComponent(returnUrl());
     }
 
+    function isGameActive() {
+      try {
+        const keen = document.getElementById("keen-app");
+        if (keen && !keen.hidden) return true;
+        const doom = document.getElementById("win-doom95");
+        if (doom && doom.classList && !doom.classList.contains("minimized")) return true;
+      } catch (e) {}
+      return false;
+    }
+
     function start() {
       // Nested browsing contexts (live-preview iframes, embeds) composite
       // child-iframe WebGL as black. Navigate this document instead.
       if (nestedFrame()) {
         location.href = launchUrl();
+        return;
+      }
+      if (isGameActive()) {
+        ping();
         return;
       }
       if (running) return;
@@ -190,6 +204,7 @@
       window.removeEventListener("keydown", onKeyDown, true);
       window.removeEventListener("pointerdown", onPointerActivity, true);
       window.removeEventListener("pointermove", onPointerActivity, true);
+      window.removeEventListener("message", onMessage);
       overlay.hidden = true;
       frame.removeAttribute("src");
       frame.setAttribute("aria-busy", "false");
@@ -211,6 +226,11 @@
     function onPointerActivity() {
       ping();
     }
+    function onMessage(event) {
+      if (event && event.data && (event.data.type === "game-activity" || event.data.type === "game-ping")) {
+        ping();
+      }
+    }
     overlay.addEventListener("pointerdown", tapOut);
     overlay.addEventListener("click", tapOut);
     overlay.addEventListener("touchstart", tapOut, { passive: false });
@@ -223,6 +243,7 @@
     window.addEventListener("keydown", onKeyDown, true);
     window.addEventListener("pointerdown", onPointerActivity, true);
     window.addEventListener("pointermove", onPointerActivity, true);
+    window.addEventListener("message", onMessage);
     function handleVisibilityChange() {
       if (document.hidden) {
         pausedForVisibility = running;

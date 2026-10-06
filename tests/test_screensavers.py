@@ -267,3 +267,25 @@ def test_nested_iframe_navigates_with_oqret(page, base_url):
         }""",
         timeout=8000,
     )
+
+
+def test_screensaver_suppressed_during_games(page, base_url):
+    # DOS: launching Keen suppresses screensaver
+    page.goto(f"{base_url}/dos/?nosplash=1")
+    page.wait_for_function("() => window.OqScreensaver && window.OqScreensaver.host", timeout=8000)
+    page.evaluate("() => document.getElementById('launch-keen').click()")
+    page.wait_for_selector("#keen-app:not([hidden])", timeout=8000)
+    # Screensaver start() should not display overlay while Keen is active
+    page.evaluate("() => window.OqScreensaver.host.start()")
+    page.wait_for_timeout(300)
+    assert page.evaluate("() => document.getElementById('oq-ss-overlay').hidden") is True
+
+    # Windows 95: opening Doom 95 suppresses screensaver
+    page.goto(f"{base_url}/win95/?nosplash=1")
+    page.wait_for_function("() => window.OqScreensaver && window.OqScreensaver.host", timeout=8000)
+    page.dblclick(".desktop-icon[data-open='win-doom95']")
+    page.wait_for_selector("#win-doom95:not(.minimized)", timeout=8000)
+    page.evaluate("() => window.OqScreensaver.host.start()")
+    page.wait_for_timeout(300)
+    assert page.evaluate("() => document.getElementById('oq-ss-overlay').hidden") is True
+

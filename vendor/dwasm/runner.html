@@ -307,6 +307,22 @@
       document.body.appendChild(script);
     }
 
+    // User activity forwarding to keep desktop screensaver suppressed:
+    let lastActivityTime = 0;
+    function notifyActivity() {
+      const now = Date.now();
+      if (now - lastActivityTime > 5000) {
+        lastActivityTime = now;
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: "game-activity" }, "*");
+          }
+        } catch (e) {}
+      }
+    }
+    window.addEventListener("keydown", notifyActivity, true);
+    window.addEventListener("pointerdown", notifyActivity, true);
+
     // Launch immediately on page load:
     initDoom();
   </script>
