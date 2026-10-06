@@ -11,7 +11,7 @@ import http.server
 import threading
 
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Error as PlaywrightError, sync_playwright
 
 REPO_ROOT = __import__("pathlib").Path(__file__).resolve().parent.parent
 
@@ -119,7 +119,13 @@ def _mirror_frozen_api(route):
             },
             "body": response.body(),
         }
-    route.fulfill(**_FROZEN_API_RESPONSES[mirror_url])
+    try:
+        route.fulfill(**_FROZEN_API_RESPONSES[mirror_url])
+    except PlaywrightError as error:
+        # A screensaver navigation can cancel its old iframe's module request.
+        # That route is already settled by Chromium; other failures stay fatal.
+        if "Route is already handled!" not in str(error):
+            raise
 
 
 def _block_heavy_assets(page):
