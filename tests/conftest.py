@@ -113,7 +113,10 @@ def _mirror_frozen_api(route):
             )
         _FROZEN_API_RESPONSES[mirror_url] = {
             "status": response.status,
-            "headers": response.headers,
+            "headers": {
+                key: value for key, value in response.headers.items()
+                if key not in ("content-encoding", "content-length", "transfer-encoding")
+            },
             "body": response.body(),
         }
     route.fulfill(**_FROZEN_API_RESPONSES[mirror_url])
