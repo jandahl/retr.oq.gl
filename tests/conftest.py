@@ -83,8 +83,22 @@ def touch_page(browser):
     context.close()
 
 
+def _mirror_frozen_api(route):
+    """Load the same frozen API archive without Cloudflare's runner-dependent HTML.
+
+    Keep the browser request URL (and relative module resolution) unchanged.
+    GitHub Pages publishes the same versioned modules as api.oq.gl.
+    """
+    mirror_url = route.request.url.replace(
+        "https://api.oq.gl/", "https://jandahl.github.io/api.oq.gl/", 1
+    )
+    response = route.fetch(url=mirror_url)
+    route.fulfill(response=response)
+
+
 def _block_heavy_assets(page):
-    """404 real katersat URLs and heavy DOOM binary assets so tests stay fast."""
+    """404 heavy assets and load frozen API modules from their archive mirror."""
+    page.route("https://api.oq.gl/api/v*/**", _mirror_frozen_api)
     page.route(
         "**/Oqaasileriffik-katersat/**",
         lambda route: route.fulfill(status=404, body="blocked in tests"),
