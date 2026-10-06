@@ -87,6 +87,9 @@ def touch_page(browser):
     context.close()
 
 
+_FROZEN_API_RESPONSES = {}
+
+
 def _mirror_frozen_api(route):
     """Load the same frozen API archive without Cloudflare's runner-dependent HTML.
 
@@ -96,8 +99,24 @@ def _mirror_frozen_api(route):
     mirror_url = route.request.url.replace(
         "https://api.oq.gl/", "https://jandahl.github.io/api.oq.gl/", 1
     )
-    response = route.fetch(url=mirror_url)
-    route.fulfill(response=response)
+    # A fresh browser context per test must not refetch the immutable archive.
+    # Store bytes, not APIResponse objects tied to a disposed request context.
+    if mirror_url not in _FROZEN_API_RESPONSES:
+        response = route.fetch(url=mirror_url)
+        content_type = response.headers.get("content-type", "")
+        if response.status != 200 or not any(
+            kind in content_type for kind in ("javascript", "json")
+        ):
+            raise AssertionError(
+                f"Frozen API module unavailable: {mirror_url} "
+                f"({response.status}, {content_type})"
+            )
+        _FROZEN_API_RESPONSES[mirror_url] = {
+            "status": response.status,
+            "headers": response.headers,
+            "body": response.body(),
+        }
+    route.fulfill(**_FROZEN_API_RESPONSES[mirror_url])
 
 
 def _block_heavy_assets(page):
