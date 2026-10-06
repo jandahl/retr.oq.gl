@@ -67,12 +67,13 @@
           window.OqScreensaver.host.setIdleMs(0);
         }
         const frame = document.getElementById("doom95-frame");
-        if (frame && frame.src.endsWith("about:blank")) {
-          frame.src = "../vendor/dwasm/runner.html";
+        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes("?v="))) {
+          frame.src = "../vendor/dwasm/runner.html?v=3";
         }
-        if (frame && frame.contentWindow) {
+        if (frame) {
           try {
-            frame.contentWindow.focus();
+            frame.focus();
+            if (frame.contentWindow) frame.contentWindow.focus();
           } catch (_) {}
         }
       }
@@ -651,26 +652,31 @@
   const doomWin = document.getElementById("win-doom95");
   const doomFrame = document.getElementById("doom95-frame");
   if (doomWin && doomFrame) {
-    doomWin.addEventListener("pointerdown", () => {
-      if (!doomWin.classList.contains("minimized") && doomFrame.contentWindow) {
+    function focusDoom() {
+      if (!doomWin.classList.contains("minimized")) {
         try {
-          doomFrame.contentWindow.focus();
+          doomFrame.focus();
+          if (doomFrame.contentWindow) {
+            doomFrame.contentWindow.focus();
+            const canvas = doomFrame.contentDocument?.getElementById("canvas");
+            if (canvas) canvas.focus();
+          }
         } catch (_) {}
       }
-    });
+    }
+
+    doomWin.addEventListener("pointerdown", focusDoom);
+    doomWin.addEventListener("click", focusDoom);
 
     doomFrame.addEventListener("load", () => {
-      if (!doomWin.classList.contains("minimized") && isTopmost(doomWin) && doomFrame.contentWindow) {
-        try {
-          doomFrame.contentWindow.focus();
-        } catch (_) {}
+      if (!doomWin.classList.contains("minimized") && isTopmost(doomWin)) {
+        focusDoom();
       }
     });
 
     function forwardDoomKey(event) {
       if (doomWin.classList.contains("minimized")) return;
       if (!isTopmost(doomWin)) return;
-      if (document.activeElement === doomFrame) return;
       if (event.target && event.target.closest("input, textarea, select")) return;
       if (!doomFrame.contentWindow) return;
       try {
@@ -679,6 +685,7 @@
           code: event.code,
           keyCode: event.keyCode,
           which: event.which,
+          charCode: event.charCode || 0,
           bubbles: true,
           cancelable: true,
           altKey: event.altKey,
@@ -691,6 +698,7 @@
     }
 
     window.addEventListener("keydown", forwardDoomKey);
+    window.addEventListener("keypress", forwardDoomKey);
     window.addEventListener("keyup", forwardDoomKey);
   }
 
