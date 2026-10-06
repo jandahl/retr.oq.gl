@@ -3,8 +3,8 @@ api: oq-api
 api_version: 0.4.5
 consumer: jandahl/retr.oq.gl
 consumes:
-  - id: sentence-analysis
-    available_since: 0.2.0
+  - sentence-analysis
 evidence:
   sentence-analysis:
-    - shared/oq-analysis.js
+    tests:
+      - test/sentence-analysis.test.js
