@@ -69,6 +69,8 @@ def page(browser):
     context = browser.new_context()
     pg = context.new_page()
     yield pg
+    # Module route callbacks must settle before their request context is disposed.
+    pg.unroute_all(behavior="wait")
     context.close()
 
 
@@ -80,6 +82,8 @@ def touch_page(browser):
     context = browser.new_context(has_touch=True, viewport={"width": 390, "height": 844})
     pg = context.new_page()
     yield pg
+    # Module route callbacks must settle before their request context is disposed.
+    pg.unroute_all(behavior="wait")
     context.close()
 
 
