@@ -289,3 +289,28 @@ def test_screensaver_suppressed_during_games(page, base_url):
     page.wait_for_timeout(300)
     assert page.evaluate("() => document.getElementById('oq-ss-overlay').hidden") is True
 
+
+def test_doom95_keyboard_controls(page, base_url):
+    page.unroute("**/*.wad")
+    page_errors = []
+    page.on("pageerror", lambda e: page_errors.append(str(e)))
+    page.goto(f"{base_url}/win95/?nosplash=1")
+    page.dblclick(".desktop-icon[data-open='win-doom95']")
+    page.wait_for_selector("#win-doom95:not(.minimized)", timeout=8000)
+    page.wait_for_function(
+        """() => {
+          const f = document.getElementById('doom95-frame');
+          return f && f.contentDocument && f.contentDocument.getElementById('canvas') && f.contentDocument.getElementById('canvas').style.display === 'block';
+        }""",
+        timeout=20000,
+    )
+    page.wait_for_timeout(500)
+
+    # Press Enter from parent window to verify key handling doesn't error
+    page.keyboard.press("Enter")
+    page.wait_for_timeout(300)
+
+    assert len(page_errors) == 0, f"Unexpected page errors: {page_errors}"
+
+
+
