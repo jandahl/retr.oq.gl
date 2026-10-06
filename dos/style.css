@@ -446,8 +446,8 @@ html, body {
   color: #7777aa; /* dim, same tone as .dos-app-attribution -- a cross-reference, not the headline result */
 }
 
-/* DOOM fullscreen takeover */
-.dos-doom-app {
+/* KEEN fullscreen takeover */
+.dos-keen-app {
   background: #000;
   display: flex;
   flex-direction: column;
@@ -455,7 +455,7 @@ html, body {
   overflow: hidden;
 }
 
-.dos-doom-header {
+.dos-keen-header {
   background: #000084;
   color: #ffff55;
   padding: 2px 8px;
@@ -467,7 +467,7 @@ html, body {
   flex: 0 0 auto;
 }
 
-.dos-doom-exit-btn {
+.dos-keen-exit-btn {
   background: transparent;
   color: #fff;
   border: 1px solid #aaa;
@@ -477,12 +477,12 @@ html, body {
   cursor: pointer;
 }
 
-.dos-doom-exit-btn:hover {
+.dos-keen-exit-btn:hover {
   background: #aa0000;
   color: #fff;
 }
 
-.dos-doom-body {
+.dos-keen-body {
   flex: 1 1 auto;
   width: 100%;
   height: 100%;
@@ -493,7 +493,7 @@ html, body {
   justify-content: center;
 }
 
-.dos-doom-frame {
+.dos-keen-frame {
   width: 100%;
   height: 100%;
   border: none;

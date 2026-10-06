@@ -49,7 +49,7 @@ audio demo, or an easter egg. Source of truth: `shared/games.js`.
 
 | Theme | Extra games / demos / eggs |
 | --- | --- |
-| `dos/` | DOOM (undocumented egg), CGA starfield idle |
+| `dos/` | Commander Keen (KEEN.EXE), DOOM (undocumented egg), CGA starfield idle |
 | `c64/` | MORPH!, raster-star idle |
 | `mac1984/` | 1-bit starfield idle |
 | `nes/` | Konami Code, CRT starfield attract |
@@ -59,6 +59,7 @@ audio demo, or an easter egg. Source of truth: `shared/games.js`.
 | `compy/` | Konami Code, CGA starfield attract, 400/486 chassis eggs |
 | `snes/` | Super KAL-Q! (Klax), Konami Code, Mode 7 attract |
 | `win31/` | Solitaire (joke), hidden credits |
+| `win95/` | Doom 95 windowed app |
 | `next/` | Kernel panic (undocumented egg), BackSpace idle |
 | `mac8/` | Starry-night idle |
 | `win98/` | Hot Dog Stand scheme |

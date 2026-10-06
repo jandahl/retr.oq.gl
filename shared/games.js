@@ -12,7 +12,8 @@ window.OqGames = {
     { id: "morph", name: "MORPH!", kind: "game" },
     { id: "kal-q", name: "Super KAL-Q! (Klax)", kind: "game" },
     { id: "konami", name: "Konami Code", kind: "egg" },
-    { id: "doom", name: "DOOM / Doom 95", kind: "game" },
+    { id: "doom", name: "Doom 95", kind: "game" },
+    { id: "keen", name: "Commander Keen", kind: "game" },
     { id: "boing", name: "Boing Ball", kind: "demo" },
 
     { id: "copper", name: "Copper bars", kind: "demo" },
@@ -37,7 +38,7 @@ window.OqGames = {
     { id: "ss-kde-gl", name: "KDE GL savers", kind: "demo" },
   ],
   matrix: {
-    dos: ["doom", "ss-cga"],
+    dos: ["keen", "ss-cga"],
     c64: ["morph", "ss-raster"],
     mac1984: ["ss-mac-stars"],
     nes: ["konami", "ss-attract"],

@@ -140,10 +140,14 @@ def _block_heavy_assets(page):
         "**/Oqaasileriffik-katersat/**",
         lambda route: route.fulfill(status=404, body="blocked in tests"),
     )
-    # Block heavy DOOM wad/wasm in general browser test sweeps to keep CI fast
+    # Block heavy DOOM wad and Commander Keen wasm in general browser test sweeps to keep CI fast
     page.route(
         "**/*.wad",
         lambda route: route.fulfill(status=404, body="doom wad blocked in tests"),
+    )
+    page.route(
+        "**/vendor/keen/*.wasm",
+        lambda route: route.fulfill(status=404, body="keen wasm blocked in tests"),
     )
 
 

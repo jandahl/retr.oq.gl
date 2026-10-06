@@ -484,23 +484,23 @@
     dirScreen.hidden = false;
   }
 
-  const doomApp = document.getElementById("doom-app");
-  const doomFrame = document.getElementById("dos-doom-frame");
+  const keenApp = document.getElementById("keen-app");
+  const keenFrame = document.getElementById("dos-keen-frame");
 
-  function launchDoom() {
+  function launchKeen() {
     dirScreen.hidden = true;
     dictApp.hidden = true;
     deconApp.hidden = true;
-    doomApp.hidden = false;
-    if (doomFrame && doomFrame.src.endsWith("about:blank")) {
-      doomFrame.src = "../vendor/dwasm/runner.html";
+    keenApp.hidden = false;
+    if (keenFrame && keenFrame.src.endsWith("about:blank")) {
+      keenFrame.src = "../vendor/keen/runner.html";
     }
   }
 
-  function exitDoom() {
-    doomApp.hidden = true;
-    if (doomFrame) {
-      doomFrame.src = "about:blank";
+  function exitKeen() {
+    keenApp.hidden = true;
+    if (keenFrame) {
+      keenFrame.src = "about:blank";
     }
     dirScreen.hidden = false;
     dosCmd.focus();
@@ -556,23 +556,23 @@
         deconWord.value = params.get("word") || "";
         searchDecon(deconWord.value);
       }
-    } else if (screen === "doom") {
+    } else if (screen === "keen") {
       dictApp.hidden = true;
       deconApp.hidden = true;
-      if (doomApp.hidden) {
-        launchDoom();
+      if (keenApp.hidden) {
+        launchKeen();
       }
     } else {
       if (!dictApp.hidden) exitDict();
       if (!deconApp.hidden) exitDecon();
-      if (!doomApp.hidden) exitDoom();
+      if (!keenApp.hidden) exitKeen();
     }
   });
 
-  document.getElementById("launch-doom").addEventListener("click", () => {
-    window.OqRouter.navigate({ screen: "doom" });
+  document.getElementById("launch-keen").addEventListener("click", () => {
+    window.OqRouter.navigate({ screen: "keen" });
   });
-  document.getElementById("doom-exit").addEventListener("click", () => {
+  document.getElementById("keen-exit").addEventListener("click", () => {
     window.OqRouter.navigate({ screen: null });
   });
 
@@ -626,13 +626,13 @@
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden || !doomApp.hidden)) {
+    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden || !keenApp.hidden)) {
       window.OqRouter.navigate({ screen: null, filter: null, word: null });
     }
   });
 
   window.addEventListener("message", (event) => {
-    if (event.data && event.data.type === "doom-exit") {
+    if (event.data && (event.data.type === "doom-exit" || event.data.type === "keen-exit")) {
       window.OqRouter.navigate({ screen: null });
     }
   });
@@ -664,11 +664,10 @@ DICT     DAT       892,928  03-14-89   2:15p
 BUILD    EXE        38,912  03-14-89   2:15p
 DECON    EXE        35,328  03-14-89   2:15p
 DECON    DAT        77,824  03-14-89   2:15p
-DOOM     EXE       709,632  02-01-95   1:09a
-DOOM1    WAD     4,196,020  02-01-95   1:09a
-        7 File(s)    5,992,116 bytes
+KEEN     EXE        51,200  12-14-90   1:14p
+KEEN1    DAT       287,000  12-14-90   1:14p
+        7 File(s)    1,387,740 bytes
                        487,424 bytes free`;
-
 
   // The real MS-DOS command was VER (built into COMMAND.COM, not a
   // standalone .EXE) -- VERSION.EXE was never a thing.
@@ -682,8 +681,8 @@ DRIVE A: WILL BE LOST!
 Proceed with Format (Y/N)?N
 Format terminated`;
 
-  // DOOM.EXE isn't in the DIR listing above (BUILD.EXE/DECON.EXE are the
-  // only "real" programs the directory admits to) -- typing it anyway is
+  // DOOM.EXE isn't in the DIR listing above (BUILD.EXE/DECON.EXE/KEEN.EXE are the
+  // programs the directory admits to) -- typing it anyway is
   // the whole joke, same as it always was on a real DOS box. It needed
   // DOS/4GW's 32-bit protected-mode extender to run at all, which refused
   // outright on anything below a 386.
@@ -753,14 +752,14 @@ DOS/4GW fatal error (15): protected mode available only with 386 or 486`;
       printLine("DOSKEY installed.");
     } else if (cmd === "FORMAT" || cmd === "FORMAT.EXE") {
       printLine(FORMAT_WARNING);
-    } else if (cmd === "DOOM" || cmd === "DOOM.EXE") {
+    } else if (cmd === "KEEN" || cmd === "KEEN.EXE" || cmd === "KEEN1" || cmd === "KEEN1.EXE") {
       if (args[0] === "/?") {
-        printLine(`DOOM.EXE [/?] [/4GW]\n\n  /4GW      Display DOS/4GW protected mode banner\n  /?        Display this help`);
-      } else if (args[0] === "/4GW") {
-        printLine(DOOM_ERROR);
+        printLine(`KEEN.EXE [/?]\n\n  /?        Display this help`);
       } else {
-        window.OqRouter.navigate({ screen: "doom" });
+        window.OqRouter.navigate({ screen: "keen" });
       }
+    } else if (cmd === "DOOM" || cmd === "DOOM.EXE") {
+      printLine(DOOM_ERROR);
     } else if (cmd === "EXIT") {
 
       // Real MS-DOS EXIT left a nested COMMAND.COM shell -- there's no
