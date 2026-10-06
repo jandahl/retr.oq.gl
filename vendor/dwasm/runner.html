@@ -101,19 +101,8 @@
 
   <script>
     if (typeof Element !== 'undefined' && Element.prototype.requestPointerLock) {
-      const origRequestPointerLock = Element.prototype.requestPointerLock;
       Element.prototype.requestPointerLock = function() {
-        try {
-          const res = origRequestPointerLock.apply(this, arguments);
-          if (res && typeof res.catch === 'function') {
-            res.catch(function(e) {
-              console.warn("Pointer lock error ignored:", e);
-            });
-          }
-          return res;
-        } catch (e) {
-          console.warn("Pointer lock error ignored:", e);
-        }
+        return Promise.resolve();
       };
     }
     const canvasElement = document.getElementById("canvas");
@@ -202,30 +191,18 @@
         outputElement.scrollTop = outputElement.scrollHeight;
         outputElement.focus();
       },
+      _canLockPointer: false,
       captureMouse: function() {
-        if (!touchEnabled && Module._canLockPointer && !Module._attemptPointerLock()) {
-          Module._canLockPointer = false;
-          document.addEventListener('keydown', Module._lockPointerOnKey);
-        }
+        // Pointer lock is disabled for desktop windowed iframe mode
       },
       winResized: function() {
         // Fits canvas cleanly in container
       },
       _attemptPointerLock: function() {
-        try {
-          if (document.pointerLockElement === null && canvasElement.requestPointerLock) {
-            canvasElement.requestPointerLock();
-          }
-        } catch (e) {
-          console.warn("Pointer lock error ignored:", e);
-        }
-        return document.pointerLockElement !== null;
+        return false;
       },
-      _lockPointerOnKey: function(event) {
-        if ((event.key === 'Escape') || Module._attemptPointerLock()) {
-          document.removeEventListener('keydown', Module._lockPointerOnKey);
-          Module._canLockPointer = true;
-        }
+      _lockPointerOnKey: function() {
+        document.removeEventListener('keydown', Module._lockPointerOnKey);
       },
       softExit: function(status) {
         console.info('DOOM exited with code', status);
@@ -237,15 +214,20 @@
     };
 
     function focusCanvas() {
-      if (canvasElement.style.display !== 'none') {
-        canvasElement.focus();
-      }
+      try {
+        window.focus();
+        if (canvasElement && canvasElement.style.display !== 'none') {
+          canvasElement.focus();
+        }
+      } catch (_) {}
     }
 
     // Forward click, pointerdown, and window focus to focus canvas
     window.addEventListener('click', focusCanvas);
     window.addEventListener('pointerdown', focusCanvas);
     window.addEventListener('focus', focusCanvas);
+    document.addEventListener('pointerdown', focusCanvas);
+    document.addEventListener('click', focusCanvas);
 
     async function initDoom() {
       try {
