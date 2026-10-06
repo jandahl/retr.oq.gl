@@ -9,6 +9,7 @@ each so state (localStorage, URL) never leaks between them.
 import functools
 import http.server
 import threading
+import urllib.request
 
 import pytest
 from playwright.sync_api import Error as PlaywrightError, sync_playwright
@@ -102,23 +103,27 @@ def _mirror_frozen_api(route):
     # A fresh browser context per test must not refetch the immutable archive.
     # Store bytes, not APIResponse objects tied to a disposed request context.
     if mirror_url not in _FROZEN_API_RESPONSES:
-        response = route.fetch(url=mirror_url)
-        content_type = response.headers.get("content-type", "")
-        if response.status != 200 or not any(
-            kind in content_type for kind in ("javascript", "json")
-        ):
-            raise AssertionError(
-                f"Frozen API module unavailable: {mirror_url} "
-                f"({response.status}, {content_type})"
-            )
-        _FROZEN_API_RESPONSES[mirror_url] = {
-            "status": response.status,
-            "headers": {
-                key: value for key, value in response.headers.items()
-                if key not in ("content-encoding", "content-length", "transfer-encoding")
-            },
-            "body": response.body(),
-        }
+        # Standard-library I/O avoids reentrant Playwright route.fetch callbacks
+        # and keeps cached responses independent of each browser context.
+        with urllib.request.urlopen(mirror_url, timeout=30) as response:
+            content_type = response.headers.get("content-type", "")
+            if response.status != 200 or not any(
+                kind in content_type for kind in ("javascript", "json")
+            ):
+                raise AssertionError(
+                    f"Frozen API module unavailable: {mirror_url} "
+                    f"({response.status}, {content_type})"
+                )
+            _FROZEN_API_RESPONSES[mirror_url] = {
+                "status": response.status,
+                "headers": {
+                    key.lower(): value for key, value in response.headers.items()
+                    if key.lower() not in (
+                        "content-encoding", "content-length", "transfer-encoding"
+                    )
+                },
+                "body": response.read(),
+            }
     try:
         route.fulfill(**_FROZEN_API_RESPONSES[mirror_url])
     except PlaywrightError as error:
