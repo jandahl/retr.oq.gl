@@ -39,6 +39,7 @@ on:
       - "shared/**"
       - "vendor/**"
       - "tests/**"
+      - "test/**"
       - ".github/workflows/theme-tests.yml"
       - ".github/workflows/palette.yml"
   workflow_dispatch:
@@ -179,6 +180,7 @@ jobs:
             shared:
               - "shared/**/*.js"
               - "tests/shared/**"
+              - "test/**"
               - "vendor/screensavers/**"
               - ".github/workflows/theme-tests.yml"
       - name: Keep only runnable theme filters

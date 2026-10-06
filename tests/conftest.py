@@ -9,9 +9,10 @@ each so state (localStorage, URL) never leaks between them.
 import functools
 import http.server
 import threading
+import urllib.request
 
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Error as PlaywrightError, sync_playwright
 
 REPO_ROOT = __import__("pathlib").Path(__file__).resolve().parent.parent
 
@@ -69,6 +70,8 @@ def page(browser):
     context = browser.new_context()
     pg = context.new_page()
     yield pg
+    # Module route callbacks must settle before their request context is disposed.
+    pg.unroute_all(behavior="wait")
     context.close()
 
 
@@ -80,11 +83,59 @@ def touch_page(browser):
     context = browser.new_context(has_touch=True, viewport={"width": 390, "height": 844})
     pg = context.new_page()
     yield pg
+    # Module route callbacks must settle before their request context is disposed.
+    pg.unroute_all(behavior="wait")
     context.close()
 
 
+_FROZEN_API_RESPONSES = {}
+
+
+def _mirror_frozen_api(route):
+    """Load the same frozen API archive without Cloudflare's runner-dependent HTML.
+
+    Keep the browser request URL (and relative module resolution) unchanged.
+    GitHub Pages publishes the same versioned modules as api.oq.gl.
+    """
+    mirror_url = route.request.url.replace(
+        "https://api.oq.gl/", "https://jandahl.github.io/api.oq.gl/", 1
+    )
+    # A fresh browser context per test must not refetch the immutable archive.
+    # Store bytes, not APIResponse objects tied to a disposed request context.
+    if mirror_url not in _FROZEN_API_RESPONSES:
+        # Standard-library I/O avoids reentrant Playwright route.fetch callbacks
+        # and keeps cached responses independent of each browser context.
+        with urllib.request.urlopen(mirror_url, timeout=30) as response:
+            content_type = response.headers.get("content-type", "")
+            if response.status != 200 or not any(
+                kind in content_type for kind in ("javascript", "json")
+            ):
+                raise AssertionError(
+                    f"Frozen API module unavailable: {mirror_url} "
+                    f"({response.status}, {content_type})"
+                )
+            _FROZEN_API_RESPONSES[mirror_url] = {
+                "status": response.status,
+                "headers": {
+                    key.lower(): value for key, value in response.headers.items()
+                    if key.lower() not in (
+                        "content-encoding", "content-length", "transfer-encoding"
+                    )
+                },
+                "body": response.read(),
+            }
+    try:
+        route.fulfill(**_FROZEN_API_RESPONSES[mirror_url])
+    except PlaywrightError as error:
+        # A screensaver navigation can cancel its old iframe's module request.
+        # That route is already settled by Chromium; other failures stay fatal.
+        if "Route is already handled!" not in str(error):
+            raise
+
+
 def _block_heavy_assets(page):
-    """404 real katersat URLs and heavy DOOM binary assets so tests stay fast."""
+    """404 heavy assets and load frozen API modules from their archive mirror."""
+    page.route("https://api.oq.gl/api/v*/**", _mirror_frozen_api)
     page.route(
         "**/Oqaasileriffik-katersat/**",
         lambda route: route.fulfill(status=404, body="blocked in tests"),
