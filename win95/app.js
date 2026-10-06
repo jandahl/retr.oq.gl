@@ -36,7 +36,7 @@
   // onto this shell + pendingOqScreen for deep links / router ids.
   let pendingOqScreen = null;
 
-  const { openWindow, forceOpenWindow, closeWindow } = window.OqRedmond.initWindowManager({
+  const { openWindow, forceOpenWindow, closeWindow, isTopmost } = window.OqRedmond.initWindowManager({
     desktop,
     taskbarWindows,
     windows,
@@ -69,6 +69,11 @@
         const frame = document.getElementById("doom95-frame");
         if (frame && frame.src.endsWith("about:blank")) {
           frame.src = "../vendor/dwasm/runner.html";
+        }
+        if (frame && frame.contentWindow) {
+          try {
+            frame.contentWindow.focus();
+          } catch (_) {}
         }
       }
     },
@@ -642,6 +647,52 @@
       }
     }
   });
+
+  const doomWin = document.getElementById("win-doom95");
+  const doomFrame = document.getElementById("doom95-frame");
+  if (doomWin && doomFrame) {
+    doomWin.addEventListener("pointerdown", () => {
+      if (!doomWin.classList.contains("minimized") && doomFrame.contentWindow) {
+        try {
+          doomFrame.contentWindow.focus();
+        } catch (_) {}
+      }
+    });
+
+    doomFrame.addEventListener("load", () => {
+      if (!doomWin.classList.contains("minimized") && isTopmost(doomWin) && doomFrame.contentWindow) {
+        try {
+          doomFrame.contentWindow.focus();
+        } catch (_) {}
+      }
+    });
+
+    function forwardDoomKey(event) {
+      if (doomWin.classList.contains("minimized")) return;
+      if (!isTopmost(doomWin)) return;
+      if (document.activeElement === doomFrame) return;
+      if (event.target && event.target.closest("input, textarea, select")) return;
+      if (!doomFrame.contentWindow) return;
+      try {
+        doomFrame.contentWindow.dispatchEvent(new KeyboardEvent(event.type, {
+          key: event.key,
+          code: event.code,
+          keyCode: event.keyCode,
+          which: event.which,
+          bubbles: true,
+          cancelable: true,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          shiftKey: event.shiftKey,
+          metaKey: event.metaKey,
+          repeat: event.repeat,
+        }));
+      } catch (_) {}
+    }
+
+    window.addEventListener("keydown", forwardDoomKey);
+    window.addEventListener("keyup", forwardDoomKey);
+  }
 
   // Boot screen: purely cosmetic overlay, dismissed on click or after a
   // timeout. The desktop underneath initializes normally regardless --

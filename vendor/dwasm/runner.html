@@ -96,10 +96,26 @@
     <progress id="progress" value="0" max="100" style="width: 180px;"></progress>
   </div>
   <textarea id="output" readonly></textarea>
-  <canvas id="canvas" oncontextmenu="event.preventDefault();" tabindex="-1"></canvas>
+  <canvas id="canvas" oncontextmenu="event.preventDefault();" tabindex="0"></canvas>
   <button type="button" id="touch-toggle">Toggle Touch Controls</button>
 
   <script>
+    if (typeof Element !== 'undefined' && Element.prototype.requestPointerLock) {
+      const origRequestPointerLock = Element.prototype.requestPointerLock;
+      Element.prototype.requestPointerLock = function() {
+        try {
+          const res = origRequestPointerLock.apply(this, arguments);
+          if (res && typeof res.catch === 'function') {
+            res.catch(function(e) {
+              console.warn("Pointer lock error ignored:", e);
+            });
+          }
+          return res;
+        } catch (e) {
+          console.warn("Pointer lock error ignored:", e);
+        }
+      };
+    }
     const canvasElement = document.getElementById("canvas");
     const outputElement = document.getElementById("output");
     const statusElement = document.getElementById("status");
@@ -196,8 +212,12 @@
         // Fits canvas cleanly in container
       },
       _attemptPointerLock: function() {
-        if (document.pointerLockElement === null) {
-          canvasElement.requestPointerLock();
+        try {
+          if (document.pointerLockElement === null && canvasElement.requestPointerLock) {
+            canvasElement.requestPointerLock();
+          }
+        } catch (e) {
+          console.warn("Pointer lock error ignored:", e);
         }
         return document.pointerLockElement !== null;
       },
@@ -216,12 +236,16 @@
       arguments: ['-iwad', 'doom1.wad']
     };
 
-    // Forward click to focus canvas
-    window.addEventListener('click', () => {
+    function focusCanvas() {
       if (canvasElement.style.display !== 'none') {
         canvasElement.focus();
       }
-    });
+    }
+
+    // Forward click, pointerdown, and window focus to focus canvas
+    window.addEventListener('click', focusCanvas);
+    window.addEventListener('pointerdown', focusCanvas);
+    window.addEventListener('focus', focusCanvas);
 
     async function initDoom() {
       try {
