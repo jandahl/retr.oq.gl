@@ -2,6 +2,7 @@
 
 ?nosplash=1 skips the boot overlay.
 ?run=CMD runs that command through OqRedmondRun (empty ?run= opens the dialog).
+?wizard=1 opens the Upgrade Wizard dialog.
 """
 
 import pytest
@@ -85,3 +86,37 @@ def test_unknown_command_stays_in_dialog(page, base_url, theme):
     err = page.text_content("#run-error")
     assert "cannot find" in err.lower()
     assert "not-a-real-program" in err
+
+
+@pytest.mark.parametrize("theme", THEMES)
+def test_wizard_query_opens_dialog(page, base_url, theme):
+    goto_theme(page, base_url, theme, extra="wizard=1")
+    page.wait_for_selector("#oq-wizard-overlay:not([hidden])", timeout=4000)
+    assert page.is_visible("#oq-wizard-dialog")
+    # Verify chameleon class is applied
+    dialog_cls = page.get_attribute("#oq-wizard-dialog", "class") or ""
+    assert f"oq-wizard-{theme}" in dialog_cls
+    # Check that eras are listed
+    options = page.query_selector_all(".oq-wizard-era-option")
+    assert len(options) == 5
+
+
+@pytest.mark.parametrize("theme", THEMES)
+def test_wizard_desktop_icon_and_start_menu_exist(page, base_url, theme):
+    goto_theme(page, base_url, theme)
+    # Desktop icon exists
+    assert page.query_selector('.desktop-icon[data-open="wizard"]') is not None
+    # Start menu item exists
+    assert page.query_selector("#start-menu-wizard") is not None
+
+
+def test_win31_wizard_affordance_and_query(page, base_url):
+    page.goto(f"{base_url}/win31/index.html?nosplash=1&wizard=1")
+    page.wait_for_selector("#oq-wizard-overlay:not([hidden])", timeout=4000)
+    assert page.is_visible("#oq-wizard-dialog")
+    dialog_cls = page.get_attribute("#oq-wizard-dialog", "class") or ""
+    assert "oq-wizard-win31" in dialog_cls
+    # Check that Program Manager Main group has the icon
+    assert page.query_selector('#win-group-main .prog-icon[data-open="wizard"]') is not None
+
+
