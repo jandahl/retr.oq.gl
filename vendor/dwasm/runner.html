@@ -101,8 +101,19 @@
 
   <script>
     if (typeof Element !== 'undefined' && Element.prototype.requestPointerLock) {
+      const origRequestPointerLock = Element.prototype.requestPointerLock;
       Element.prototype.requestPointerLock = function() {
-        return Promise.resolve();
+        try {
+          const res = origRequestPointerLock.apply(this, arguments);
+          if (res && typeof res.catch === 'function') {
+            res.catch(function(e) {
+              // Silently ignore pointer lock denials
+            });
+          }
+          return res;
+        } catch (e) {
+          // Silently ignore synchronous pointer lock exceptions
+        }
       };
     }
     const canvasElement = document.getElementById("canvas");
@@ -191,15 +202,21 @@
         outputElement.scrollTop = outputElement.scrollHeight;
         outputElement.focus();
       },
-      _canLockPointer: false,
+      _canLockPointer: true,
       captureMouse: function() {
-        // Pointer lock is disabled for desktop windowed iframe mode
+        // Do not attach lockPointerOnKey on every keypress to prevent key exceptions,
+        // but allow click-to-capture on canvas.
       },
       winResized: function() {
         // Fits canvas cleanly in container
       },
       _attemptPointerLock: function() {
-        return false;
+        try {
+          if (document.pointerLockElement === null && canvasElement.requestPointerLock) {
+            canvasElement.requestPointerLock();
+          }
+        } catch (_) {}
+        return document.pointerLockElement !== null;
       },
       _lockPointerOnKey: function() {
         document.removeEventListener('keydown', Module._lockPointerOnKey);
@@ -222,12 +239,29 @@
       } catch (_) {}
     }
 
+    // Canvas click requests mouse capture for mouselook
+    canvasElement.addEventListener('click', function() {
+      focusCanvas();
+      if (!touchEnabled && Module._attemptPointerLock) {
+        Module._attemptPointerLock();
+      }
+    });
+
     // Forward click, pointerdown, and window focus to focus canvas
     window.addEventListener('click', focusCanvas);
     window.addEventListener('pointerdown', focusCanvas);
     window.addEventListener('focus', focusCanvas);
     document.addEventListener('pointerdown', focusCanvas);
     document.addEventListener('click', focusCanvas);
+
+    // Escape releases pointer lock if locked
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.pointerLockElement && document.exitPointerLock) {
+        try {
+          document.exitPointerLock();
+        } catch (_) {}
+      }
+    });
 
     async function initDoom() {
       try {
