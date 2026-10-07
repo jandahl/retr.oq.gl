@@ -78,6 +78,7 @@
   function applyEra(id, { persist = false } = {}) {
     const era = ERA_IDS.has(id) ? id : "aqua";
     document.documentElement.dataset.osxEra = era;
+    window.dispatchEvent(new CustomEvent("oq:aqua-era-change", { detail: era }));
     if (persist) writeStoredEra(era);
     return era;
   }

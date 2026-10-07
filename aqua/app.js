@@ -403,6 +403,27 @@
   const appMenuTitle = document.getElementById("app-menu-title");
   const appMenuAboutLink = document.getElementById("app-menu-about-link");
   const menuEmptyTrash = document.getElementById("menu-empty-trash");
+  const aboutEraKicker = document.getElementById("about-era-kicker");
+  const aboutEraDescription = document.getElementById("about-era-description");
+
+  const eraAbout = {
+    aqua: ["Aqua", "~2001 (Cheetah / Puma)", "An early OS X Aqua desktop for retr-oq: jelly traffic lights, pinstripes, and a shelf Dock with the bright, candy-colored chrome of the first public OS X releases."],
+    tiger: ["Tiger", "2005", "A Tiger-inspired retr-oq desktop: unified brushed-metal chrome, a cooler blue-grey palette, and a flatter Dock shaped by the polished utility of Mac OS X 10.4."],
+    leopard: ["Leopard", "2007", "A Leopard-inspired retr-oq desktop: dark menubar, cool graphite window chrome, reflective Dock glass, and the deeper night palette of Mac OS X 10.5."],
+    lion: ["Lion", "2011", "A Lion-inspired retr-oq desktop: linen texture, padded controls, warmer materials, and a chunky shelf Dock that leans into the peak of skeuomorphic OS X."],
+    yosemite: ["Yosemite", "2014", "A Yosemite-inspired retr-oq desktop: flatter controls, translucent vibrancy, restrained shadows, and a light interface that lets the desktop show through."],
+    bigsur: ["Big Sur", "2020", "A Big Sur-inspired retr-oq desktop: generous rounded geometry, larger app surfaces, dense translucency, and a compact floating Dock."],
+    glass: ["Glassholism", "2026", "A deliberately maximal glass study: layered frost, refraction, bloom, and luminous edges applied consistently to the menubar, windows, menus, About panel, and Dock."],
+  };
+
+  function syncAboutEra() {
+    const id = document.documentElement.dataset.osxEra || "aqua";
+    const era = eraAbout[id] || eraAbout.aqua;
+    if (aboutEraKicker) aboutEraKicker.textContent = `retr-oq · ${era[0]} · ${era[1]}`;
+    if (aboutEraDescription) aboutEraDescription.textContent = era[2];
+  }
+  syncAboutEra();
+  window.addEventListener("oq:aqua-era-change", syncAboutEra);
 
   function syncAppMenu(win) {
     focusedWin = win && isLive(win) ? win : null;
