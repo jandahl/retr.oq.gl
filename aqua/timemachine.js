@@ -6,52 +6,13 @@
   // Galaxy: original canvas 2D star-tunnel / nebula (not Apple TM art).
 
   const ERA_KEY = "retr-oq:aqua-osx-era";
-  const ERAS = [
-    {
-      id: "aqua",
-      year: "2001",
-      name: "Aqua",
-      blurb: "Cheetah–Puma jelly & shelf Dock",
-    },
-    {
-      id: "tiger",
-      year: "2005",
-      name: "Tiger",
-      blurb: "Unified toolbar · metal-ish chrome",
-    },
-    {
-      id: "leopard",
-      year: "2007",
-      name: "Leopard",
-      blurb: "Dark menubar · reflective Dock",
-    },
-    {
-      id: "lion",
-      year: "2011",
-      name: "Lion",
-      blurb: "Peak skeuomorphism · linen & leather",
-    },
-    {
-      id: "yosemite",
-      year: "2014",
-      name: "Yosemite",
-      blurb: "Translucent flat · vibrancy blur",
-    },
-    {
-      id: "bigsur",
-      year: "2020",
-      name: "Big Sur",
-      blurb: "Rounder chrome · dense translucency",
-    },
-    {
-      id: "glass",
-      year: "2026",
-      name: "Glassholism",
-      blurb: "Maximal liquid glass · frost & bloom",
-    },
-  ];
+  const ERAS = (window.OqCupertino?.eras || []).filter((era) => era.family === "osx");
 
   const ERA_IDS = new Set(ERAS.map((e) => e.id));
+
+  // The inline boot script may already have applied the legacy Aqua value
+  // before this adapter loads. Migrate independently of that paint guard.
+  window.OqCupertino?.migrateStoredEra("osx");
 
   function prefersReducedMotion() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -59,7 +20,7 @@
 
   function readStoredEra() {
     try {
-      const v = localStorage.getItem(ERA_KEY);
+      const v = window.OqCupertino?.migrateStoredEra("osx") || localStorage.getItem(ERA_KEY);
       if (ERA_IDS.has(v)) return v;
     } catch {
       /* ignore */
@@ -70,6 +31,7 @@
   function writeStoredEra(id) {
     try {
       localStorage.setItem(ERA_KEY, id);
+      if (window.OqCupertino?.storageKey) localStorage.setItem(window.OqCupertino.storageKey, id);
     } catch {
       /* ignore */
     }

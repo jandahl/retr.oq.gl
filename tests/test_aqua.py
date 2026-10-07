@@ -497,6 +497,21 @@ def test_time_machine_overlay_opens_and_sets_era(page, base_url):
     assert page.evaluate("() => document.documentElement.dataset.osxEra") == "tiger"
 
 
+def test_time_machine_migrates_legacy_aqua_storage(page, base_url):
+    """The Cupertino registry adopts the old Aqua key without losing the era."""
+    goto_aqua(page, base_url)
+    page.evaluate(
+        """() => {
+          localStorage.removeItem('retr-oq:cupertino-era');
+          localStorage.setItem('retr-oq:aqua-osx-era', 'leopard');
+        }"""
+    )
+    page.reload()
+    page.wait_for_timeout(200)
+    assert page.evaluate("() => document.documentElement.dataset.osxEra") == "leopard"
+    assert page.evaluate("() => localStorage.getItem('retr-oq:cupertino-era')") == "leopard"
+
+
 def test_time_machine_cancel_restores_previous_era(page, base_url):
     goto_aqua(page, base_url)
     page.evaluate(
