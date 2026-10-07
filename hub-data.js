@@ -280,7 +280,7 @@ window.OqHubMachines = [
   },
   {
     href: "win98/",
-    name: "Windows",
+    name: "Redmond",
     year: "1992–2009",
     category: "redmond",
     hasGames: false,
