@@ -10,7 +10,8 @@
 /* Apply persisted OS X era before paint to avoid skin flash. */
 (function () {
   try {
-    var e = localStorage.getItem("retr-oq:aqua-osx-era");
+    var params = new URLSearchParams(window.location.search);
+    var e = params.get("era") || localStorage.getItem("retr-oq:cupertino-era") || localStorage.getItem("retr-oq:aqua-osx-era");
     var allowed = { aqua: 1, tiger: 1, leopard: 1, lion: 1, yosemite: 1, bigsur: 1, glass: 1 };
     if (!allowed[e]) e = "aqua";
     document.documentElement.setAttribute("data-osx-era", e);
