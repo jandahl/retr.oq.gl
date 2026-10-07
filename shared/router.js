@@ -97,6 +97,18 @@
         boot.setAttribute("hidden", "");
       }
     }
+    if (params.has("wizard")) {
+      let wTries = 0;
+      function kickWizard() {
+        const api = window.OqRedmondWizard;
+        if (api) {
+          api.open();
+          return;
+        }
+        if (wTries++ < 40) window.setTimeout(kickWizard, 50);
+      }
+      kickWizard();
+    }
     if (!params.has("run")) return;
     const cmd = params.get("run") || "";
     let tries = 0;
@@ -125,5 +137,8 @@
   }
   if (/\/(win95|win98|xp|win7)(\/|$)/.test(location.pathname)) {
     loadNextToRouter("redmond/run.js?v=9");
+  }
+  if (/\/(win31|win95|win98|xp|win7)(\/|$)/.test(location.pathname)) {
+    loadNextToRouter("redmond/wizard.js?v=1");
   }
 })();
