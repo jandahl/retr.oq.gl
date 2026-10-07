@@ -8,7 +8,7 @@
 //
 // `category` is a best-fit tag, not an exhaustive taxonomy: "console",
 // "handheld", "workstation" (NeXT, KDE) for the unambiguous cases, split by
-// lineage for the rest -- "redmond" (win31/win98/xp/win7), "cupertino"
+// lineage for the rest -- "redmond" (Windows), "cupertino"
 // (mac1984/mac8/aqua), and "home-computer" for independent 8/16-bit machines
 // that are neither (dos, c64, amiga -- keyboard/BASIC machines, not
 // cartridge consoles, however tempting that grouping is once the vendor
@@ -218,33 +218,6 @@ window.OqHubMachines = [
     `,
   },
   {
-    href: "win31/",
-    name: "Windows 3.1",
-    year: "1992",
-    category: "redmond",
-    hasGames: false,
-    meta: "Program Manager",
-    iconNote: "Teal desktop, 3.1 window: sysmenu on the left, no close X",
-    icon: `
-      <rect width="32" height="32" fill="#008080"/>
-      <rect x="3" y="5" width="26" height="20" fill="#c0c0c0"/>
-      <rect x="3" y="5" width="25" height="1" fill="#ffffff"/>
-      <rect x="3" y="5" width="1" height="19" fill="#ffffff"/>
-      <rect x="28" y="6" width="1" height="19" fill="#000000"/>
-      <rect x="4" y="24" width="25" height="1" fill="#000000"/>
-      <rect x="5" y="7" width="22" height="4" fill="#000080"/>
-      <rect x="6" y="8" width="3" height="2" fill="#c0c0c0"/>
-      <rect x="7" y="9" width="1" height="1" fill="#000000"/>
-      <rect x="22" y="8" width="2" height="2" fill="#c0c0c0"/>
-      <rect x="25" y="8" width="2" height="2" fill="#c0c0c0"/>
-      <rect x="6" y="12" width="20" height="10" fill="#c0c0c0"/>
-      <rect x="7" y="13" width="8" height="8" fill="#ffff00"/>
-      <rect x="8" y="14" width="6" height="2" fill="#000080"/>
-      <rect x="17" y="13" width="8" height="8" fill="#00ffff"/>
-      <rect x="18" y="14" width="6" height="2" fill="#000080"/>
-    `,
-  },
-  {
     href: "os2/",
     name: "OS/2 Warp",
     year: "1994",
@@ -281,24 +254,6 @@ window.OqHubMachines = [
     `,
   },
   {
-    href: "win95/",
-    name: "Windows 95",
-    year: "1995",
-    category: "redmond",
-    hasGames: false,
-    meta: "Start / Mikisoq",
-    iconNote: "Teal desktop, Windows 95 shell, optional sled-dog house",
-    icon: `
-      <rect width="32" height="32" fill="#008080"/>
-      <rect x="4" y="6" width="24" height="18" fill="#c0c0c0"/>
-      <rect x="5" y="7" width="22" height="3" fill="#000080"/>
-      <rect x="6" y="11" width="20" height="11" fill="#fff"/>
-      <circle cx="16" cy="16" r="4" fill="#c98c57" stroke="#43281e"/>
-      <circle cx="14.5" cy="15.5" r=".6" fill="#201510"/><circle cx="17.5" cy="15.5" r=".6" fill="#201510"/>
-      <rect x="5" y="24" width="22" height="4" fill="#c0c0c0"/>
-    `,
-  },
-  {
     href: "mac8/",
     name: "Mac OS 8.1",
     year: "1998",
@@ -325,12 +280,12 @@ window.OqHubMachines = [
   },
   {
     href: "win98/",
-    name: "Windows 98",
-    year: "1998",
+    name: "Windows",
+    year: "1992–2009",
     category: "redmond",
     hasGames: false,
-    meta: "Start / taskbar",
-    iconNote: "Teal desktop, 3D gray window, navy title bar",
+    meta: "Upgrade Wizard",
+    iconNote: "Teal desktop, classic Windows window, navy title bar",
     icon: `
       <rect width="32" height="32" fill="#008080"/>
       <rect x="4" y="6" width="24" height="18" fill="#c0c0c0"/>
@@ -409,28 +364,6 @@ window.OqHubMachines = [
     `,
   },
   {
-    href: "xp/",
-    name: "Windows XP",
-    year: "2001",
-    category: "redmond",
-    hasGames: false,
-    meta: "Luna Blue",
-    iconNote: "Bliss hill, Luna blue chrome",
-    icon: `
-      <rect width="32" height="16" fill="#5eb1e5"/>
-      <rect y="16" width="32" height="16" fill="#3d9e2a"/>
-      <rect x="0" y="14" width="18" height="8" fill="#6bb33a"/>
-      <rect x="20" y="6" width="6" height="4" fill="#ffffff"/>
-      <rect x="3" y="10" width="26" height="16" fill="#ece9d8"/>
-      <rect x="3" y="10" width="26" height="4" fill="#0054e3"/>
-      <rect x="4" y="11" width="12" height="2" fill="#ffffff"/>
-      <rect x="24" y="11" width="4" height="2" fill="#e96c32"/>
-      <rect x="5" y="16" width="22" height="8" fill="#ffffff"/>
-      <rect x="7" y="18" width="8" height="1" fill="#000000"/>
-      <rect x="7" y="21" width="12" height="1" fill="#000000"/>
-    `,
-  },
-  {
     href: "kde/",
     name: "KDE",
     year: "2006",
@@ -454,30 +387,5 @@ window.OqHubMachines = [
       <rect x="8" y="29" width="4" height="2" fill="#e8e8ee"/>
     `,
   },
-  {
-    href: "win7/",
-    name: "Windows 7",
-    year: "2009",
-    category: "redmond",
-    hasGames: false,
-    meta: "Aero glass",
-    iconNote: "Harmony swirl, glass title, four-color orb",
-    icon: `
-      <rect width="32" height="32" fill="#071833"/>
-      <rect x="4" y="18" width="10" height="6" fill="#1a4e8a"/>
-      <rect x="16" y="12" width="12" height="10" fill="#0d2f66"/>
-      <rect x="10" y="8" width="8" height="8" fill="#2a6cb0"/>
-      <rect x="2" y="7" width="28" height="18" fill="#dce6f4"/>
-      <rect x="2" y="7" width="28" height="4" fill="#9ec3ee"/>
-      <rect x="3" y="8" width="10" height="2" fill="#2b2b2b"/>
-      <rect x="24" y="8" width="2" height="2" fill="#c05050"/>
-      <rect x="26" y="8" width="2" height="2" fill="#50a050"/>
-      <rect x="4" y="13" width="24" height="10" fill="#ffffff"/>
-      <rect x="13" y="22" width="6" height="6" fill="#222222"/>
-      <rect x="14" y="23" width="2" height="2" fill="#f35325"/>
-      <rect x="16" y="23" width="2" height="2" fill="#81bc06"/>
-      <rect x="14" y="25" width="2" height="2" fill="#05a6f0"/>
-      <rect x="16" y="25" width="2" height="2" fill="#ffba08"/>
-    `,
-  },
 ];
+
