@@ -151,17 +151,72 @@
       .icon-wizard {
         background-image: url("${WIZARD_ICON_SVG}");
       }
+      .oq-wizard-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: rgba(0, 0, 0, 0.45) !important;
+        z-index: 99999 !important;
+      }
+      .oq-wizard-overlay[hidden] {
+        display: none !important;
+      }
       .oq-wizard-dialog {
         width: min(32rem, calc(100vw - 20px)) !important;
-        max-height: min(34rem, calc(100vh - 40px));
+        max-height: min(36rem, calc(100vh - 40px));
         display: flex;
         flex-direction: column;
         user-select: none;
         visibility: visible !important;
         opacity: 1 !important;
+        position: relative !important;
+        z-index: 100000 !important;
       }
+      /* Win 3.1: scale down to fit comfortably inside html { zoom: 2 } */
       .oq-wizard-win31 {
-        width: min(30rem, calc(100vw - 16px)) !important;
+        width: min(19rem, calc(100vw - 16px)) !important;
+        max-height: calc(100vh - 20px) !important;
+        background: #ffffff !important;
+      }
+      .oq-wizard-win31 .win31-dialog-body {
+        background: #ffffff !important;
+        padding: 6px 8px !important;
+      }
+      .oq-wizard-win31 .oq-wizard-header {
+        padding-bottom: 4px;
+        margin-bottom: 6px;
+      }
+      .oq-wizard-win31 .oq-wizard-header-text h2 {
+        font-size: 11px;
+      }
+      .oq-wizard-win31 .oq-wizard-header-text p {
+        font-size: 9px;
+      }
+      .oq-wizard-win31 .oq-wizard-era-list {
+        max-height: 10rem;
+        gap: 3px;
+      }
+      .oq-wizard-win31 .oq-wizard-era-option {
+        padding: 3px 4px;
+      }
+      .oq-wizard-win31 .oq-wizard-era-title {
+        font-size: 10px;
+      }
+      .oq-wizard-win31 .oq-wizard-era-tagline,
+      .oq-wizard-win31 .oq-wizard-era-desc {
+        font-size: 9px;
+      }
+      /* Win 95: strictly single-color solid title bar */
+      .oq-wizard-win95 .title-bar {
+        background: #000080 !important;
       }
       .oq-wizard-header {
         display: flex;
@@ -193,7 +248,6 @@
       }
       .oq-wizard-steps-container {
         flex: 1;
-        min-height: 15rem;
         display: flex;
         flex-direction: column;
       }
@@ -202,14 +256,18 @@
         flex-direction: column;
         flex: 1;
       }
+      .oq-wizard-step[hidden] {
+        display: none !important;
+      }
       .oq-wizard-era-list {
         display: flex;
         flex-direction: column;
         gap: 6px;
         margin: 8px 0;
         overflow-y: auto;
-        max-height: 14rem;
-        padding-right: 4px;
+        max-height: 13.5rem;
+        padding-right: 2px;
+        scrollbar-width: thin;
       }
       .oq-wizard-era-option {
         display: flex;
@@ -515,6 +573,8 @@
   function openWizard() {
     const theme = detectTheme();
     if (!theme) return;
+    const startMenu = document.getElementById("start-menu");
+    if (startMenu) startMenu.hidden = true;
     const overlay = createWizardDialog(theme);
     overlay.hidden = false;
   }

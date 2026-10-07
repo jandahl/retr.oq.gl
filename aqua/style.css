@@ -15,14 +15,6 @@
   src: url("../vendor/next/fonts/texgyreheros-bold.otf") format("opentype");
 }
 
-/* Desktop chrome scale — prefer 1.5 (mac1984) over mac8's 2: Aqua's
-   jelly traffic lights + Dock glass already read large; 2 felt oversized
-   next to the menubar. Same CLAUDE.md zoom gotcha as other zoom themes. */
-@media (min-width: 700px) {
-  html {
-    zoom: 1.5;
-  }
-}
 
 
 /* Graphite appearance — greys Aqua chrome (period System Preferences). */

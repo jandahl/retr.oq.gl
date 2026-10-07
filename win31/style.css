@@ -81,12 +81,6 @@ html, body {
   overflow: hidden;
 }
 
-/* Like the Mac II theme, give the fixed-pixel CRT artwork a true 2x layout
-   scale on roomy displays. Keeping phones at 1x prevents the shell from
-   becoming wider than the viewport. */
-@media (min-width: 700px) {
-  html { zoom: 2; }
-}
 
 .boot-screen {
   position: fixed;
