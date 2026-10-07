@@ -3,6 +3,15 @@
 import pytest
 
 
+def test_canonical_shell_and_aqua_compatibility_redirect(page, base_url):
+    page.goto(f"{base_url}/cupertino/index.html?era=lion#desktop")
+    assert "/cupertino/" in page.url
+    assert page.evaluate("() => document.documentElement.dataset.osxEra") == "lion"
+    page.goto(f"{base_url}/aqua/index.html?era=tiger#desktop")
+    assert "/cupertino/" in page.url
+    assert page.evaluate("() => document.documentElement.dataset.osxEra") == "tiger"
+
+
 @pytest.mark.parametrize(
     ("theme", "skin"),
     [("mac1984", "system1"), ("mac8", "mac8")],
