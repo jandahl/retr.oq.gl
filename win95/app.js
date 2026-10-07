@@ -67,8 +67,8 @@
           window.OqScreensaver.host.setIdleMs(0);
         }
         const frame = document.getElementById("doom95-frame");
-        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes("?v="))) {
-          frame.src = "../vendor/dwasm/runner.html?v=3";
+        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes("?v=4"))) {
+          frame.src = "../vendor/dwasm/runner.html?v=4";
         }
         if (frame) {
           try {
