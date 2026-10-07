@@ -71,7 +71,7 @@ audio demo, or an easter egg. Source of truth: `shared/games.js`.
 **`shared/`** — `dict-source.js`, `katersat-source.js`, `dict-merge.js`
 (Chicago + katersat Option C; see `shared/SOURCES.md`), `hyphenation.js`,
 `router.js`, `decon-app.js`, `redmond/window-manager.js` (win31/98/XP/7),
-`osx/` (aqua/ + future OS X skins), `art/fox/` (MORPH! mascot source:
+`cupertino/` (Aqua + future OS X skins), `art/fox/` (MORPH! mascot source:
 first-gen illustrations + 128px hires frames — not GB-locked; theme
 sprites stay in the theme dir).
 
