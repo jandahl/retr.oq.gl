@@ -131,7 +131,7 @@
   }
 
   // Desktop + text-mode themes: load the screensaver host from next to this file.
-  if (/\/(win31|win95|win98|xp|win7|kde|mac8|mac1984|aqua|amiga|next|dos|c64)(\/|$)/.test(location.pathname)) {
+  if (/\/(win31|win95|win98|xp|win7|kde|mac8|mac1984|aqua|cupertino|amiga|next|dos|c64)(\/|$)/.test(location.pathname)) {
     loadNextToRouter("redmond/screensaver-catalog.js?v=1");
     loadNextToRouter("redmond/screensaver.js?v=36");
   }
