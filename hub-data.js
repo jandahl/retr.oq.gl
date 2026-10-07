@@ -325,12 +325,12 @@ window.OqHubMachines = [
     `,
   },
   {
-    href: "aqua/",
-    name: "OS X Aqua",
+    href: "cupertino/",
+    name: "Cupertino",
     year: "2001",
     category: "cupertino",
     hasGames: false,
-    meta: "Aqua / Dock",
+    meta: "Aqua / Dock · family",
     iconNote: "Pinstripe desktop, traffic-light window, glass Dock",
     icon: `
       <rect width="32" height="32" fill="#e2e6ec"/>
@@ -388,4 +388,3 @@ window.OqHubMachines = [
     `,
   },
 ];
-
