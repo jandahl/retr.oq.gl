@@ -30,3 +30,12 @@ test("Aqua entry point loads the registry before its Time Machine adapter", () =
   const timeMachine = html.indexOf('src="timemachine.js?v=11"');
   assert.ok(registry >= 0 && timeMachine > registry);
 });
+
+test("Classic Mac entry points load the native Time Machine adapter", () => {
+  for (const [file, marker] of [["mac1984/index.html", "classic-time-machine.js?v=1"], ["mac8/index.html", "classic-time-machine.js?v=1"]]) {
+    const html = read(file);
+    assert.match(html, /shared\/cupertino\/era-registry\.js\?v=1/);
+    assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.match(html, /classic-time-machine\.css\?v=1/);
+  }
+});
