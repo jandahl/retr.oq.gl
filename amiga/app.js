@@ -782,4 +782,87 @@
   placeBoing();
   if (copperOn) drawCopper(0);
   requestAnimationFrame(tickBoing);
+
+  // ---------- Workbench Version Switcher ----------
+  const STORAGE_KEY = "retr-oq:amiga-version";
+  const screenTitle = document.querySelector(".wb-screen-title");
+  const winVersion = document.getElementById("win-version");
+  const versionApply = document.getElementById("version-apply");
+  const versionCancel = document.getElementById("version-cancel");
+  const radioInputs = document.querySelectorAll('input[name="wb-version-choice"]');
+
+  const VERSION_CONFIGS = {
+    "1.3": {
+      screenTitle: "Workbench 1.3",
+      bodyClass: null,
+      kickstart: "Kickstart 34.5",
+    },
+    "2.0": {
+      screenTitle: "Workbench 2.04",
+      bodyClass: "wb-mode-2",
+      kickstart: "Kickstart 37.175",
+    },
+    "3.1": {
+      screenTitle: "Workbench 3.1",
+      bodyClass: "wb-mode-3",
+      kickstart: "Kickstart 40.68",
+    },
+  };
+
+  function setWorkbenchVersion(version, persist = true) {
+    const config = VERSION_CONFIGS[version] || VERSION_CONFIGS["1.3"];
+    document.body.classList.remove("wb-mode-2", "wb-mode-3");
+    if (config.bodyClass) {
+      document.body.classList.add(config.bodyClass);
+    }
+    if (screenTitle) {
+      screenTitle.textContent = config.screenTitle;
+    }
+    for (const radio of radioInputs) {
+      radio.checked = radio.value === (VERSION_CONFIGS[version] ? version : "1.3");
+    }
+    if (persist) {
+      try {
+        localStorage.setItem(STORAGE_KEY, version);
+      } catch {}
+    }
+  }
+
+  // Load from URL param or localStorage
+  const urlParam = new URLSearchParams(window.location.search).get("version");
+  let savedVersion = "1.3";
+  try {
+    savedVersion = localStorage.getItem(STORAGE_KEY) || "1.3";
+  } catch {}
+  const initialVersion = urlParam || savedVersion;
+  setWorkbenchVersion(initialVersion, false);
+
+  if (versionApply) {
+    versionApply.addEventListener("click", () => {
+      let selected = "1.3";
+      for (const radio of radioInputs) {
+        if (radio.checked) {
+          selected = radio.value;
+          break;
+        }
+      }
+      setWorkbenchVersion(selected, true);
+      closeWindowEl(winVersion);
+    });
+  }
+
+  if (versionCancel) {
+    versionCancel.addEventListener("click", () => {
+      closeWindowEl(winVersion);
+    });
+  }
+
+  const menuResetWB = document.getElementById("menu-resetwb");
+  if (menuResetWB) {
+    menuResetWB.querySelector("a").addEventListener("click", (event) => {
+      event.preventDefault();
+      closeMenu();
+      setWorkbenchVersion("1.3", true);
+    });
+  }
 })();

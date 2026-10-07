@@ -700,3 +700,218 @@ button,
 @media (prefers-reduced-motion: reduce) {
   .guru-box { animation: none; }
 }
+
+/* ---------- Workbench Version Switcher Dialog ---------- */
+.wb-version-body {
+  padding: 0.8rem 1rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.wb-version-lead {
+  margin: 0;
+  font-weight: bold;
+}
+.wb-version-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.wb-version-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--wb-black);
+  box-shadow: inset 1px 1px 0 var(--wb-white), inset -1px -1px 0 var(--wb-black);
+  background: var(--wb-white);
+  color: var(--wb-black);
+  cursor: var(--cursor-arrow);
+  user-select: none;
+}
+.wb-version-card input[type="radio"] {
+  margin-top: 3px;
+  cursor: var(--cursor-arrow);
+  accent-color: var(--wb-orange);
+}
+.wb-version-card:has(input:checked) {
+  background: var(--wb-orange);
+  color: var(--wb-black);
+  box-shadow: inset 1px 1px 0 var(--wb-black), inset -1px -1px 0 var(--wb-white);
+}
+.wb-version-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.wb-version-card-content strong {
+  font-size: 15px;
+}
+.wb-version-card-content span {
+  font-size: 13px;
+  opacity: 0.88;
+}
+.wb-version-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+/* ---------- Workbench 2.0 (ECS, 3D Gray & Deep Blue) ---------- */
+body.wb-mode-2 {
+  --wb-blue: #0055aa;
+  --wb-white: #ffffff;
+  --wb-black: #000000;
+  --wb-orange: #aaaaaa; /* 2.0 gray replaces orange bevels */
+  background: #777777;
+}
+body.wb-mode-2 .wb-backdrop {
+  background-color: #777777;
+  filter: grayscale(0.5) brightness(0.9);
+}
+body.wb-mode-2 .wb-screenbar {
+  background: #aaaaaa;
+  color: #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow: inset 0 1px 0 #ffffff, inset 0 -1px 0 #555555;
+}
+body.wb-mode-2 .wb-screen-title {
+  color: #000000;
+  font-weight: bold;
+}
+body.wb-mode-2 .wb-screenbar > [role="menu-item"] {
+  color: #000000;
+}
+body.wb-mode-2 .wb-screenbar > [role="menu-item"].menu-open,
+body.wb-mode-2 .wb-screenbar [role="menu"] a:hover,
+body.wb-mode-2 .wb-screenbar [role="menu"] a:focus-visible {
+  background: #0055aa;
+  color: #ffffff;
+}
+body.wb-mode-2 .wb-screenbar [role="menu"] li.divider {
+  border-top: 2px solid #555555;
+}
+body.wb-mode-2 .wb-window {
+  background: #aaaaaa;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -2px -2px 0 #000000, 3px 3px 0 rgba(0, 0, 0, 0.4);
+}
+body.wb-mode-2 .wb-titlebar {
+  background: #0055aa;
+}
+body.wb-mode-2 .wb-title {
+  color: #ffffff;
+  font-weight: bold;
+}
+body.wb-mode-2 .wb-window.inactive .wb-titlebar {
+  background: #aaaaaa;
+}
+body.wb-mode-2 .wb-window.inactive .wb-title {
+  color: #000000;
+}
+body.wb-mode-2 .gadget {
+  background: #aaaaaa;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000;
+}
+body.wb-mode-2 .gadget-close::after,
+body.wb-mode-2 .gadget-zoom::after,
+body.wb-mode-2 .gadget-depth::before,
+body.wb-mode-2 .gadget-depth::after {
+  background: #aaaaaa;
+}
+body.wb-mode-2 .wb-growbox {
+  background: #aaaaaa;
+  box-shadow: inset 1px 1px 0 #ffffff;
+}
+body.wb-mode-2 .desktop-icon:focus-visible .desktop-icon-label,
+body.wb-mode-2 .desktop-icon.is-selected .desktop-icon-label {
+  background: #0055aa;
+  color: #ffffff;
+}
+body.wb-mode-2 .wb-btn {
+  background: #aaaaaa;
+  color: #000000;
+}
+body.wb-mode-2 .wb-version-card:has(input:checked) {
+  background: #0055aa;
+  color: #ffffff;
+}
+
+/* ---------- Workbench 3.1 (MagicWB / AGA Slate & Silver) ---------- */
+body.wb-mode-3 {
+  --wb-blue: #3b5998;
+  --wb-white: #ffffff;
+  --wb-black: #1a1a1a;
+  --wb-orange: #969696;
+  background: #969696;
+}
+body.wb-mode-3 .wb-backdrop {
+  background-color: #969696;
+  filter: contrast(0.9) brightness(0.95);
+}
+body.wb-mode-3 .wb-screenbar {
+  background: #b4b4b4;
+  color: #1a1a1a;
+  border-bottom: 2px solid #555555;
+  box-shadow: inset 0 1px 0 #ffffff, inset 0 -1px 0 #777777;
+}
+body.wb-mode-3 .wb-screen-title {
+  color: #1a1a1a;
+  font-weight: bold;
+}
+body.wb-mode-3 .wb-screenbar > [role="menu-item"] {
+  color: #1a1a1a;
+}
+body.wb-mode-3 .wb-screenbar > [role="menu-item"].menu-open,
+body.wb-mode-3 .wb-screenbar [role="menu"] a:hover,
+body.wb-mode-3 .wb-screenbar [role="menu"] a:focus-visible {
+  background: #3b5998;
+  color: #ffffff;
+}
+body.wb-mode-3 .wb-screenbar [role="menu"] li.divider {
+  border-top: 2px solid #969696;
+}
+body.wb-mode-3 .wb-window {
+  background: #b4b4b4;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -2px -2px 0 #333333, 2px 2px 4px rgba(0, 0, 0, 0.35);
+}
+body.wb-mode-3 .wb-titlebar {
+  background: #3b5998;
+}
+body.wb-mode-3 .wb-title {
+  color: #ffffff;
+}
+body.wb-mode-3 .wb-window.inactive .wb-titlebar {
+  background: #969696;
+}
+body.wb-mode-3 .wb-window.inactive .wb-title {
+  color: #1a1a1a;
+}
+body.wb-mode-3 .gadget {
+  background: #b4b4b4;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #333333;
+}
+body.wb-mode-3 .gadget-close::after,
+body.wb-mode-3 .gadget-zoom::after,
+body.wb-mode-3 .gadget-depth::before,
+body.wb-mode-3 .gadget-depth::after {
+  background: #b4b4b4;
+}
+body.wb-mode-3 .wb-growbox {
+  background: #b4b4b4;
+  box-shadow: inset 1px 1px 0 #ffffff;
+}
+body.wb-mode-3 .desktop-icon:focus-visible .desktop-icon-label,
+body.wb-mode-3 .desktop-icon.is-selected .desktop-icon-label {
+  background: #3b5998;
+  color: #ffffff;
+}
+body.wb-mode-3 .wb-btn {
+  background: #b4b4b4;
+  color: #1a1a1a;
+}
+body.wb-mode-3 .wb-version-card:has(input:checked) {
+  background: #3b5998;
+  color: #ffffff;
+}
+
