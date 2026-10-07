@@ -18,14 +18,14 @@ test("Cupertino registry covers Classic and OS X milestones in chronology", () =
 });
 
 test("Aqua Time Machine consumes only OS X eras from the shared registry", () => {
-  const source = read("aqua/timemachine.js");
+  const source = read("cupertino/timemachine.js");
   assert.match(source, /window\.OqCupertino\?\.eras/);
   assert.match(source, /era\.family === "osx"/);
   assert.match(source, /migrateStoredEra\("osx"\)/);
 });
 
 test("Aqua entry point loads the registry before its Time Machine adapter", () => {
-  const html = read("aqua/index.html");
+  const html = read("cupertino/index.html");
   const registry = html.indexOf("shared/cupertino/era-registry.js?v=1");
   const timeMachine = html.indexOf('src="timemachine.js?v=11"');
   assert.ok(registry >= 0 && timeMachine > registry);

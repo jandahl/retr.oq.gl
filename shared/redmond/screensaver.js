@@ -296,7 +296,7 @@
     if (p.includes("/xp/")) return "xp";
     if (p.includes("/mac1984/")) return "mac1984";
     if (p.includes("/mac8/")) return "mac8";
-    if (p.includes("/aqua/")) return "aqua";
+    if (p.includes("/aqua/") || p.includes("/cupertino/")) return "aqua";
     if (p.includes("/kde/")) return "kde";
     if (p.includes("/amiga/")) return "amiga";
     if (p.includes("/next/")) return "next";
