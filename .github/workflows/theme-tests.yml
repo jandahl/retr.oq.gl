@@ -20,28 +20,6 @@ name: theme tests
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - "aqua/**"
-      - "c64/**"
-      - "compy/**"
-      - "gb/**"
-      - "gg/**"
-      - "nes/**"
-      - "snes/**"
-      - "win98/**"
-      - "win95/**"
-      - "os2/**"
-      - "win31/**"
-      - "dos/**"
-      - "xp/**"
-      - "win7/**"
-      - "kde/**"
-      - "shared/**"
-      - "vendor/**"
-      - "tests/**"
-      - "test/**"
-      - ".github/workflows/theme-tests.yml"
-      - ".github/workflows/palette.yml"
   workflow_dispatch:
 
 concurrency:
@@ -49,6 +27,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  shared-node-tests:
+    # Fast Node-only test suite covering shared minigame engines and shared invariants.
+    # Runs unconditionally on every pull request to satisfy GitHub branch protection's
+    # required check without depending on path filters.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test tests/shared/*.mjs
+
   changes:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
@@ -63,7 +54,6 @@ jobs:
     # at all (zero jobs scheduled, no code ever ran).
     outputs:
       themes: ${{ steps.theme_list.outputs.themes }}
-      shared: ${{ steps.filter.outputs.shared }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -177,37 +167,12 @@ jobs:
               - "tests/requirements.txt"
               - "shared/*.js"
               - ".github/workflows/theme-tests.yml"
-            shared:
-              - "shared/**/*.js"
-              - "tests/shared/**"
-              - "test/**"
-              - "vendor/screensavers/**"
-              - ".github/workflows/theme-tests.yml"
       - name: Keep only runnable theme filters
         id: theme_list
         env:
           FILTERED_CHANGES: ${{ steps.filter.outputs.changes }}
         run: |
-          themes=$(jq -c 'map(select(. != "shared"))' <<< "$FILTERED_CHANGES")
-          echo "themes=$themes" >> "$GITHUB_OUTPUT"
-
-  shared-node-tests:
-    # shared/morph-puzzles.js, shared/morph-game.js and shared/klax-game.js
-    # (the MORPH!/KLAX minigame engine + data, loaded classic-script-style
-    # by gb/, snes/, and c64/)
-    # are pure logic with no DOM, so they get their own fast Node-only job
-    # instead of waiting on the `changes`/Playwright matrix above. Runs on
-    # only when shared JS or shared Node tests changed; this avoids a runner
-    # for unrelated theme-only changes while preserving the direct coverage.
-    needs: changes
-    if: needs.changes.outputs.shared == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-      - run: node --test tests/shared/*.mjs
+          echo "themes=$FILTERED_CHANGES" >> "$GITHUB_OUTPUT"
 
   test:
     needs: changes
