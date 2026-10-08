@@ -632,6 +632,9 @@ button,
     height: auto !important;
     max-height: calc(100vh - 54px) !important;
   }
+  #win-version.closed {
+    display: none !important;
+  }
 }
 
 /* ---------- Requesters ---------- */
