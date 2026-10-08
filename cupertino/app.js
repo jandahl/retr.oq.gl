@@ -479,8 +479,10 @@
       let bestScale = 1;
       for (const el of liveItems()) {
         if (el.classList.contains("is-bouncing")) continue;
-        const rect = el.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
+        // Use the untransformed layout box. Feeding the previous scale back
+        // into the next distance sample makes neighboring icons jump.
+        const dockRect = dock.getBoundingClientRect();
+        const cx = dockRect.left + (el.offsetLeft + el.offsetWidth / 2) * zoom;
         const dist = Math.abs(clientX - cx);
         const t = Math.max(0, 1 - dist / RANGE);
         const scale = 1 + (MAX_SCALE - 1) * (0.5 - 0.5 * Math.cos(Math.PI * t));
@@ -1155,6 +1157,16 @@
   }
 
   applyAppearance(getStoredAppearance());
+
+  // Modern macOS exposes a system light/dark appearance from Big Sur onward.
+  // Keep the early Aqua-era skins historically light, but let later eras and
+  // the Time Machine preview follow the host preference.
+  const systemAppearance = window.matchMedia("(prefers-color-scheme: dark)");
+  function applySystemAppearance() {
+    document.documentElement.dataset.systemAppearance = systemAppearance.matches ? "dark" : "light";
+  }
+  applySystemAppearance();
+  systemAppearance.addEventListener?.("change", applySystemAppearance);
 
   document.querySelector("#menu-sys-prefs a")?.addEventListener("click", (event) => {
     event.preventDefault();
