@@ -1,14 +1,15 @@
-# aqua/ — internal notes
+# cupertino/ — Aqua-era internal notes
 
 Early OS X **Aqua** (roughly 10.0–10.4 / 2001). Shell behavior lives in
 `shared/osx/`; this directory is mostly skin + thin wiring.
 
 See root `CLAUDE.md` → Families → OS X (`shared/osx/`).
 
-## Directory name
+## Historical directory name
 
-Chose `aqua/` (not `osx/`) so a later Tiger / Leopard skin can sit beside
-it without renaming. Year on the hub is **2001** (Cheetah / early Aqua).
+The compatibility URL `/aqua/` remains available, but the canonical family
+directory is now `cupertino/`. Year on the hub is **2001** (Cheetah / early
+Aqua).
 
 ## Vendor CSS search (2026-09)
 

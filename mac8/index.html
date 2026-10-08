@@ -9,8 +9,9 @@
 <title>retr-oq — Mac OS 8.1 desktop prototype</title>
 <link rel="stylesheet" href="../vendor/mac8/base.css" />
 <link rel="stylesheet" href="style.css?v=15" />
+<link rel="stylesheet" href="../shared/cupertino/classic-time-machine.css?v=1" />
 </head>
-<body>
+<body class="mac8">
   <div id="boot-screen">
     <div id="boot-sequence" class="visible">
       <svg class="smiling-mac" viewBox="0 0 16 16" shape-rendering="crispEdges" role="img" aria-label="Smiling computer">
@@ -386,10 +387,12 @@
   <script src="../shared/dict-merge.js?v=2"></script>
   <script src="../shared/hyphenation.js?v=1"></script>
   <script src="../shared/router.js?v=24"></script>
+  <script src="../shared/cupertino/era-registry.js?v=1"></script>
   <!-- Real ES module, not a classic script -- see shared/oq-analysis.js's
        own header comment for why this one file is the exception. -->
   <script type="module" src="../shared/oq-analysis.js?v=14"></script>
   <script src="../shared/decon-app.js?v=6"></script>
   <script src="app.js?v=10"></script>
+  <script src="../shared/cupertino/classic-time-machine.js?v=1"></script>
 </body>
 </html>
