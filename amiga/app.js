@@ -271,8 +271,12 @@
     if (link) {
       link.addEventListener("click", (event) => {
         event.preventDefault();
+        event.stopPropagation();
         const target = document.getElementById(item.dataset.open);
-        if (target) openWindow(target);
+        if (target) {
+          openWindow(target);
+        }
+        closeMenu();
       });
     }
   }
