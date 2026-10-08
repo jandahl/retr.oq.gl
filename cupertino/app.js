@@ -1255,6 +1255,57 @@
   }
   wireScreenEffectsMenu();
 
+  // Dock folder stack: a small, period-inspired foldout for the available
+  // macOS screen savers. The existing screensaver host owns fullscreen
+  // lifecycle and Escape handling; this only supplies the launcher UI.
+  (function wireScreensaverFolder() {
+    const folder = document.getElementById("dock-screensavers");
+    const menu = document.getElementById("dock-screensavers-menu");
+    if (!folder || !menu) return;
+    const entries = window.OqScreenSaverCatalog
+      ? window.OqScreenSaverCatalog.forTheme("aqua")
+      : [
+          { id: "fieldlines", label: "Field Lines" },
+          { id: "flux", label: "Flux" },
+          { id: "solarwinds", label: "Solar Winds" },
+        ];
+    for (const entry of entries) {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "dock-folder-menu-item";
+      item.setAttribute("role", "menuitem");
+      item.dataset.saver = entry.id;
+      item.textContent = entry.label;
+      item.addEventListener("click", () => {
+        menu.hidden = true;
+        folder.setAttribute("aria-expanded", "false");
+        startScreenEffect(entry.id);
+      });
+      menu.appendChild(item);
+    }
+    if (!entries.length) {
+      const empty = document.createElement("span");
+      empty.className = "dock-folder-menu-empty";
+      empty.textContent = "No screen savers installed";
+      menu.appendChild(empty);
+    }
+    function close() {
+      menu.hidden = true;
+      folder.setAttribute("aria-expanded", "false");
+    }
+    folder.addEventListener("click", (event) => {
+      event.stopPropagation();
+      menu.hidden = !menu.hidden;
+      folder.setAttribute("aria-expanded", String(!menu.hidden));
+    });
+    document.addEventListener("pointerdown", (event) => {
+      if (!menu.hidden && !menu.contains(event.target) && event.target !== folder) close();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !menu.hidden) close();
+    });
+  })();
+
   // Test/debug hook: shorten idle without waiting ~75s in CI.
   window.__aquaScreenEffects = {
     start: startScreenEffect,
