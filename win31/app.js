@@ -970,7 +970,11 @@
   // Boot to Program Manager, with a brief startup screen before the shell
   // appears. Continue is useful for keyboard and automated previews.
   function finishBoot() {
-    if (bootScreen.classList.contains("is-done")) return;
+    if (bootScreen.classList.contains("is-done")) {
+      if (!standalone) forceOpenWindow(winProgman);
+      syncChrome();
+      return;
+    }
     bootScreen.classList.add("is-done");
     if (standalone) return;
     forceOpenWindow(winProgman);

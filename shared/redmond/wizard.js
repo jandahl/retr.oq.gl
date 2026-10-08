@@ -75,7 +75,6 @@
     if (currentParams.has("filter")) passParams.set("filter", currentParams.get("filter"));
     if (currentParams.has("word")) passParams.set("word", currentParams.get("word"));
     if (currentParams.has("order")) passParams.set("order", currentParams.get("order"));
-    passParams.set("nosplash", "1");
     const q = passParams.toString();
     return era.path + (q ? ("?" + q) : "");
   }
@@ -151,6 +150,9 @@
       .icon-wizard {
         background-image: url("${WIZARD_ICON_SVG}");
       }
+      .icon-wizard-31 { background: linear-gradient(135deg, #000080 0 45%, #fff 46% 54%, #c0c0c0 55%); }
+      .icon-wizard-9x { background: linear-gradient(135deg, #008080 0 45%, #fff 46% 54%, #000080 55%); }
+      .icon-wizard-modern { background: linear-gradient(135deg, #1d4ed8 0 45%, #fff 46% 54%, #60a5fa 55%); }
       .oq-wizard-overlay {
         position: fixed !important;
         inset: 0 !important;
@@ -595,7 +597,7 @@
       li.className = "start-menu-item";
       
       const icon = document.createElement("span");
-      icon.className = "start-menu-icon icon-wizard";
+      icon.className = `start-menu-icon icon-wizard icon-wizard-${theme === "win31" ? "31" : theme === "win95" || theme === "win98" || theme === "xp" ? "9x" : "modern"}`;
       icon.setAttribute("aria-hidden", "true");
 
       li.append(icon, document.createTextNode(" Upgrade Wizard…"));
@@ -629,7 +631,7 @@
       }
       iconEl.setAttribute("data-open", "wizard");
       iconEl.innerHTML = `
-        <span class="desktop-icon-glyph icon-wizard" aria-hidden="true"></span>
+        <span class="desktop-icon-glyph icon-wizard icon-wizard-${theme === "win95" || theme === "win98" || theme === "xp" ? "9x" : "modern"}" aria-hidden="true"></span>
         <span class="desktop-icon-label">Upgrade Wizard</span>
       `;
 
@@ -656,7 +658,7 @@
         progBtn.className = "prog-icon";
         progBtn.setAttribute("data-open", "wizard");
         progBtn.innerHTML = `
-          <span class="prog-icon-glyph icon-wizard" aria-hidden="true"></span>
+          <span class="prog-icon-glyph icon-wizard icon-wizard-31" aria-hidden="true"></span>
           <span class="prog-icon-label">Upgrade Wizard</span>
         `;
         progBtn.addEventListener("click", () => {
