@@ -795,21 +795,45 @@
   const versionCancel = document.getElementById("version-cancel");
   const radioInputs = document.querySelectorAll('input[name="wb-version-choice"]');
 
+  const iconImgs = {
+    ram: document.getElementById("icon-img-ram"),
+    oq: document.getElementById("icon-img-oq"),
+    decon: document.getElementById("icon-img-decon"),
+    about: document.getElementById("icon-img-about"),
+    version: document.getElementById("icon-img-version"),
+    trash: document.getElementById("icon-img-trash"),
+  };
+  const aboutArtImg = document.getElementById("about-art-img");
+  const aboutVersionKicker = document.getElementById("about-version-kicker");
+  const aboutVersionDesc = document.getElementById("about-version-desc");
+
   const VERSION_CONFIGS = {
     "1.3": {
       screenTitle: "Workbench 1.3",
       bodyClass: null,
       kickstart: "Kickstart 34.5",
+      artSuffix: "",
+      aboutKicker: "Workbench 1.3 \u00a0 Kickstart 34.5",
+      aboutDesc: "A classic Amiga desktop — four-pen Intuition chrome (blue / white / black / orange) around a Deluxe Paint backdrop and icons, 12-bit OCS color, the way an A500 owner dressed the machine: Workbench in the gadgets, a macaw and a chrome torus on the wallpaper because they could.",
+      romIcon: "art/icon-rom.png",
     },
     "2.0": {
       screenTitle: "Workbench 2.04",
       bodyClass: "wb-mode-2",
       kickstart: "Kickstart 37.175",
+      artSuffix: "-wb2",
+      aboutKicker: "Workbench 2.04 \u00a0 Kickstart 37.175",
+      aboutDesc: "The ECS revolution — Commodore\u2019s clean 3D sculpted aesthetic introduced on the A3000 and A500 Plus. Professional neutral greys, chiseled bevel borders, deep blue titlebars, and crisp modern system typography.",
+      romIcon: "art/icon-rom-wb2.png",
     },
     "3.1": {
       screenTitle: "Workbench 3.1",
       bodyClass: "wb-mode-3",
       kickstart: "Kickstart 40.68",
+      artSuffix: "-wb3",
+      aboutKicker: "Workbench 3.1 \u00a0 Kickstart 40.68",
+      aboutDesc: "The AGA powerhouse — refined MagicWB styling for the A1200 and A4000. Dithered slate textures, metallic copper accents, sharp bevelled panels, and higher-density desktop ergonomics.",
+      romIcon: "art/icon-rom-wb3.png",
     },
   };
 
@@ -825,6 +849,20 @@
     for (const radio of radioInputs) {
       radio.checked = radio.value === (VERSION_CONFIGS[version] ? version : "1.3");
     }
+
+    // Dynamic graphic adaptations
+    const sfx = config.artSuffix;
+    if (iconImgs.ram) iconImgs.ram.src = sfx ? `art/icon-disk${sfx}.png` : "art/icon-disk.png";
+    if (iconImgs.oq) iconImgs.oq.src = sfx ? `art/icon-oq${sfx}.png` : "art/icon-oq.png";
+    if (iconImgs.decon) iconImgs.decon.src = sfx ? `art/icon-decon${sfx}.png` : "art/icon-decon.png";
+    if (iconImgs.about) iconImgs.about.src = sfx ? `art/icon-drawer${sfx}.png` : "art/icon-drawer.png";
+    if (iconImgs.trash) iconImgs.trash.src = sfx ? `art/icon-trash${sfx}.png` : "art/icon-trash.png";
+    if (iconImgs.version) iconImgs.version.src = config.romIcon;
+
+    if (aboutArtImg) aboutArtImg.src = sfx ? `art/about${sfx}.png` : "art/about.png";
+    if (aboutVersionKicker) aboutVersionKicker.textContent = config.aboutKicker;
+    if (aboutVersionDesc) aboutVersionDesc.textContent = config.aboutDesc;
+
     if (persist) {
       try {
         localStorage.setItem(STORAGE_KEY, version);
