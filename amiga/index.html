@@ -84,29 +84,29 @@
 
     <div class="desktop-icons desktop-icons-left">
       <button type="button" class="desktop-icon" data-open="win-ram">
-        <img src="art/icon-disk.png" alt="" width="64" height="64" />
+        <img id="icon-img-ram" src="art/icon-disk.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">RAM:</span>
       </button>
       <button type="button" class="desktop-icon" data-open="win-oq">
-        <img src="art/icon-oq.png" alt="" width="64" height="64" />
+        <img id="icon-img-oq" src="art/icon-oq.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">OQ!</span>
       </button>
       <button type="button" class="desktop-icon" data-open="win-decon">
-        <img src="art/icon-decon.png" alt="" width="64" height="64" />
+        <img id="icon-img-decon" src="art/icon-decon.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">Word Deconstructor</span>
       </button>
       <button type="button" class="desktop-icon" data-open="win-about">
-        <img src="art/icon-drawer.png" alt="" width="64" height="64" />
+        <img id="icon-img-about" src="art/icon-drawer.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">Art</span>
       </button>
       <button type="button" class="desktop-icon" data-open="win-version">
-        <img src="art/icon-disk.png" alt="" width="64" height="64" />
+        <img id="icon-img-version" src="art/icon-rom.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">ROM Switch</span>
       </button>
     </div>
     <div class="desktop-icons desktop-icons-right">
       <button type="button" class="desktop-icon" data-open="win-trash">
-        <img src="art/icon-trash.png" alt="" width="64" height="64" />
+        <img id="icon-img-trash" src="art/icon-trash.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">Trash</span>
       </button>
     </div>
@@ -182,11 +182,11 @@
         <button type="button" class="gadget gadget-depth" id="win-about-depth" aria-label="Depth"></button>
       </div>
       <div class="wb-body about-body">
-        <img class="about-art" src="art/about.png" width="160" height="120" alt="Deluxe Paint still: banana, chrome ship, juggler" />
-        <p>
+        <img id="about-art-img" class="about-art" src="art/about.png" width="160" height="120" alt="Deluxe Paint still: banana, chrome ship, juggler" />
+        <p id="about-version-kicker">
           Workbench 1.3 &nbsp; Kickstart 34.5
         </p>
-        <p>
+        <p id="about-version-desc">
           A prototype Amiga desktop — four-pen Intuition chrome
           (blue / white / black / orange) around a Deluxe Paint backdrop
           and icons, 12-bit OCS color, the way a real A500 owner actually
