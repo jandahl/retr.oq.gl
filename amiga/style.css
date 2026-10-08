@@ -789,9 +789,10 @@ body.wb-mode-2 {
 }
 body.wb-mode-2 .wb-backdrop {
   background-color: #777777;
-  background-image: url("art/pattern-wb2.png");
-  background-size: 64px 64px;
-  background-repeat: repeat;
+  background-image: url("art/backdrop-wb2.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 body.wb-mode-2 .wb-screenbar {
   background: #aaaaaa;
@@ -938,9 +939,10 @@ body.wb-mode-3 {
 }
 body.wb-mode-3 .wb-backdrop {
   background-color: #969696;
-  background-image: url("art/pattern-wb3.png");
-  background-size: 64px 64px;
-  background-repeat: repeat;
+  background-image: url("art/backdrop-wb3.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 body.wb-mode-3 .wb-screenbar {
   background: #afb8b8;
