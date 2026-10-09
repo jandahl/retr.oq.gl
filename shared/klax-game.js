@@ -58,6 +58,48 @@
   const CORRECT_VS_WRONG_AFFIX_CHANCE = 0.55; // odds that affix is the correct one (vs. a real wrong one)
 
   /**
+   * Helper computing structured slot notation for debug mode:
+   * e.g. root "illu" -> "A1", affix "qaq" -> "ABCDEF2".
+   * A letter represents which word/root chain it belongs to, and the number
+   * represents the slot position (1 for root, 2 for first affix, etc.).
+   */
+  function buildDebugLabels(puzzles) {
+    const rootOrder = [];
+    for (const p of puzzles) {
+      if (!rootOrder.includes(p.root)) rootOrder.push(p.root);
+    }
+    const rootLetters = {};
+    rootOrder.forEach((r, idx) => {
+      rootLetters[r] = String.fromCharCode(65 + idx);
+    });
+
+    const markerSlots = {};
+    puzzles.forEach((p) => {
+      p.steps.forEach((step, sIdx) => {
+        const slot = sIdx + 2;
+        const m = step.correct.marker;
+        if (!markerSlots[m]) markerSlots[m] = {};
+        if (!markerSlots[m][slot]) markerSlots[m][slot] = new Set();
+        markerSlots[m][slot].add(p.root);
+      });
+    });
+
+    const labels = {};
+    // Position 1: roots
+    rootOrder.forEach((r) => {
+      labels[r] = `${rootLetters[r]}1`;
+    });
+    // Position 2+: affixes/suffixes
+    for (const [m, slots] of Object.entries(markerSlots)) {
+      for (const [slot, rSet] of Object.entries(slots)) {
+        const letters = [...rSet].map((r) => rootLetters[r]).sort().join("");
+        labels[m] = `${letters}${slot}`;
+      }
+    }
+    return labels;
+  }
+
+  /**
    * @param {{
    *   puzzles: Array<{ root: string, steps: Array<{ correct: { marker: string }, wrong: Array<{ marker: string }> }> }>,
    *   columns?: number,
@@ -65,13 +107,28 @@
    *   paddleCap?: number,
    *   startLives?: number,
    *   riseSpeed?: number, // 0..1 well progress per second
+   *   debug?: boolean, // debug mode: replace morphemes with slot notation (A1, A2, BCDEF2...)
    *   rng?: () => number, // 0..1, same contract as Math.random -- injectable so a
    *     // test can drive spawnActive() with a fixed, reproducible sequence
    *     // instead of asserting over thousands of real-random draws.
    * }} config
    */
-  function createGame({ puzzles, columns = 4, stackCap = 5, paddleCap = 4, startLives = 3, riseSpeed = 0.22, rng = Math.random }) {
+  function createGame({
+    puzzles,
+    columns = 4,
+    stackCap = 5,
+    paddleCap = 4,
+    startLives = 3,
+    riseSpeed = 0.22,
+    debug = false,
+    rng = Math.random,
+  }) {
     if (!puzzles || puzzles.length === 0) throw new Error("createGame requires at least one puzzle");
+
+    const debugLabels = buildDebugLabels(puzzles);
+    function toDisplayMarker(m) {
+      return (debug && debugLabels[m]) ? debugLabels[m] : m;
+    }
 
     // One round per puzzle, built from its first step only: a tile pair
     // (the puzzle's own verified root and its one correct first marker),
@@ -130,7 +187,7 @@
         const ids = Array.from(pendingRoots.keys());
         const roundId = ids[Math.floor(rng() * ids.length)];
         const round = rounds[roundId];
-        active = { roundId, kind: "affix-correct", marker: round.correct, col: Math.floor(rng() * columns), y: 0 };
+        active = { roundId, kind: "affix-correct", marker: toDisplayMarker(round.correct), col: Math.floor(rng() * columns), y: 0 };
         return;
       }
       const round = rounds[Math.floor(rng() * rounds.length)];
@@ -146,7 +203,7 @@
       active = {
         roundId: round.id,
         kind: wantsRoot ? "root" : marker === round.correct ? "affix-correct" : "affix-wrong",
-        marker,
+        marker: toDisplayMarker(marker),
         col: Math.floor(rng() * columns),
         y: 0,
       };
@@ -308,5 +365,5 @@
     return { start, tick, place, discard, getState };
   }
 
-  window.OqKlaxGame = { createGame };
+  window.OqKlaxGame = { createGame, buildDebugLabels };
 })();
