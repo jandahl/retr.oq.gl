@@ -1414,10 +1414,12 @@
 
   function launchKlax() {
     showScreen("klax");
+    const debug = new URLSearchParams(window.location.search).get("debug") === "1";
     if (!klaxGame) klaxGame = window.OqKlaxGame.createGame({
       puzzles: window.OqMorphPuzzles.puzzles,
       columns: KLAX_COLS,
       riseSpeed: 0.12,
+      debug,
     });
     klaxGame.start();
     klaxCol = 0;

@@ -882,7 +882,8 @@
     // stack tile enough height for scale-2 text (see fitTextScale/
     // renderTileMarker below); a text-readability trade against one less
     // row of headroom before a lane overflows.
-    if (!klaxGame) klaxGame = window.OqKlaxGame.createGame({ puzzles: window.OqMorphPuzzles.puzzles, columns: KLAX_COLS, stackCap: 4 });
+    const debug = new URLSearchParams(window.location.search).get("debug") === "1";
+    if (!klaxGame) klaxGame = window.OqKlaxGame.createGame({ puzzles: window.OqMorphPuzzles.puzzles, columns: KLAX_COLS, stackCap: 4, debug });
     klaxGame.start();
     klaxCol = 0;
     klaxFlash = 0;

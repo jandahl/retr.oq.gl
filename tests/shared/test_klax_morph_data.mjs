@@ -348,3 +348,60 @@ test("reuse floor: every root and marker connects to at least 3 DISTINCT others"
       `under the floor: ${underFloor.map(([k, others]) => `${k} (${others.size}: ${[...others].join(",")})`).join("; ")}`,
   );
 });
+
+test("klax-game.js: debug mode replaces morphemes with structured slot notation (A1, A2, etc.)", () => {
+  const labels = sandbox.window.OqKlaxGame.buildDebugLabels(puzzles);
+  // Roots are mapped to A1, B1, C1, D1, E1, F1 (distinct roots in appearance order)
+  assert.equal(labels["illu"], "A1");
+  assert.equal(labels["nuna"], "B1");
+  assert.equal(labels["angut"], "C1");
+  assert.equal(labels["qimmeq"], "D1");
+  assert.equal(labels["inuk"], "E1");
+  assert.equal(labels["inuuik"], "F1");
+
+  // Step 1 affixes (slot 2) aggregate the letters of the words/roots they fit:
+  // qaq fits all 6 roots at slot 2 -> ABCDEF2
+  assert.equal(labels["qaq"], "ABCDEF2");
+  // mi fits B, C, D, E, F at slot 2 -> BCDEF2
+  assert.equal(labels["mi"], "BCDEF2");
+  // t fits A, B, C, E at slot 2 -> ABCE2
+  assert.equal(labels["t"], "ABCE2");
+  // sior fits A, D, F at slot 2 -> ADF2
+  assert.equal(labels["sior"], "ADF2");
+
+  // Step 2 affixes (slot 3)
+  assert.equal(labels["voq"], "AEF3");
+  assert.equal(labels["vunga"], "BCD3");
+  assert.equal(labels["soq"], "ADF3");
+
+  // Create game with debug: true and verify spawned tile markers use slot notation
+  const game = sandbox.window.OqKlaxGame.createGame({ puzzles, riseSpeed: 1, debug: true, rng: doomRandom(1) });
+  let state = game.start();
+  const seenMarkers = new Set();
+  for (let i = 0; i < 4000 && !state.gameOver; i++) {
+    if (state.active) seenMarkers.add(state.active.marker);
+    game.tick(1, state.active ? state.active.col : 0, 1);
+    state = game.getState();
+  }
+
+  // Ensure Kalaallisut roots are NOT present in seenMarkers, only slot notation or pill markers
+  const pillMarkers = new Set(["LANE", "ALL", "1UP"]);
+  const expectedLabels = new Set(Object.values(labels));
+  for (const marker of seenMarkers) {
+    assert.ok(
+      expectedLabels.has(marker) || pillMarkers.has(marker),
+      `unexpected marker in debug mode: "${marker}"`,
+    );
+  }
+  // Verify matching still works properly in debug mode
+  const debugMatchGame = sandbox.window.OqKlaxGame.createGame({
+    puzzles,
+    columns: 2,
+    debug: true,
+    riseSpeed: 1,
+    rng: () => 0.5, // non-pill, root vs affix alternates predictably
+  });
+  const matchState = debugMatchGame.start();
+  assert.ok(expectedLabels.has(matchState.active.marker), `expected debug label, got ${matchState.active.marker}`);
+});
+

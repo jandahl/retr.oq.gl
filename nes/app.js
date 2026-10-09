@@ -968,7 +968,8 @@
 
   function launchKlax() {
     showScreen("klax");
-    if (!klaxGame) klaxGame = window.OqKlaxGame.createGame({ puzzles: window.OqMorphPuzzles.puzzles, columns: KLAX_COLS });
+    const debug = new URLSearchParams(window.location.search).get("debug") === "1";
+    if (!klaxGame) klaxGame = window.OqKlaxGame.createGame({ puzzles: window.OqMorphPuzzles.puzzles, columns: KLAX_COLS, debug });
     klaxGame.start();
     klaxCol = 0;
     klaxFlash = 0;
