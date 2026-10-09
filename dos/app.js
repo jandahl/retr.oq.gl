@@ -491,6 +491,7 @@
     dirScreen.hidden = true;
     dictApp.hidden = true;
     deconApp.hidden = true;
+    wolfApp.hidden = true;
     keenApp.hidden = false;
     if (window.OqScreensaver && window.OqScreensaver.host) {
       window.OqScreensaver.host.setIdleMs(0);
@@ -504,6 +505,35 @@
     keenApp.hidden = true;
     if (keenFrame) {
       keenFrame.src = "about:blank";
+    }
+    if (window.OqScreensaver && window.OqScreensaver.host) {
+      window.OqScreensaver.host.setIdleMs(45000);
+    }
+    dirScreen.hidden = false;
+    dosCmd.focus();
+  }
+
+  const wolfApp = document.getElementById("wolf-app");
+  const wolfFrame = document.getElementById("dos-wolf-frame");
+
+  function launchWolf() {
+    dirScreen.hidden = true;
+    dictApp.hidden = true;
+    deconApp.hidden = true;
+    keenApp.hidden = true;
+    wolfApp.hidden = false;
+    if (window.OqScreensaver && window.OqScreensaver.host) {
+      window.OqScreensaver.host.setIdleMs(0);
+    }
+    if (wolfFrame && wolfFrame.src.endsWith("about:blank")) {
+      wolfFrame.src = "../vendor/wolf3d/runner.html";
+    }
+  }
+
+  function exitWolf() {
+    wolfApp.hidden = true;
+    if (wolfFrame) {
+      wolfFrame.src = "about:blank";
     }
     if (window.OqScreensaver && window.OqScreensaver.host) {
       window.OqScreensaver.host.setIdleMs(45000);
@@ -565,13 +595,22 @@
     } else if (screen === "keen") {
       dictApp.hidden = true;
       deconApp.hidden = true;
+      wolfApp.hidden = true;
       if (keenApp.hidden) {
         launchKeen();
+      }
+    } else if (screen === "wolf" || screen === "wolf3d") {
+      dictApp.hidden = true;
+      deconApp.hidden = true;
+      keenApp.hidden = true;
+      if (wolfApp.hidden) {
+        launchWolf();
       }
     } else {
       if (!dictApp.hidden) exitDict();
       if (!deconApp.hidden) exitDecon();
       if (!keenApp.hidden) exitKeen();
+      if (!wolfApp.hidden) exitWolf();
     }
   });
 
@@ -579,6 +618,13 @@
     window.OqRouter.navigate({ screen: "keen" });
   });
   document.getElementById("keen-exit").addEventListener("click", () => {
+    window.OqRouter.navigate({ screen: null });
+  });
+
+  document.getElementById("launch-wolf").addEventListener("click", () => {
+    window.OqRouter.navigate({ screen: "wolf" });
+  });
+  document.getElementById("wolf-exit").addEventListener("click", () => {
     window.OqRouter.navigate({ screen: null });
   });
 
@@ -632,13 +678,13 @@
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden || !keenApp.hidden)) {
+    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden || !keenApp.hidden || !wolfApp.hidden)) {
       window.OqRouter.navigate({ screen: null, filter: null, word: null });
     }
   });
 
   window.addEventListener("message", (event) => {
-    if (event.data && (event.data.type === "doom-exit" || event.data.type === "keen-exit")) {
+    if (event.data && (event.data.type === "doom-exit" || event.data.type === "keen-exit" || event.data.type === "wolf-exit")) {
       window.OqRouter.navigate({ screen: null });
     }
   });
@@ -672,7 +718,9 @@ DECON    EXE        35,328  03-14-89   2:15p
 DECON    DAT        77,824  03-14-89   2:15p
 KEEN     EXE        51,200  12-14-90   1:14p
 KEEN1    DAT       287,000  12-14-90   1:14p
-        7 File(s)    1,387,740 bytes
+WOLF3D   EXE        78,416  05-05-92   3:00p
+WL1      DAT       620,112  05-05-92   3:00p
+        9 File(s)    2,086,268 bytes
                        487,424 bytes free`;
 
   // The real MS-DOS command was VER (built into COMMAND.COM, not a
@@ -763,6 +811,12 @@ DOS/4GW fatal error (15): protected mode available only with 386 or 486`;
         printLine(`KEEN.EXE [/?]\n\n  /?        Display this help`);
       } else {
         window.OqRouter.navigate({ screen: "keen" });
+      }
+    } else if (cmd === "WOLF" || cmd === "WOLF.EXE" || cmd === "WOLF3D" || cmd === "WOLF3D.EXE") {
+      if (args[0] === "/?") {
+        printLine(`WOLF3D.EXE [/?]\n\n  /?        Display this help`);
+      } else {
+        window.OqRouter.navigate({ screen: "wolf" });
       }
     } else if (cmd === "DOOM" || cmd === "DOOM.EXE") {
       printLine(DOOM_ERROR);

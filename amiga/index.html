@@ -99,6 +99,10 @@
         <img id="icon-img-about" src="art/icon-drawer.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">Art</span>
       </button>
+      <button type="button" class="desktop-icon" data-open="win-robocod">
+        <img id="icon-img-robocod" src="art/icon-disk.png" alt="" width="64" height="64" />
+        <span class="desktop-icon-label">RoboCod</span>
+      </button>
       <button type="button" class="desktop-icon" data-open="win-version">
         <img id="icon-img-version" src="art/icon-rom.png" alt="" width="64" height="64" />
         <span class="desktop-icon-label">ROM Switch</span>
@@ -215,6 +219,20 @@
       <div class="wb-growbox" id="win-trash-growbox"></div>
     </section>
 
+    <!-- James Pond II: Codename RoboCod (Amiga emulation via in-browser archive runner) -->
+    <section class="wb-window closed" id="win-robocod" style="top: 2rem; left: 4rem; width: 44rem; height: 32rem;">
+      <div class="wb-titlebar" id="win-robocod-titlebar">
+        <button type="button" class="gadget gadget-close" id="win-robocod-close" aria-label="Close"></button>
+        <h1 class="wb-title">James Pond II &mdash; RoboCod (Amiga)</h1>
+        <button type="button" class="gadget gadget-zoom" id="win-robocod-zoom" aria-label="Zoom"></button>
+        <button type="button" class="gadget gadget-depth" id="win-robocod-depth" aria-label="Depth"></button>
+      </div>
+      <div class="wb-body wb-robocod-body" style="padding: 0; background: #000; overflow: hidden; display: flex; flex-direction: column;">
+        <iframe class="wb-robocod-frame" id="wb-robocod-frame" src="about:blank" title="James Pond II: Codename RoboCod" allow="autoplay; fullscreen; gamepad" style="width: 100%; height: 100%; border: none;"></iframe>
+      </div>
+      <div class="wb-growbox" id="win-robocod-growbox"></div>
+    </section>
+
     <section class="wb-window closed" id="win-version" style="top: 3.5rem; left: 8rem; width: 26rem; height: 23rem;">
       <div class="wb-titlebar" id="win-version-titlebar">
         <button type="button" class="gadget gadget-close" id="win-version-close" aria-label="Close"></button>
@@ -287,6 +305,6 @@
   <script src="../shared/router.js?v=24"></script>
   <script type="module" src="../shared/oq-analysis.js?v=14"></script>
   <script src="../shared/decon-app.js?v=6"></script>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

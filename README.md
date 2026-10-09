@@ -49,11 +49,11 @@ audio demo, or an easter egg. Source of truth: `shared/games.js`.
 
 | Theme | Extra games / demos / eggs |
 | --- | --- |
-| `dos/` | Commander Keen (KEEN.EXE), DOOM (undocumented egg), CGA starfield idle |
+| `dos/` | Commander Keen (KEEN.EXE), Wolfenstein 3D (WOLF3D.EXE), DOOM (undocumented egg), CGA starfield idle |
 | `c64/` | MORPH!, raster-star idle |
 | `mac1984/` | 1-bit starfield idle |
 | `nes/` | Konami Code, CRT starfield attract |
-| `amiga/` | Boing Ball, Copper bars, Boing idle |
+| `amiga/` | James Pond II / RoboCod, Boing Ball, Copper bars, Boing idle |
 | `gb/` | MORPH!, Konami Code, LCD fox attract |
 | `gg/` (direct URL) | Konami Code, LCD plasma attract |
 | `compy/` | Konami Code, CGA starfield attract, 400/486 chassis eggs |

@@ -14,6 +14,8 @@ window.OqGames = {
     { id: "konami", name: "Konami Code", kind: "egg" },
     { id: "doom", name: "Doom 95", kind: "game" },
     { id: "keen", name: "Commander Keen", kind: "game" },
+    { id: "wolf3d", name: "Wolfenstein 3D", kind: "game" },
+    { id: "robocod", name: "James Pond II (RoboCod)", kind: "game" },
     { id: "boing", name: "Boing Ball", kind: "demo" },
 
     { id: "copper", name: "Copper bars", kind: "demo" },
@@ -38,11 +40,11 @@ window.OqGames = {
     { id: "ss-kde-gl", name: "KDE GL savers", kind: "demo" },
   ],
   matrix: {
-    dos: ["keen", "ss-cga"],
+    dos: ["keen", "wolf3d", "ss-cga"],
     c64: ["morph", "ss-raster"],
     mac1984: ["ss-mac-stars"],
     nes: ["konami", "ss-attract"],
-    amiga: ["boing", "copper", "ss-boing-idle"],
+    amiga: ["robocod", "boing", "copper", "ss-boing-idle"],
     gb: ["morph", "konami", "ss-attract"],
     gg: ["konami", "ss-attract"],
     compy: ["konami", "ss-attract"],

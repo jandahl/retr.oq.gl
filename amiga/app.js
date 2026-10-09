@@ -142,15 +142,23 @@
 
   const winOq = document.getElementById("win-oq");
   const winDecon = document.getElementById("win-decon");
+  const winRobocod = document.getElementById("win-robocod");
+  const robocodFrame = document.getElementById("wb-robocod-frame");
 
   function openWindow(win) {
     win.classList.remove("closed");
     focus(win);
+    if (win === winRobocod && robocodFrame && robocodFrame.src.endsWith("about:blank")) {
+      robocodFrame.src = "https://archive.org/embed/jamespond_adf";
+    }
   }
 
   function closeWindowEl(win) {
     const wasActive = !win.classList.contains("inactive");
     win.classList.add("closed");
+    if (win === winRobocod && robocodFrame) {
+      robocodFrame.src = "about:blank";
+    }
     if (wasActive) {
       const next = windows.find((w) => w !== win && !w.classList.contains("closed"));
       if (next) focus(next);
@@ -190,7 +198,7 @@
     if (closeBtn) {
       closeBtn.addEventListener("click", (event) => {
         event.stopPropagation();
-        if (win === winOq || win === winDecon) {
+        if (win === winOq || win === winDecon || win === winRobocod) {
           window.OqRouter.navigate({ screen: null, filter: null, word: null, order: null });
           return;
         }
@@ -260,6 +268,10 @@
       }
       if (target === winDecon) {
         window.OqRouter.navigate({ screen: "decon", word: deconWord.value || null });
+        return;
+      }
+      if (target === winRobocod) {
+        window.OqRouter.navigate({ screen: "robocod" });
         return;
       }
       openWindow(target);
@@ -596,9 +608,13 @@
         deconWord.value = word;
         deconController.search(word);
       }
+    } else if (screen === "robocod" || screen === "jamespond") {
+      if (winRobocod.classList.contains("closed")) openWindow(winRobocod);
+      else focus(winRobocod);
     } else {
       if (!winOq.classList.contains("closed")) closeWindowEl(winOq);
       if (!winDecon.classList.contains("closed")) closeWindowEl(winDecon);
+      if (!winRobocod.classList.contains("closed")) closeWindowEl(winRobocod);
     }
   });
 
