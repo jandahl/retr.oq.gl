@@ -28,14 +28,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
     #main {
       /* scale to fit viewport while keeping 640x400 aspect ratio */
-      position: relative;
-      left: auto;
-      top: auto;
-      margin: 0;
+      position: relative !important;
+      left: auto !important;
+      top: auto !important;
+      margin: 0 !important;
       transform-origin: center center;
+      flex-shrink: 0;
     }
   </style>
 
@@ -136,36 +138,66 @@
     
     <div id="game">
       <div class="fps"></div>
-      <div class="center"></div>
-      <div class="text"></div>
-      <div class="message pause">
-        <div class="box"></div>
+      
+      <div class="renderer">
+        <div class="ceiling"></div>
+        <div class="floor"></div>
+        <div class="player-weapon"></div>
+        <div class="damage-flash overlay"></div>
+        <div class="bonus-flash overlay"></div>
+        <div class="death overlay"></div>
+        <div class="pause overlay"><img alt="" src="art/paused.png"/></div>
       </div>
       
-      <div class="damage-flash"></div>
-      <div class="bonus-flash"></div>
+      <div class="loading"><img alt="" src="art/getpsyched.png"/></div>
       
-      <div class="victory-screen">
-        <div class="layer-1"></div>
-        <div class="layer-2"></div>
-      </div>
+      <div class="gameover"></div>
       
-      <div class="intermission-screen">
+      <div class="intermission">
         <div class="background"></div>
-        <div class="time stat">
-          <div class="digit"></div>
-          <div class="digit"></div>
-          <div class="colon"></div>
-          <div class="digit"></div>
-          <div class="digit"></div>
-        </div>
-        <div class="par stat">
-          <div class="digit"></div>
-          <div class="digit"></div>
-          <div class="colon"></div>
+        <div class="background-secret"></div>
+        <div class="background-victory"></div>
+        
+        <div class="bj"></div>
+        
+        <div class="floor stat">
           <div class="digit"></div>
           <div class="digit"></div>
         </div>
+        
+        <div class="bonus stat">
+          <div class="digit"></div>
+          <div class="digit"></div>
+          <div class="digit"></div>
+          <div class="digit"></div>
+          <div class="digit"></div>
+          <div class="digit"></div>
+        </div>
+        
+        <div class="total-time-minutes victory-stat">
+          <div class="digit"></div><div class="digit"></div>
+        </div>
+        <div class="total-time-seconds victory-stat">
+          <div class="digit"></div><div class="digit"></div>
+        </div>
+
+        <div class="time-minutes stat">
+          <div class="digit"></div>
+          <div class="digit"></div>
+        </div>
+        <div class="time-seconds stat">
+          <div class="digit"></div>
+          <div class="digit"></div>
+        </div>
+        <div class="par-minutes stat">
+          <div class="digit"></div>
+          <div class="digit"></div>
+        </div>
+        <div class="par-seconds stat">
+          <div class="digit"></div>
+          <div class="digit"></div>
+        </div>
+
         <div class="kill-ratio stat">
           <div class="digit"></div>
           <div class="digit"></div>
@@ -223,12 +255,16 @@
   function fitMain() {
     const main = document.getElementById("main");
     if (!main) return;
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const vp = window.visualViewport;
+    const w = vp ? vp.width : (window.innerWidth || document.documentElement.clientWidth);
+    const h = vp ? vp.height : (window.innerHeight || document.documentElement.clientHeight);
     const scale = Math.min(w / 640, h / 400);
     main.style.transform = `scale(${scale})`;
   }
   window.addEventListener("resize", fitMain);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", fitMain);
+  }
   fitMain();
 
   let lastActivityTime = 0;
