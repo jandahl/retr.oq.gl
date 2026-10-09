@@ -17,19 +17,6 @@ name: html lint
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - "**/*.html"
-      - "**/*.css"
-      - "**/*.js"
-      - "hub-data.js"
-      - ".htmlvalidate.json"
-      - "package-lock.json"
-      - "requirements-dev.txt"
-      - "tools/check_css.py"
-      - "tools/check_palette.py"
-      - "tools/palette-baseline.json"
-      - ".github/workflows/html-lint.yml"
-      - ".github/workflows/palette.yml"
   workflow_dispatch:
 
 concurrency:
