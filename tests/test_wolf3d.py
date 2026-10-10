@@ -69,5 +69,18 @@ class TestOriginalAssetSwap(unittest.TestCase):
                 self.assertTrue(os.path.exists(orig), orig)
                 self.assertNotEqual(open(orig, "rb").read(), open(cur, "rb").read(), rel)
 
+
+class TestGuardSpriteSheets(unittest.TestCase):
+    """Guards must have 49 frames matching Wolf3D layout in both 64 and 128."""
+    def test_guard_sheet_dimensions(self):
+        for size, w_expected in [("64", 3136), ("128", 6272)]:
+            p = os.path.join(BASE_DIR, "vendor", "wolf3d", "art", "sprites", size, "054_102.png")
+            self.assertTrue(os.path.exists(p), f"Missing {p}")
+            with open(p, "rb") as f:
+                head = f.read(24)
+            w, h = struct.unpack(">II", head[16:24])
+            self.assertEqual(w, w_expected)
+            self.assertEqual(h, int(size))
+
 if __name__ == '__main__':
     unittest.main()
