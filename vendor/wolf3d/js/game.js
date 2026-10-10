@@ -664,7 +664,7 @@ Wolf.Game = (function() {
                 if (texture % 2 == 0) {
                     texture--;
                 }
-                f = texturePath + "w_" + texture + ".png";
+                f = Wolf.Renderer.wallUrl(texture);
                 if (!preloadTextures[f]) {
                     files.push(f);
                     preloadTextures[f] = true;
@@ -1138,6 +1138,12 @@ Wolf.Game = (function() {
             }
         });
         
+        // Debug: F8 swaps reskinned/original assets live; game state is untouched
+        // because only texture URLs change (renderer re-reads them every frame).
+        Wolf.Input.bindKey("F8", function(e) {
+            Wolf.Game.toggleAssets();
+        });
+
         Wolf.Input.bindKey("P", function(e) {
             if (!keyInputActive) {
                 return;
@@ -1212,6 +1218,13 @@ Wolf.Game = (function() {
     }
     
     
+    function toggleAssets() {
+        var next = Wolf.Renderer.getAssetSet() == "original" ? "reskin" : "original";
+        Wolf.Renderer.setAssetSet(next);
+        notify("Assets: " + next);
+        return next;
+    }
+
     function enableMouse(enable) {
         mouseEnabled = enable;
     }
@@ -1308,7 +1321,8 @@ Wolf.Game = (function() {
         bindControl : bindControl,
         resume : resume,
         victory : victory,
-        endEpisode : endEpisode
+        endEpisode : endEpisode,
+        toggleAssets : toggleAssets
         
         /*
         dump : dump,

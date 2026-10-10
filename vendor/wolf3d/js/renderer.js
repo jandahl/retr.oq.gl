@@ -21,6 +21,11 @@ Wolf.Renderer = (function() {
         sprites = [],
         maxDistZ = 64 * 0x10000,
         hasInit = false;
+        // Debug asset swap: "reskin" (default) or "original". Only the files
+        // listed in ORIGINAL_WALLS exist under art-original/; everything else
+        // is shared. Swapping changes URLs only, so game state is untouched.
+        assetSet = "reskin",
+        ORIGINAL_WALLS = {5:1, 7:1, 19:1, 21:1, 33:1, 35:1, 93:1};
         visibleSprites = [];
         
     var TILESHIFT = Wolf.TILESHIFT,
@@ -45,6 +50,31 @@ Wolf.Renderer = (function() {
         atan2 = Math.atan2,
         round = Math.round,
         sqrt = Math.sqrt;
+
+    (function() {
+        var m = /[?&]assets=(original|reskin)/.exec(location.search), v = m && m[1];
+        try { v = v || localStorage.getItem("wolf3d.assets"); } catch (e) {}
+        if (v == "original") { assetSet = "original"; }
+    })();
+
+    function wallUrl(texture) {
+        var set = (assetSet == "original" && ORIGINAL_WALLS[texture]) ? "art-original/" : "art/";
+        return set + "walls-shaded/" + Wolf.TEXTURERESOLUTION + "/w_" + texture + ".png";
+    }
+
+    function atlasUrl() {
+        return (assetSet == "original" ? "art-original/" : "art/") + "walls-shaded/64/walls.png";
+    }
+
+    function setAssetSet(name) {
+        assetSet = (name == "original") ? "original" : "reskin";
+        try { localStorage.setItem("wolf3d.assets", assetSet); } catch (e) {}
+        return assetSet;
+    }
+
+    function getAssetSet() {
+        return assetSet;
+    }
 
     function init() {
         var image, slice, x;
@@ -188,7 +218,7 @@ Wolf.Renderer = (function() {
             itop = (proc.texture % 2) ? 0 : -height;
         } else {
             itop = -(proc.texture-1) * height;
-            textureSrc = "art/walls-shaded/64/walls.png";
+            textureSrc = atlasUrl();
         }
        
         if (image._src != textureSrc) {
@@ -259,7 +289,7 @@ Wolf.Renderer = (function() {
         if (texture % 2 == 0) {
             texture--;
         }
-        textureSrc = texturePath + "w_" + texture + ".png";
+        textureSrc = wallUrl(texture);
         
         updateSlice(n, textureSrc, proc);
     }
@@ -277,7 +307,7 @@ Wolf.Renderer = (function() {
             texture -= 1;
         }
         
-        textureSrc = texturePath + "w_" + texture + ".png";
+        textureSrc = wallUrl(texture);
         
         updateSlice(n, textureSrc, proc);
     }
@@ -402,7 +432,10 @@ Wolf.Renderer = (function() {
         clear : clear,
         loadSprite : loadSprite,
         unloadSprite : unloadSprite,
-        reset : reset
+        reset : reset,
+        wallUrl : wallUrl,
+        setAssetSet : setAssetSet,
+        getAssetSet : getAssetSet
     };
 
 })();
