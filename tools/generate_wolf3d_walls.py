@@ -234,6 +234,48 @@ def generate_us_flag_banner(base_w, base_pixels):
 
     return make_shaded_pair(base_w, out)
 
+BAYER4 = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
+PORTRAIT_LOW_W, PORTRAIT_LOW_H = 19, 25   # chunky low-res grid (same at 64px and 128px)
+PORTRAIT_COLORS = 14
+
+def median_cut(colors, n):
+    """Reduce a list of RGB tuples to an n-colour palette (average of each box)."""
+    boxes = [list(colors)]
+    while len(boxes) < n:
+        boxes.sort(key=lambda b: len(b), reverse=True)
+        box = boxes.pop(0)
+        if len(box) < 2:
+            boxes.append(box)
+            break
+        ch = max(range(3), key=lambda c: max(p[c] for p in box) - min(p[c] for p in box))
+        box.sort(key=lambda p: p[ch])
+        mid = len(box) // 2
+        boxes.extend([box[:mid], box[mid:]])
+    return [tuple(sum(p[c] for p in b) // len(b) for c in range(3)) for b in boxes if b]
+
+def pixelate_portrait(portrait_ppm, cw, ch, tag):
+    """Chunky pixel-art portrait: tiny grid, boosted contrast, limited palette,
+    ordered dithering, nearest-neighbour upscale to cw x ch."""
+    lw, lh = PORTRAIT_LOW_W, PORTRAIT_LOW_H
+    _, _, low = render_image_ppm(
+        portrait_ppm, os.path.join(TMP_DIR, f'temp_portlow_{tag}.ppm'), lw, lh,
+        crop_expr='crop=w=min(iw\\,ih*0.75):h=min(iw*1.33\\,ih):x=(iw-out_w)/2:y=ih*0.06'
+    )
+    def punch(v):
+        return max(0, min(255, int((v - 128) * 1.25 + 128)))
+    pre = [[tuple(punch(c) for c in px) for px in row] for row in low]
+    palette = median_cut([px for row in pre for px in row], PORTRAIT_COLORS)
+    def nearest(px):
+        return min(palette, key=lambda q: sum((px[i] - q[i]) ** 2 for i in range(3)))
+    small = []
+    for y in range(lh):
+        row = []
+        for x in range(lw):
+            d = (BAYER4[y % 4][x % 4] - 7.5) * 2.5
+            row.append(nearest(tuple(max(0, min(255, int(c + d))) for c in pre[y][x])))
+        small.append(row)
+    return [[small[y * lh // ch][x * lw // cw] for x in range(cw)] for y in range(ch)]
+
 def generate_portrait_wall(base_w, base_pixels, portrait_ppm):
     """
     Place the presidential portrait inside an ornate gilded/wood picture frame on base wall.
@@ -286,12 +328,7 @@ def generate_portrait_wall(base_w, base_pixels, portrait_ppm):
     cw = cx1 - cx0
     ch = cy1 - cy0
 
-    _, _, port_pixels = render_image_ppm(
-        portrait_ppm,
-        os.path.join(TMP_DIR, f'temp_port_{base_w}.ppm'),
-        cw, ch,
-        crop_expr='crop=w=min(iw\\,ih*0.75):h=min(iw*1.33\\,ih):x=(iw-out_w)/2:y=ih*0.06'
-    )
+    port_pixels = pixelate_portrait(portrait_ppm, cw, ch, str(base_w))
 
     for y in range(ch):
         for x in range(cw):
@@ -356,6 +393,19 @@ def make_shaded_pair(size, top_half):
         full.append(shaded_row)
     return full
 
+def patch_atlas(ids=(5, 7, 19, 21, 33, 35, 93)):
+    """The raycaster's non-XP path reads walls-shaded/64/walls.png, a vertical strip where
+    texture N (lit) / N+1 (shaded) live at y=(N-1)*64. Paste the generated 64px walls in."""
+    atlas_path = os.path.join(WOLF_WALLS_64, 'walls.png')
+    aw, ah, atlas = decode_png(atlas_path)
+    for n in ids:
+        _, _, tex = decode_png(os.path.join(WOLF_WALLS_64, f'w_{n}.png'))
+        for y in range(128):
+            atlas[(n - 1) * 64 + y] = [tuple(px[:3]) for px in tex[y]]
+    with open(atlas_path, 'wb') as f:
+        f.write(encode_png_rgb(aw, ah, [[tuple(px[:3]) for px in row] for row in atlas]))
+    print("Patched walls.png atlas")
+
 def process_walls():
     os.makedirs(TMP_DIR, exist_ok=True)
     trump_raw = os.path.join(TMP_DIR, 'trump_raw.jpg')
@@ -417,6 +467,7 @@ def process_walls():
         with open(os.path.join(folder, 'w_93.png'), 'wb') as f:
             f.write(encode_png_rgb(res, res * 2, w93_pixels))
 
+    patch_atlas()
     print("\nAll Wolf3D replacement wall textures generated successfully!")
 
 if __name__ == '__main__':
