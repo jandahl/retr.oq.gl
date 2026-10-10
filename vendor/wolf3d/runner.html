@@ -38,6 +38,123 @@
       margin: 0 !important;
       transform-origin: center center;
       flex-shrink: 0;
+      touch-action: manipulation;
+    }
+
+    /* Virtual Touch Controls */
+    #touch-controls {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10000;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    .touch-btn {
+      position: absolute;
+      pointer-events: auto;
+      background: rgba(40, 40, 40, 0.45);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.85);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    .touch-btn:active, .touch-btn.active {
+      background: rgba(220, 40, 40, 0.65);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: scale(0.96);
+    }
+    /* D-pad Cluster (Bottom-Left) */
+    .dpad-cluster {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      width: 150px;
+      height: 150px;
+      pointer-events: none;
+    }
+    .dpad-btn {
+      width: 46px;
+      height: 46px;
+      font-size: 22px;
+    }
+    .dpad-up {
+      top: 0;
+      left: 52px;
+    }
+    .dpad-down {
+      bottom: 0;
+      left: 52px;
+    }
+    .dpad-left {
+      top: 52px;
+      left: 0;
+    }
+    .dpad-right {
+      top: 52px;
+      right: 0;
+    }
+    /* Action Buttons Cluster (Bottom-Right) */
+    .action-cluster {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      width: 150px;
+      height: 150px;
+      pointer-events: none;
+    }
+    .btn-fire {
+      right: 0;
+      bottom: 54px;
+      width: 62px;
+      height: 62px;
+      font-size: 15px;
+      border-radius: 50%;
+      background: rgba(180, 20, 20, 0.5);
+      border-color: rgba(255, 100, 100, 0.6);
+    }
+    .btn-use {
+      right: 74px;
+      bottom: 14px;
+      width: 58px;
+      height: 58px;
+      font-size: 13px;
+      border-radius: 50%;
+      background: rgba(20, 120, 200, 0.5);
+      border-color: rgba(100, 180, 255, 0.6);
+    }
+    .btn-strafe {
+      right: 14px;
+      bottom: 0;
+      width: 48px;
+      height: 38px;
+      font-size: 11px;
+    }
+    /* Top Bar Control (Pause / Menu) */
+    .top-cluster {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      pointer-events: none;
+    }
+    .btn-menu {
+      width: 56px;
+      height: 34px;
+      font-size: 12px;
+      background: rgba(30, 30, 30, 0.5);
     }
   </style>
 
@@ -250,6 +367,23 @@
   </div>
 </div>
 
+<div id="touch-controls">
+  <div class="top-cluster">
+    <div class="touch-btn btn-menu" id="touch-btn-menu">MENU</div>
+  </div>
+  <div class="dpad-cluster">
+    <div class="touch-btn dpad-btn dpad-up" data-key="UP">&#9650;</div>
+    <div class="touch-btn dpad-btn dpad-down" data-key="DOWN">&#9660;</div>
+    <div class="touch-btn dpad-btn dpad-left" data-key="LEFT">&#9664;</div>
+    <div class="touch-btn dpad-btn dpad-right" data-key="RIGHT">&#9654;</div>
+  </div>
+  <div class="action-cluster">
+    <div class="touch-btn btn-fire" data-key="CTRL">FIRE</div>
+    <div class="touch-btn btn-use" data-key="SPACE">OPEN</div>
+    <div class="touch-btn btn-strafe" data-key="ALT">STRAFE</div>
+  </div>
+</div>
+
 <script>
   // Resize scaler to maintain 640x400 aspect ratio nicely inside iframe
   function fitMain() {
@@ -281,6 +415,122 @@
   }
   window.addEventListener("keydown", notifyActivity, true);
   window.addEventListener("pointerdown", notifyActivity, true);
+
+  // Touch controls & Mobile audio unlock
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  const touchControls = document.getElementById("touch-controls");
+
+  // Mobile Audio Unlock on first interaction
+  function unlockAudio() {
+    try {
+      const dummy = new Audio();
+      dummy.play().catch(function() {});
+    } catch (_) {}
+    window.removeEventListener("touchstart", unlockAudio, true);
+    window.removeEventListener("pointerdown", unlockAudio, true);
+  }
+  window.addEventListener("touchstart", unlockAudio, true);
+  window.addEventListener("pointerdown", unlockAudio, true);
+
+  if (isTouchDevice) {
+    // Poll game playing state to toggle virtual overlay during gameplay
+    setInterval(function() {
+      const isPlaying = window.Wolf && window.Wolf.Game && window.Wolf.Game.isPlaying();
+      const isGameVisible = $("#game").is(":visible");
+      if (isPlaying && isGameVisible) {
+        if (touchControls.style.display !== "block") {
+          touchControls.style.display = "block";
+        }
+      } else {
+        if (touchControls.style.display !== "none") {
+          touchControls.style.display = "none";
+        }
+      }
+    }, 250);
+
+    // Bind virtual buttons
+    const activeTouches = {};
+
+    function handleButtonState(btn, isDown) {
+      if (!btn) return;
+      const keyName = btn.getAttribute("data-key");
+      if (isDown) {
+        btn.classList.add("active");
+        if (keyName && window.Wolf && window.Wolf.Input && window.Wolf.Input.setKey) {
+          window.Wolf.Input.setKey(keyName, true);
+        }
+      } else {
+        btn.classList.remove("active");
+        if (keyName && window.Wolf && window.Wolf.Input && window.Wolf.Input.setKey) {
+          window.Wolf.Input.setKey(keyName, false);
+        }
+      }
+    }
+
+    touchControls.addEventListener("touchstart", function(e) {
+      notifyActivity();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        const btn = elem ? elem.closest(".touch-btn") : null;
+        if (btn) {
+          if (btn.id === "touch-btn-menu") {
+            if (window.Wolf && window.Wolf.Input && window.Wolf.Input.setKey) {
+              window.Wolf.Input.setKey("ESC", true);
+              setTimeout(function() {
+                window.Wolf.Input.setKey("ESC", false);
+              }, 100);
+            }
+          } else {
+            activeTouches[touch.identifier] = btn;
+            handleButtonState(btn, true);
+          }
+        }
+      }
+      e.preventDefault();
+    }, { passive: false });
+
+    touchControls.addEventListener("touchmove", function(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const touch = e.changedTouches[i];
+        const prevBtn = activeTouches[touch.identifier];
+        const elem = document.elementFromPoint(touch.clientX, touch.clientY);
+        const currBtn = elem ? elem.closest(".touch-btn") : null;
+        if (prevBtn !== currBtn) {
+          if (prevBtn) handleButtonState(prevBtn, false);
+          if (currBtn && currBtn.id !== "touch-btn-menu") {
+            activeTouches[touch.identifier] = currBtn;
+            handleButtonState(currBtn, true);
+          } else {
+            delete activeTouches[touch.identifier];
+          }
+        }
+      }
+      e.preventDefault();
+    }, { passive: false });
+
+    function clearTouch(touch) {
+      const btn = activeTouches[touch.identifier];
+      if (btn) {
+        handleButtonState(btn, false);
+        delete activeTouches[touch.identifier];
+      }
+    }
+
+    touchControls.addEventListener("touchend", function(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        clearTouch(e.changedTouches[i]);
+      }
+      e.preventDefault();
+    }, { passive: false });
+
+    touchControls.addEventListener("touchcancel", function(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        clearTouch(e.changedTouches[i]);
+      }
+      e.preventDefault();
+    }, { passive: false });
+  }
 </script>
 
 </body>
