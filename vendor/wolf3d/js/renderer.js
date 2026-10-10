@@ -25,7 +25,8 @@ Wolf.Renderer = (function() {
         // listed in ORIGINAL_WALLS exist under art-original/; everything else
         // is shared. Swapping changes URLs only, so game state is untouched.
         assetSet = "reskin",
-        ORIGINAL_WALLS = {5:1, 7:1, 19:1, 21:1, 33:1, 35:1, 93:1};
+        ORIGINAL_WALLS = {5:1, 7:1, 19:1, 21:1, 33:1, 35:1, 93:1},
+        ORIGINAL_SPRITES = {"054_102.png":1};
         visibleSprites = [];
         
     var TILESHIFT = Wolf.TILESHIFT,
@@ -64,6 +65,11 @@ Wolf.Renderer = (function() {
 
     function atlasUrl() {
         return (assetSet == "original" ? "art-original/" : "art/") + "walls-shaded/64/walls.png";
+    }
+
+    function spriteUrl(sheet) {
+        var set = (assetSet == "original" && ORIGINAL_SPRITES[sheet]) ? "art-original/" : "art/";
+        return set + "sprites/" + Wolf.TEXTURERESOLUTION + "/" + sheet;
     }
 
     function setAssetSet(name) {
@@ -359,7 +365,7 @@ Wolf.Renderer = (function() {
             divStyle.top = (YRES / 2 - size / 2) + "px";
 
             texture = Wolf.Sprites.getTexture(vis.sprite.tex[0]);
-            textureSrc = spritePath + texture.sheet;
+            textureSrc = spriteUrl(texture.sheet);
 
             if (image._src != textureSrc) {
                 image._src = textureSrc;
@@ -434,6 +440,7 @@ Wolf.Renderer = (function() {
         unloadSprite : unloadSprite,
         reset : reset,
         wallUrl : wallUrl,
+        spriteUrl : spriteUrl,
         setAssetSet : setAssetSet,
         getAssetSet : getAssetSet
     };

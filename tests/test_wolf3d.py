@@ -59,7 +59,7 @@ class TestWolf3DTextures(unittest.TestCase):
         self.assertTrue(0.45 <= ratio <= 0.60, f"Expected shading ratio around 0.52, got {ratio:.2f}")
 
 class TestOriginalAssetSwap(unittest.TestCase):
-    """Every reskinned wall must have an original under art-original/ for the debug swap."""
+    """Every reskinned wall and sprite must have an original under art-original/ for the debug swap."""
     def test_originals_present_and_differ(self):
         for size in ("64", "128"):
             for n in (5, 7, 19, 21, 33, 35, 93):
@@ -67,7 +67,15 @@ class TestOriginalAssetSwap(unittest.TestCase):
                 orig = os.path.join(BASE_DIR, "vendor", "wolf3d", "art-original", rel)
                 cur = os.path.join(BASE_DIR, "vendor", "wolf3d", "art", rel)
                 self.assertTrue(os.path.exists(orig), orig)
-                self.assertNotEqual(open(orig, "rb").read(), open(cur, "rb").read(), rel)
+                with open(orig, "rb") as fo, open(cur, "rb") as fc:
+                    self.assertNotEqual(fo.read(), fc.read(), rel)
+
+            sprite_rel = os.path.join("sprites", size, "054_102.png")
+            orig_sp = os.path.join(BASE_DIR, "vendor", "wolf3d", "art-original", sprite_rel)
+            cur_sp = os.path.join(BASE_DIR, "vendor", "wolf3d", "art", sprite_rel)
+            self.assertTrue(os.path.exists(orig_sp), orig_sp)
+            with open(orig_sp, "rb") as fo, open(cur_sp, "rb") as fc:
+                self.assertNotEqual(fo.read(), fc.read(), sprite_rel)
 
 
 class TestGuardSpriteSheets(unittest.TestCase):
