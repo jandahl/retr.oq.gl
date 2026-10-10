@@ -234,48 +234,6 @@ def generate_us_flag_banner(base_w, base_pixels):
 
     return make_shaded_pair(base_w, out)
 
-BAYER4 = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
-PORTRAIT_LOW_W, PORTRAIT_LOW_H = 19, 25   # chunky low-res grid (same at 64px and 128px)
-PORTRAIT_COLORS = 14
-
-def median_cut(colors, n):
-    """Reduce a list of RGB tuples to an n-colour palette (average of each box)."""
-    boxes = [list(colors)]
-    while len(boxes) < n:
-        boxes.sort(key=lambda b: len(b), reverse=True)
-        box = boxes.pop(0)
-        if len(box) < 2:
-            boxes.append(box)
-            break
-        ch = max(range(3), key=lambda c: max(p[c] for p in box) - min(p[c] for p in box))
-        box.sort(key=lambda p: p[ch])
-        mid = len(box) // 2
-        boxes.extend([box[:mid], box[mid:]])
-    return [tuple(sum(p[c] for p in b) // len(b) for c in range(3)) for b in boxes if b]
-
-def pixelate_portrait(portrait_ppm, cw, ch, tag):
-    """Chunky pixel-art portrait: tiny grid, boosted contrast, limited palette,
-    ordered dithering, nearest-neighbour upscale to cw x ch."""
-    lw, lh = PORTRAIT_LOW_W, PORTRAIT_LOW_H
-    _, _, low = render_image_ppm(
-        portrait_ppm, os.path.join(TMP_DIR, f'temp_portlow_{tag}.ppm'), lw, lh,
-        crop_expr='crop=w=min(iw\\,ih*0.75):h=min(iw*1.33\\,ih):x=(iw-out_w)/2:y=ih*0.06'
-    )
-    def punch(v):
-        return max(0, min(255, int((v - 128) * 1.25 + 128)))
-    pre = [[tuple(punch(c) for c in px) for px in row] for row in low]
-    palette = median_cut([px for row in pre for px in row], PORTRAIT_COLORS)
-    def nearest(px):
-        return min(palette, key=lambda q: sum((px[i] - q[i]) ** 2 for i in range(3)))
-    small = []
-    for y in range(lh):
-        row = []
-        for x in range(lw):
-            d = (BAYER4[y % 4][x % 4] - 7.5) * 2.5
-            row.append(nearest(tuple(max(0, min(255, int(c + d))) for c in pre[y][x])))
-        small.append(row)
-    return [[small[y * lh // ch][x * lw // cw] for x in range(cw)] for y in range(ch)]
-
 def generate_portrait_wall(base_w, base_pixels, portrait_ppm):
     """
     Place the presidential portrait inside an ornate gilded/wood picture frame on base wall.
@@ -328,7 +286,95 @@ def generate_portrait_wall(base_w, base_pixels, portrait_ppm):
     cw = cx1 - cx0
     ch = cy1 - cy0
 
-    port_pixels = pixelate_portrait(portrait_ppm, cw, ch, str(base_w))
+    _, _, port_pixels = render_image_ppm(
+        portrait_ppm,
+        os.path.join(TMP_DIR, f'temp_port_{base_w}.ppm'),
+        cw, ch,
+        crop_expr='crop=w=min(iw\\,ih*0.75):h=min(iw*1.33\\,ih):x=(iw-out_w)/2:y=ih*0.06'
+    )
+
+    for y in range(ch):
+        for x in range(cw):
+            out[cy0 + y][cx0 + x] = port_pixels[y][x]
+
+    return make_shaded_pair(base_w, out)
+
+def generate_stained_glass_portrait(base_w, base_pixels, portrait_ppm):
+    """
+    Replace Hitler stained glass window (w_65) with Donald Trump presidential portrait
+    inside the existing stained glass arch/frame on base wall.
+    """
+    scale = base_w // 64
+    out = [list(row) for row in base_pixels[:base_w]]
+
+    # Inner canvas inside stained glass frame:
+    cx0 = 12 * scale
+    cx1 = 51 * scale
+    cy0 = 6 * scale
+    cy1 = 57 * scale
+    cw = cx1 - cx0
+    ch = cy1 - cy0
+
+    _, _, port_pixels = render_image_ppm(
+        portrait_ppm,
+        os.path.join(TMP_DIR, f'temp_port_w65_{base_w}.ppm'),
+        cw, ch,
+        crop_expr='crop=w=min(iw\\,ih*0.75):h=min(iw*1.33\\,ih):x=(iw-out_w)/2:y=ih*0.06'
+    )
+
+    for y in range(ch):
+        for x in range(cw):
+            out[cy0 + y][cx0 + x] = port_pixels[y][x]
+
+    return make_shaded_pair(base_w, out)
+
+def generate_red_portrait_wall(base_w, base_pixels, portrait_ppm):
+    """
+    Replace Hitler shouting portrait on red background (w_97) with presidential
+    portrait on red background with red framed border on base wall.
+    """
+    scale = base_w // 64
+    out = [list(row) for row in base_pixels[:base_w]]
+
+    fx0 = 7 * scale
+    fx1 = 59 * scale
+    fy0 = 2 * scale
+    fy1 = 60 * scale
+    border_thick = 2 * scale
+
+    red_dark = (100, 10, 10)
+    red_mid  = (180, 20, 20)
+
+    for y in range(fy0, fy1):
+        for x in range(fx0, fx1):
+            is_border = (x < fx0 + border_thick or x >= fx1 - border_thick or
+                         y < fy0 + border_thick or y >= fy1 - border_thick)
+            out[y][x] = red_dark if is_border else red_mid
+
+    # Frame shadow
+    for y in range(fy0 + scale, min(base_w, fy1 + scale)):
+        if fx1 < base_w:
+            r, g, b = out[y][fx1]
+            out[y][fx1] = (int(r * 0.4), int(g * 0.4), int(b * 0.4))
+    for x in range(fx0 + scale, min(base_w, fx1 + scale)):
+        if fy1 < base_w:
+            r, g, b = out[fy1][x]
+            out[fy1][x] = (int(r * 0.4), int(g * 0.4), int(b * 0.4))
+
+    # Inner canvas:
+    cx0 = fx0 + border_thick
+    cx1 = fx1 - border_thick
+    cy0 = fy0 + border_thick
+    cy1 = fy1 - border_thick
+    cw = cx1 - cx0
+    ch = cy1 - cy0
+
+    _, _, port_pixels = render_image_ppm(
+        portrait_ppm,
+        os.path.join(TMP_DIR, f'temp_port_w97_{base_w}.ppm'),
+        cw, ch,
+        crop_expr='crop=w=min(iw\\,ih*0.75):h=min(iw*1.33\\,ih):x=(iw-out_w)/2:y=ih*0.06'
+    )
 
     for y in range(ch):
         for x in range(cw):
@@ -393,7 +439,7 @@ def make_shaded_pair(size, top_half):
         full.append(shaded_row)
     return full
 
-def patch_atlas(ids=(5, 7, 19, 21, 33, 35, 93)):
+def patch_atlas(ids=(5, 7, 19, 21, 33, 35, 65, 93, 97)):
     """The raycaster's non-XP path reads walls-shaded/64/walls.png, a vertical strip where
     texture N (lit) / N+1 (shaded) live at y=(N-1)*64. Paste the generated 64px walls in."""
     atlas_path = os.path.join(WOLF_WALLS_64, 'walls.png')
@@ -416,6 +462,8 @@ def process_walls():
     fetch_file('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/1280px-Flag_of_the_United_States.svg.png', flag_raw)
     fetch_file('https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Seal_of_the_President_of_the_United_States.svg/1280px-Seal_of_the_President_of_the_United_States.svg.png', seal_raw)
 
+    orig_dir = os.path.join(BASE_DIR, 'vendor', 'wolf3d', 'art-original', 'walls-shaded')
+
     for res, folder in [(64, WOLF_WALLS_64), (128, WOLF_WALLS_128)]:
         print(f"\n--- Generating {res}x{res*2} wall textures in {folder} ---")
 
@@ -424,6 +472,11 @@ def process_walls():
         w17_w, w17_h, wood_pixels = decode_png(os.path.join(folder, 'w_17.png'))
         w9_w, w9_h, blue_pixels = decode_png(os.path.join(folder, 'w_9.png'))
         w91_w, w91_h, moss_pixels = decode_png(os.path.join(folder, 'w_91.png'))
+
+        # Original backgrounds for w_65 and w_97
+        res_orig = os.path.join(orig_dir, str(res))
+        _, _, w65_orig_pixels = decode_png(os.path.join(res_orig, 'w_65.png'))
+        _, _, w97_orig_pixels = decode_png(os.path.join(res_orig, 'w_97.png'))
 
         # 2. w_5: US Flag on grey stone
         print("Creating w_5.png (US Flag on Grey Stone)...")
@@ -461,11 +514,23 @@ def process_walls():
         with open(os.path.join(folder, 'w_35.png'), 'wb') as f:
             f.write(encode_png_rgb(res, res * 2, w35_pixels))
 
-        # 8. w_93: US Flag on mossy stone
+        # 8. w_65: Trump Stained Glass Portrait
+        print("Creating w_65.png (Donald Trump Stained Glass Portrait)...")
+        w65_pixels = generate_stained_glass_portrait(res, w65_orig_pixels, trump_raw)
+        with open(os.path.join(folder, 'w_65.png'), 'wb') as f:
+            f.write(encode_png_rgb(res, res * 2, w65_pixels))
+
+        # 9. w_93: US Flag on mossy stone
         print("Creating w_93.png (US Flag on Mossy Stone)...")
         w93_pixels = generate_us_flag_banner(res, moss_pixels)
         with open(os.path.join(folder, 'w_93.png'), 'wb') as f:
             f.write(encode_png_rgb(res, res * 2, w93_pixels))
+
+        # 10. w_97: Trump Portrait on Red Background
+        print("Creating w_97.png (Donald Trump Portrait on Red Background)...")
+        w97_pixels = generate_red_portrait_wall(res, w97_orig_pixels, trump_raw)
+        with open(os.path.join(folder, 'w_97.png'), 'wb') as f:
+            f.write(encode_png_rgb(res, res * 2, w97_pixels))
 
     patch_atlas()
     print("\nAll Wolf3D replacement wall textures generated successfully!")

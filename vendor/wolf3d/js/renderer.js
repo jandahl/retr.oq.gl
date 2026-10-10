@@ -25,7 +25,7 @@ Wolf.Renderer = (function() {
         // listed in ORIGINAL_WALLS exist under art-original/; everything else
         // is shared. Swapping changes URLs only, so game state is untouched.
         assetSet = "reskin",
-        ORIGINAL_WALLS = {5:1, 7:1, 19:1, 21:1, 33:1, 35:1, 93:1},
+        ORIGINAL_WALLS = {5:1, 7:1, 19:1, 21:1, 33:1, 35:1, 65:1, 93:1, 97:1},
         ORIGINAL_SPRITES = {"054_102.png":1};
         visibleSprites = [];
         
