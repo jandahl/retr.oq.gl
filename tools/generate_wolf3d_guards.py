@@ -106,10 +106,29 @@ def extract_sprite(min_x, max_x, min_y, max_y, target_size=64, fig_height=52):
                     outlined[y][x] = (int(r * 0.25), int(g * 0.25), int(b * 0.25), 255)
     return outlined
 
-stand_8 = []
-for min_x, max_x in r1_cols:
-    ys = [y for y in range(40, 270) for x in range(min_x, max_x+1) if not is_green(raw_ref[(y*w_ref+x)*3], raw_ref[(y*w_ref+x)*3+1], raw_ref[(y*w_ref+x)*3+2])]
-    stand_8.append(extract_sprite(min_x, max_x, min(ys), max(ys)))
+def flip_h(frame):
+    return [[frame[y][63-x] for x in range(64)] for y in range(64)]
+
+# Extract 8 rotations matching Wolf3D clockwise heading order:
+# Angle 0: South (Front) -> Reference Row 0 Fig 0 (23, 147)
+# Angle 1: South-East (Front-Left) -> Reference Row 0 Fig 7 (898, 1006)
+# Angle 2: East (Left profile) -> Reference Row 0 Fig 6 (791, 861)
+# Angle 3: North-East (Back-Left) -> Reference Row 0 Fig 5 (702, 787)
+# Angle 4: North (Back) -> Reference Row 0 Fig 4 (563, 678)
+# Angle 5: North-West (Back-Right) -> Horizontally flipped Fig 5 (702, 787)
+# Angle 6: West (Right profile) -> Reference Row 0 Fig 2 (329, 401)
+# Angle 7: South-West (Front-Right) -> Reference Row 0 Fig 1 (179, 289)
+
+s0 = extract_sprite(23, 147, 40, 265)
+s1 = extract_sprite(898, 1006, 40, 265)
+s2 = extract_sprite(791, 861, 40, 265)
+s3 = extract_sprite(702, 787, 40, 265)
+s4 = extract_sprite(563, 678, 40, 265)
+s5 = flip_h(s3)
+s6 = extract_sprite(329, 401, 40, 265)
+s7 = extract_sprite(179, 289, 40, 265)
+
+stand_8 = [s0, s1, s2, s3, s4, s5, s6, s7]
 
 # 2. Articulate seamless walking frames from base standing frames
 def articulate_walk(base_frame, phase, rot):
@@ -154,7 +173,9 @@ def articulate_walk(base_frame, phase, rot):
                     res[target_y][target_x] = px
                     
     elif rot in (2, 6):
-        direction = 1 if rot == 2 else -1
+        # rot == 2 faces viewer left (forward = decreasing x, backward = increasing x)
+        # rot == 6 faces viewer right (forward = increasing x, backward = decreasing x)
+        direction = -1 if rot == 2 else 1
         stride = 2 if phase == 0 else (-2 if phase == 2 else 0)
         for y in range(39, 64):
             for x in range(64):
@@ -173,8 +194,10 @@ def articulate_walk(base_frame, phase, rot):
                         res[target_y][trailing_x] = (int(px[0]*0.7), int(px[1]*0.7), int(px[2]*0.7), px[3])
                     
     else:
+        # Diagonal walk phases
         scissor = 1 if phase == 0 else (-1 if phase == 2 else 0)
-        direction = 1 if rot in (1, 3) else -1
+        # rot in (1, 3) face viewer left; rot in (5, 7) face viewer right
+        direction = -1 if rot in (1, 3) else 1
         for y in range(39, 64):
             for x in range(64):
                 px = base_frame[y][x]
