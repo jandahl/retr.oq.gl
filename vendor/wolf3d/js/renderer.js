@@ -55,7 +55,12 @@ Wolf.Renderer = (function() {
     (function() {
         var m = /[?&]assets=(original|reskin)/.exec(location.search), v = m && m[1];
         try { v = v || localStorage.getItem("wolf3d.assets"); } catch (e) {}
-        if (v == "original") { assetSet = "original"; }
+        if (v == "original") {
+            assetSet = "original";
+            $(function() {
+                $("#title-screen").css("background-image", "url(" + titleUrl() + ")");
+            });
+        }
     })();
 
     function wallUrl(texture) {
@@ -72,9 +77,14 @@ Wolf.Renderer = (function() {
         return set + "sprites/" + Wolf.TEXTURERESOLUTION + "/" + sheet;
     }
 
+    function titleUrl() {
+        return (assetSet == "original" ? "art-original/" : "art/") + "title.png";
+    }
+
     function setAssetSet(name) {
         assetSet = (name == "original") ? "original" : "reskin";
         try { localStorage.setItem("wolf3d.assets", assetSet); } catch (e) {}
+        $("#title-screen").css("background-image", "url(" + titleUrl() + ")");
         return assetSet;
     }
 
@@ -441,6 +451,7 @@ Wolf.Renderer = (function() {
         reset : reset,
         wallUrl : wallUrl,
         spriteUrl : spriteUrl,
+        titleUrl : titleUrl,
         setAssetSet : setAssetSet,
         getAssetSet : getAssetSet
     };
