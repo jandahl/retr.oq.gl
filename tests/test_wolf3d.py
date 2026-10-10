@@ -14,7 +14,9 @@ TARGET_WALLS = [
     "w_21.png",  # Presidential Seal on wood
     "w_33.png",  # US Flag on blue brick
     "w_35.png",  # Trump portrait on blue brick
+    "w_65.png",  # Trump stained glass portrait
     "w_93.png",  # US Flag on mossy stone
+    "w_97.png",  # Trump portrait on red background
 ]
 
 class TestWolf3DTextures(unittest.TestCase):
@@ -62,7 +64,7 @@ class TestOriginalAssetSwap(unittest.TestCase):
     """Every reskinned wall and sprite must have an original under art-original/ for the debug swap."""
     def test_originals_present_and_differ(self):
         for size in ("64", "128"):
-            for n in (5, 7, 19, 21, 33, 35, 93):
+            for n in (5, 7, 19, 21, 33, 35, 65, 93, 97):
                 rel = os.path.join("walls-shaded", size, f"w_{n}.png")
                 orig = os.path.join(BASE_DIR, "vendor", "wolf3d", "art-original", rel)
                 cur = os.path.join(BASE_DIR, "vendor", "wolf3d", "art", rel)

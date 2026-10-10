@@ -44,9 +44,11 @@ Wolf.Game = (function() {
 
         controls = {
             up          : ["UP", "W"],
-            left        : ["LEFT", "A"],
+            left        : ["LEFT"],
             down        : ["DOWN", "S"],
-            right       : ["RIGHT", "D"],
+            right       : ["RIGHT"],
+            strafeLeft  : ["A"],
+            strafeRight : ["D"],
             run         : ["SHIFT"],
             attack      : ["CTRL", "X"],
             use         : ["SPACE", "E"],
@@ -109,6 +111,18 @@ Wolf.Game = (function() {
             if (downKey) {
                 player.cmd.forwardMove += -moveValue * Wolf.BACKMOVESCALE;
             } 
+        }
+
+        var strafeLeftKey = Wolf.Input.checkKeys(controls.strafeLeft),
+            strafeRightKey = Wolf.Input.checkKeys(controls.strafeRight);
+
+        if (!(strafeLeftKey && strafeRightKey)) {
+            if (strafeLeftKey) {
+                player.cmd.sideMove += -moveValue * Wolf.MOVESCALE;
+            }
+            if (strafeRightKey) {
+                player.cmd.sideMove += moveValue * Wolf.MOVESCALE;
+            }
         }
 
         if (mouseEnabled && Wolf.Input.isPointerLocked()) {

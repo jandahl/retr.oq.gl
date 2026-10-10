@@ -89,6 +89,10 @@ Wolf.Menu = (function() {
         $("#menu div.menu.active li").removeClass("active");
         item.addClass("active");
         
+        if (item && item.length && item[0].scrollIntoView) {
+            item[0].scrollIntoView({ block: "nearest", behavior: "auto" });
+        }
+        
         if ($("#menu div.menu.active").hasClass("skill")) {
             $("#menu div.menu.active div.face")
                 .removeClass()
@@ -524,6 +528,7 @@ Wolf.Menu = (function() {
         $("#menu li").removeClass("active");
         $("#menu").data("menu", menuName).addClass(menuName).show();
         $("#menu div.menu." + menuName).addClass("active").show();
+        $("#menu div.menu." + menuName + " ul").scrollTop(0);
         $("#menu div.menu." + menuName + " ul li").first().addClass("active");
         $("#menu").focus();
         
