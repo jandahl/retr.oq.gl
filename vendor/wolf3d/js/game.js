@@ -1058,21 +1058,28 @@ Wolf.Game = (function() {
                 return true;
             }
         } else {
-            if (main.requestFullScreenWithKeys) {
-                main.requestFullScreenWithKeys();
-                return true;
-            } else if (main.requestFullScreen) {
-                main.requestFullScreen(true);
-                return true;
-            } else if (main.webkitRequestFullScreen) {
-                main.webkitRequestFullScreen(true);
-                return true;
-            } else if (document.body.mozRequestFullScreenWithKeys) {
-                document.body.mozRequestFullScreenWithKeys();
-                return true;
-            } else if (document.body.mozRequestFullScreen) {
-                document.body.mozRequestFullScreen();
-                return true;
+            try {
+                if (main.requestFullscreen) {
+                    main.requestFullscreen();
+                    return true;
+                } else if (main.requestFullScreenWithKeys) {
+                    main.requestFullScreenWithKeys();
+                    return true;
+                } else if (main.requestFullScreen) {
+                    main.requestFullScreen();
+                    return true;
+                } else if (main.webkitRequestFullScreen) {
+                    main.webkitRequestFullScreen();
+                    return true;
+                } else if (document.body.mozRequestFullScreenWithKeys) {
+                    document.body.mozRequestFullScreenWithKeys();
+                    return true;
+                } else if (document.body.mozRequestFullScreen) {
+                    document.body.mozRequestFullScreen();
+                    return true;
+                }
+            } catch (fsErr) {
+                // Ignore fullscreen errors if not allowed or rejected by browser policy
             }
         }
         return false;
