@@ -253,6 +253,18 @@
     window.addEventListener("keydown", notifyActivity, true);
     window.addEventListener("pointerdown", notifyActivity, true);
 
+    async function initKeen() {
+      try {
+        const script = document.createElement("script");
+        script.src = "chocolate-keen.js";
+        script.async = true;
+        document.body.appendChild(script);
+      } catch (err) {
+        console.warn("Keen initialization bypassed:", err);
+        if (loadingElement) loadingElement.style.display = "none";
+      }
+    }
+
     initKeen();
   </script>
 </body>

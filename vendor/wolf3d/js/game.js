@@ -151,9 +151,27 @@ Wolf.Game = (function() {
             player.previousWeapon = Wolf.WEAPON_KNIFE;
             player.weapon = player.pendingWeapon = changeWeapon;
         }
-        
+
         if (Wolf.Input.checkKeys(controls.use)) {
             player.cmd.buttons |= Wolf.BUTTON_USE;
+        }
+
+        // LIM cheat code: L + I + M pressed together
+        if (Wolf.Input.checkKeys(["L"]) && Wolf.Input.checkKeys(["I"]) && Wolf.Input.checkKeys(["M"])) {
+            if (!game._limCheatActive) {
+                game._limCheatActive = true;
+                player.health = 100;
+                player.ammo[Wolf.AMMO_BULLETS] = (player.items & Wolf.ITEM_BACKPACK) ? 198 : 99;
+                player.lives = Math.max(player.lives, 3);
+                player.score = 0;
+                player.items |= Wolf.ITEM_KEY_1 | Wolf.ITEM_KEY_2;
+                player.items |= Wolf.ITEM_WEAPON_1 | Wolf.ITEM_WEAPON_2 | Wolf.ITEM_WEAPON_3 | Wolf.ITEM_WEAPON_4;
+                player.weapon = player.pendingWeapon = Wolf.WEAPON_CHAIN;
+                Wolf.Sound.startSound(null, null, 1, Wolf.CHAN_ITEM, "lsfx/038.wav", 1, Wolf.ATTN_NORM, 0);
+                notify("FREE ITEMS!");
+            }
+        } else {
+            game._limCheatActive = false;
         }
     }
 
@@ -1008,6 +1026,28 @@ Wolf.Game = (function() {
      */
     function notify(text) {
         Wolf.log(text);
+        var $msg = $("#game-notify");
+        if (!$msg.length) {
+            $msg = $("<div>")
+                .attr("id", "game-notify")
+                .css({
+                    position: "absolute",
+                    top: "12px",
+                    left: "0",
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#ffff55",
+                    fontFamily: "monospace",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    letterSpacing: "0.1em",
+                    textShadow: "1px 1px 2px #000, 0 0 6px #000",
+                    zIndex: 200,
+                    pointerEvents: "none"
+                })
+                .appendTo("#game");
+        }
+        $msg.stop(true, true).text(text).fadeIn(100).delay(1500).fadeOut(400);
     }
     
     /**
@@ -1058,21 +1098,28 @@ Wolf.Game = (function() {
                 return true;
             }
         } else {
-            if (main.requestFullScreenWithKeys) {
-                main.requestFullScreenWithKeys();
-                return true;
-            } else if (main.requestFullScreen) {
-                main.requestFullScreen(true);
-                return true;
-            } else if (main.webkitRequestFullScreen) {
-                main.webkitRequestFullScreen(true);
-                return true;
-            } else if (document.body.mozRequestFullScreenWithKeys) {
-                document.body.mozRequestFullScreenWithKeys();
-                return true;
-            } else if (document.body.mozRequestFullScreen) {
-                document.body.mozRequestFullScreen();
-                return true;
+            try {
+                if (main.requestFullscreen) {
+                    main.requestFullscreen();
+                    return true;
+                } else if (main.requestFullScreenWithKeys) {
+                    main.requestFullScreenWithKeys();
+                    return true;
+                } else if (main.requestFullScreen) {
+                    main.requestFullScreen();
+                    return true;
+                } else if (main.webkitRequestFullScreen) {
+                    main.webkitRequestFullScreen();
+                    return true;
+                } else if (document.body.mozRequestFullScreenWithKeys) {
+                    document.body.mozRequestFullScreenWithKeys();
+                    return true;
+                } else if (document.body.mozRequestFullScreen) {
+                    document.body.mozRequestFullScreen();
+                    return true;
+                }
+            } catch (fsErr) {
+                // Ignore fullscreen errors if not allowed or rejected by browser policy
             }
         }
         return false;
@@ -1322,7 +1369,8 @@ Wolf.Game = (function() {
         resume : resume,
         victory : victory,
         endEpisode : endEpisode,
-        toggleAssets : toggleAssets
+        toggleAssets : toggleAssets,
+        getCurrentGame : function() { return currentGame; }
         
         /*
         dump : dump,
