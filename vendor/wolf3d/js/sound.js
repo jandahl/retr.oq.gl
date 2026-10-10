@@ -57,6 +57,71 @@ Wolf.Sound = (function() {
         return file.split(".")[0] + "." + ext
     }
 
+    // Low-latency path: decode every effect once into an AudioBuffer and fire it
+    // through Web Audio. Streaming an <audio> element per first play cost >1s
+    // (network fetch + decoder spin-up); buffers start in a few ms.
+    var ctx = null,
+        buffers = {},      // file -> AudioBuffer
+        loading = {},      // file -> true while fetching/decoding
+        masterGain = null;
+
+    function getContext() {
+        if (!ctx) {
+            var AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) { return null; }
+            try {
+                ctx = new AC();
+                masterGain = ctx.createGain();
+                masterGain.connect(ctx.destination);
+            } catch (e) { ctx = null; }
+        }
+        return ctx;
+    }
+
+    function resumeContext() {
+        var c = getContext();
+        if (c && c.state == "suspended") {
+            var p = c.resume();
+            if (p && p.catch) { p.catch(function() {}); }
+        }
+    }
+
+    function loadBuffer(file, done) {
+        var c = getContext(), xhr;
+        if (!c || buffers[file] || loading[file]) { return; }
+        loading[file] = true;
+        xhr = new XMLHttpRequest();
+        xhr.open("GET", getFileName(file), true);
+        xhr.responseType = "arraybuffer";
+        xhr.onload = function() {
+            if (xhr.status != 200 && xhr.status != 0) { loading[file] = false; return; }
+            var ok = function(buf) { buffers[file] = buf; loading[file] = false; if (done) { done(buf); } },
+                fail = function() { loading[file] = false; },
+                p = c.decodeAudioData(xhr.response, ok, fail);
+            if (p && p.catch) { p.catch(fail); }
+        };
+        xhr.onerror = function() { loading[file] = false; };
+        xhr.send();
+    }
+
+    function playBuffer(buf, volume) {
+        var c = getContext(), src, gain;
+        if (!c) { return false; }
+        resumeContext();
+        src = c.createBufferSource();
+        gain = c.createGain();
+        src.buffer = buf;
+        gain.gain.value = volume;
+        src.connect(gain);
+        gain.connect(masterGain);
+        src.start(0);
+        return true;
+    }
+
+    function preloadSounds(list) {
+        for (var i = 0; i < list.length; i++) { loadBuffer("lsfx/" + list[i] + ".wav"); }
+    }
+
     function createAudioElement() {
         var audio = new Audio();
         audioElements.push(audio);
@@ -65,7 +130,21 @@ Wolf.Sound = (function() {
 
     function startSound(posPlayer, posSound, entNum, entChannel, file, volume, attenuation, timeOfs) {
         var audio, dx, dy, dist;
-        
+
+        if (posPlayer && posSound) {
+            dx = (posPlayer.x - posSound.x) / Wolf.TILEGLOBAL;
+            dy = (posPlayer.y - posSound.y) / Wolf.TILEGLOBAL;
+            dist = dx * dx + dy * dy;
+            volume *= 1 / (1 + dist / 50);
+        }
+        if (buffers[file]) {
+            if (soundEnabled && playBuffer(buffers[file], volume * Wolf.MASTER_VOLUME)) { return; }
+            if (!soundEnabled) { return; }
+        } else {
+            loadBuffer(file);   // first use of an unlisted sound: fall back below, buffered next time
+        }
+        posPlayer = posSound = null;   // attenuation already applied above
+
         if (!sounds[file]) {
             sounds[file] = [];
         }
@@ -121,6 +200,11 @@ Wolf.Sound = (function() {
     }
     
     function init() {
+        // all shipped effects in lsfx/ (~370KB); decoded once, then played with ~0 latency
+        preloadSounds(["001", "003", "005", "008", "009", "012", "023", "028", "030", "031", "032", "033", "034", "035", "036", "037", "038", "039", "040", "044", "045", "061", "062", "064", "069", "076", "078", "080", "085", "086"]);
+        document.addEventListener("keydown", resumeContext, true);
+        document.addEventListener("pointerdown", resumeContext, true);
+        document.addEventListener("touchstart", resumeContext, true);
     }
     
     
