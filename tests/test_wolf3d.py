@@ -77,6 +77,13 @@ class TestOriginalAssetSwap(unittest.TestCase):
             with open(orig_sp, "rb") as fo, open(cur_sp, "rb") as fc:
                 self.assertNotEqual(fo.read(), fc.read(), sprite_rel)
 
+        orig_title = os.path.join(BASE_DIR, "vendor", "wolf3d", "art-original", "title.png")
+        cur_title = os.path.join(BASE_DIR, "vendor", "wolf3d", "art", "title.png")
+        self.assertTrue(os.path.exists(orig_title), orig_title)
+        self.assertTrue(os.path.exists(cur_title), cur_title)
+        with open(orig_title, "rb") as fo, open(cur_title, "rb") as fc:
+            self.assertNotEqual(fo.read(), fc.read(), "title.png")
+
 
 class TestGuardSpriteSheets(unittest.TestCase):
     """Guards must have 49 frames matching Wolf3D layout in both 64 and 128."""
