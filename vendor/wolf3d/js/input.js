@@ -157,6 +157,18 @@ Wolf.Input = (function() {
         return false;
     }
     
+    function setKey(k, isDown) {
+        var keyCode = (typeof k === "number") ? k : Wolf.Keys[k];
+        if (keyCode) {
+            keys[keyCode] = !!isDown;
+            if (isDown && bindings[keyCode]) {
+                for (var i=0,n=bindings[keyCode].length;i<n;i++) {
+                    bindings[keyCode][i]({ keyCode: keyCode, preventDefault: function(){} });
+                }
+            }
+        }
+    }
+
     /**
      * @memberOf Wolf.Input
      * @description Clear status for keys.
@@ -246,6 +258,7 @@ Wolf.Input = (function() {
         resetMouse : resetMouse,
         checkKeys : checkKeys,
         clearKeys : clearKeys,
+        setKey : setKey,
         bindKey : bindKey,
         leftMouseDown : leftMouseDown,
         rightMouseDown : rightMouseDown,

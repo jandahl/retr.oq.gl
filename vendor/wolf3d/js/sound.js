@@ -89,7 +89,10 @@ Wolf.Sound = (function() {
         }
 
         audio.volume = volume * Wolf.MASTER_VOLUME * (soundEnabled ? 1 : 0);
-        audio.play();
+        var playPromise = audio.play();
+        if (playPromise && playPromise.catch) {
+            playPromise.catch(function() {});
+        }
     }
     
     function startMusic(file) {
@@ -101,7 +104,10 @@ Wolf.Sound = (function() {
         if (currentMusic != filename) {
             music.src = currentMusic = filename;
             music.volume = Wolf.MUSIC_VOLUME * Wolf.MASTER_VOLUME * (musicEnabled ? 1 : 0);
-            music.play();
+            var playPromise = music.play();
+            if (playPromise && playPromise.catch) {
+                playPromise.catch(function() {});
+            }
         }
     }
 
