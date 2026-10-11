@@ -1,197 +1,148 @@
 #!/usr/bin/env python3
-"""Reskin the three Wolf3D boss sprite sheets (Fake Hitler, Mecha-Hitler, Hitler)
-into Fake Trump, Mecha-Trump and Trump with dual chainguns.
+"""Pack generated Trump boss action frames into Wolf3D sprite sheets.
 
-Every frame is derived from the pristine original in art-original/sprites, so all
-animation poses, hitboxes and frame timings stay 100% authentic:
-  * face   -> orange tan, moustache removed
-  * hair   -> swept golden-blonde pompadour
-  * teal mecha armour / brown uniform -> navy blue
-  * red necktie on the walking and shooting frames
-  * Hitler's death gore -> green (matches the guards' green blood)
+The source art in tools/assets is image-generator pixel art. This script only
+extracts transparent action frames, removes the attack sheet's magenta key, and
+packs art into the engine's existing frame cells. Original attack/death poses,
+projectiles, transformation frames, and corpses without a generated equivalent
+stay in their original slots.
 
-Run:  uv run --no-project --with pillow python3 tools/generate_wolf3d_bosses.py
-Sheets: 325_337 (Fake, 13 frames), 338_363 (Mecha + Hitler, 26 frames).
+Run: uv run --no-project --with pillow python3 tools/generate_wolf3d_bosses.py
 """
 import os
-from collections import deque
 from PIL import Image
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(BASE, 'vendor', 'wolf3d', 'art-original', 'sprites')
-DST = os.path.join(BASE, 'vendor', 'wolf3d', 'art', 'sprites')
+ORIGINAL = os.path.join(BASE, 'vendor', 'wolf3d', 'art-original', 'sprites')
+OUTPUT = os.path.join(BASE, 'vendor', 'wolf3d', 'art', 'sprites')
+ASSETS = os.path.join(BASE, 'tools', 'assets')
 
-# (sheet, frames, tie frame indices, tie length in 64px rows, green-gore frame indices)
-SHEETS = {
-    '325_337': dict(n=13, tie=range(0, 5), tie_len=8, gore=()),
-    '338_363': dict(n=26, tie=range(11, 18), tie_len=9, gore=range(18, 26)),
-}
+SUIT_WALK_ART = os.path.join(ASSETS, 'wolf3d-djt-walk-gatlings.png')
+MECHA_WALK_ART = os.path.join(ASSETS, 'wolf3d-djt-mecha-walk-gatlings.png')
+FAKE_ROBE_WALK_ART = os.path.join(ASSETS, 'wolf3d-djt-fake-robe-walk-wide.png')
+FAKE_ROBE_ATTACK_ART = os.path.join(ASSETS, 'wolf3d-djt-fake-robe-attack.png')
+ATTACK_ART = os.path.join(ASSETS, 'wolf3d-djt-attack.png')
 
-
-def lum(p):
-    return 0.3 * p[0] + 0.59 * p[1] + 0.11 * p[2]
-
-
-def is_skin_core(p):
-    r, g, b, a = p
-    return a > 0 and r >= 208 and g >= 120 and 70 <= b <= 150 and r > g > b and r - b >= 90
-
-
-def is_warm(p):
-    r, g, b, a = p
-    return a > 0 and r >= 150 and r > g > b and r - b >= 50
+SUIT_WALK_FRAMES = {i: i for i in range(4)}
+MECHA_WALK_FRAMES = {i: i for i in range(4)}
+FAKE_ATTACK_FRAME = {4: 4}
+FAKE_ROBE_WIDTHS = {i: 56 for i in range(5)}
+# 338-363 layout: mecha walk 0-3, attack 4-6, dead 7, death 8-10;
+# exposed Hitler walk 11-14, attack 15-17, dead 18, death 19-25.
+HITLER_SUIT_WALK_FRAMES = {11 + i: 4 + i for i in range(4)}
+# The engine cycles shoot1 -> shoot2 -> shoot3. Its generated strip has a
+# ready pose and a firing pose, so the latter occupies both muzzle-flash states.
+HITLER_SUIT_ATTACK_FRAMES = {15: 8, 16: 9, 17: 9}
 
 
-def orange(p):
-    return (min(255, p[0]), int(p[1] * 0.80), int(p[2] * 0.55), 255)
+def keyed_views(path, cols=4, rows=2):
+    """Return character crops from a generated regular-grid master sheet."""
+    sheet = Image.open(path).convert('RGBA')
+    cell_w, cell_h = sheet.width // cols, sheet.height // rows
+    views = []
+    for row in range(rows):
+        for col in range(cols):
+            cell = sheet.crop((col * cell_w, row * cell_h,
+                               (col + 1) * cell_w, (row + 1) * cell_h))
+            px = cell.load()
+            for y in range(cell.height):
+                for x in range(cell.width):
+                    r, g, b, _ = px[x, y]
+                    # The model's flat magenta key varies slightly at the edges.
+                    if r > 180 and b > 180 and g < 65 and abs(r - b) < 75:
+                        px[x, y] = (0, 0, 0, 0)
+                    else:
+                        px[x, y] = (r, g, b, 255)
+            bounds = cell.getchannel('A').getbbox()
+            if not bounds:
+                raise ValueError(f'No character found in turnaround cell {col},{row}: {path}')
+            views.append(cell.crop(bounds))
+    return views
 
 
-def gold(p):
-    t = min(1.0, lum(p) / 110.0)
-    return (int(150 + 100 * t), int(100 + 95 * t), int(20 + 50 * t), 255)
+def transparent_views(path, cols=4):
+    """Split a generated transparent-background action strip into frames."""
+    sheet = Image.open(path).convert('RGBA')
+    views = []
+    for col in range(cols):
+        left = round(col * sheet.width / cols)
+        right = round((col + 1) * sheet.width / cols)
+        cell = sheet.crop((left, 0, right, sheet.height))
+        bounds = cell.getchannel('A').getbbox()
+        if not bounds:
+            raise ValueError(f'No character found in walk frame {col}: {path}')
+        views.append(cell.crop(bounds))
+    return views
 
 
-def navy(p):
-    l = lum(p)
-    return (int(l * 0.12), int(l * 0.20), min(255, int(l * 0.85) + 25), 255)
+def fit_view(view, resolution, target_height, target_width=None):
+    """Nearest-neighbor pixel-art fit, centered on a Wolf3D frame baseline."""
+    cell = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
+    max_h, max_w = target_height, target_width or 62
+    if target_width:
+        # Fake's original robe frames are deliberately broad, with arms spread
+        # across nearly the full 64px cell; match that silhouette.
+        width, height = max_w, max_h
+    else:
+        factor = min(max_h / view.height, max_w / view.width)
+        width = max(1, round(view.width * factor))
+        height = max(1, round(view.height * factor))
+    scaled = view.resize((width, height), Image.Resampling.NEAREST)
+    x = (64 - width) // 2
+    y = 64 - height
+    cell.alpha_composite(scaled, (x, y))
+    if resolution == 64:
+        return cell
+    return cell.resize((resolution, resolution), Image.Resampling.NEAREST)
 
 
-def is_teal(p):
-    return p[3] > 0 and p[2] > p[0] + 15 and p[1] > p[0] + 15
+def pack(sheet_name, frame_count, replacements, view_set, resolution,
+         target_heights=None, target_widths=None, default_height=54):
+    original = Image.open(os.path.join(ORIGINAL, str(resolution), sheet_name + '.png')).convert('RGBA')
+    output = Image.new('RGBA', original.size, (0, 0, 0, 0))
+    target_heights = target_heights or {}
+    target_widths = target_widths or {}
+    for index in range(frame_count):
+        x = index * resolution
+        if index in replacements:
+            view_index = replacements[index]
+            frame = fit_view(view_set[view_index], resolution,
+                             target_heights.get(index, default_height),
+                             target_widths.get(index))
+        else:
+            frame = original.crop((x, 0, x + resolution, resolution))
+        output.paste(frame, (x, 0))
+    path = os.path.join(OUTPUT, str(resolution), sheet_name + '.png')
+    output.save(path)
+    return path
 
 
-def is_brown(p):
-    r, g, b, a = p
-    return (a > 0 and r <= 225 and r > b + 12 and r >= g >= b and g > 18
-            and g < 0.85 * r and b >= 0.18 * r)
-
-
-def is_blood(p):
-    return p[3] > 0 and p[0] >= 60 and p[1] <= 50 and p[2] <= 50 and p[0] > 2 * p[1]
-
-
-def green(p):
-    return (int(p[1] + p[0] * 0.15), int(min(255, p[0] * 1.15)), int(p[2] + p[0] * 0.1), 255)
-
-
-def find_face(px, w, h):
-    """Largest warm-skin blob in the upper 65% of the frame -> bbox, or None."""
-    seen = [[False] * w for _ in range(h)]
-    best = None
-    for y in range(int(h * 0.65)):
-        for x in range(w):
-            if seen[y][x] or not is_skin_core(px[x, y]):
-                continue
-            q, pts = deque([(x, y)]), []
-            seen[y][x] = True
-            while q:
-                cx, cy = q.popleft()
-                pts.append((cx, cy))
-                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    nx, ny = cx + dx, cy + dy
-                    if 0 <= nx < w and 0 <= ny < int(h * 0.65) and not seen[ny][nx] and is_skin_core(px[nx, ny]):
-                        seen[ny][nx] = True
-                        q.append((nx, ny))
-            if best is None or len(pts) > len(best):
-                best = pts
-    k = h / 64.0
-    if not best or len(best) < 8 * k * k:
-        return None
-    xs = [p[0] for p in best]
-    ys = [p[1] for p in best]
-    return min(xs), max(xs), min(ys), max(ys)
-
-
-def reskin_frame(fr, idx, cfg):
-    w, h = fr.size
-    k = h // 64
-    px = fr.load()
-    face = find_face(px, w, h)
-
-    if face:
-        face = (face[0], face[1], max(0, face[2] - int((face[3] - face[2] + 1) * 0.35)), face[3])
-
-    def in_face(x, y):
-        return face and face[0] - 2 * k <= x <= face[1] + 2 * k and face[2] - 8 * k <= y <= face[3]
-
-    # 1. uniforms / armour (everything outside the face box)
-    for y in range(h):
-        for x in range(w):
-            p = px[x, y]
-            if p[3] == 0 or in_face(x, y):
-                continue
-            if is_blood(p) and idx in cfg['gore']:
-                px[x, y] = green(p)
-            elif is_teal(p) or is_brown(p):
-                px[x, y] = navy(p)
-
-    if face:
-        x0, x1, y0, y1 = face
-        fw, fh = x1 - x0 + 1, y1 - y0 + 1
-        # 2. skin -> orange, moustache out
-        for y in range(y0, y1 + 1):
-            for x in range(x0, x1 + 1):
-                if is_warm(px[x, y]):
-                    px[x, y] = orange(px[x, y])
-        skin = orange((232, 136, 88, 255))
-        for y in range(y0 + int(fh * 0.50), y0 + int(fh * 0.66)):
-            for x in range(x0 + int(fw * 0.22), x1 - int(fw * 0.22) + 1):
-                p = px[x, y]
-                if p[3] and lum(p) < 100 and not is_blood(p):
-                    px[x, y] = skin
-        # 3. hair: recolour the dark grey cap, then grow a swept pompadour
-        hair_rows = range(max(0, y0 - 8 * k), y0 + int(fh * 0.22))
-        hair = []
-        for y in hair_rows:
-            for x in range(max(0, x0 - k), min(w, x1 + k + 1)):
-                p = px[x, y]
-                if p[3] and lum(p) < 120 and not is_blood(p):
-                    px[x, y] = gold(p)
-                    hair.append((x, y))
-        if hair:
-            top = min(y for _, y in hair)
-            for x in range(x0, x1 + k + 1):
-                col = [y for hx, y in hair if hx == x]
-                if not col:
-                    continue
-                t = min(col)
-                lift = 2 * k if x > x0 + fw * 0.3 else k
-                for dy in range(1, lift + 1):
-                    if t - dy >= 0 and px[x, t - dy][3] == 0:
-                        px[x, t - dy] = gold((120 - dy * 10,) * 3 + (255,))
-            # forehead sweep to the right
-            for y in range(top, y0 + int(fh * 0.25)):
-                row = [x for x, hy in hair if hy == y]
-                if row and px[max(row) + 1, y][3] == 0 and max(row) + 1 < w:
-                    px[max(row) + 1, y] = gold((100, 100, 100, 255))
-        # 4. red necktie
-        if idx in cfg['tie']:
-            cx = (x0 + x1) // 2
-            cy = y1 + k
-            for dx in range(-3 * k, 3 * k + 1):
-                px[cx + dx, cy] = (240, 240, 240, 255)
-            for dx in range(-2 * k, 2 * k + 1):
-                px[cx + dx, cy + k] = (225, 225, 225, 255)
-            length = cfg['tie_len'] * k
-            for dy in range(k, length):
-                half = k if dy < length - 3 * k else 2 * k
-                for dx in range(-half + 1, half + 1):
-                    px[cx + dx, cy + dy] = (215, 0, 0, 255) if dx <= 0 else (150, 0, 0, 255)
-    return fr
-
-
-def process(sheet, cfg, res):
-    src = Image.open(os.path.join(SRC, str(res), sheet + '.png')).convert('RGBA')
-    out = Image.new('RGBA', src.size, (0, 0, 0, 0))
-    for i in range(cfg['n']):
-        fr = src.crop((i * res, 0, (i + 1) * res, res))
-        out.paste(reskin_frame(fr, i, cfg), (i * res, 0))
-    out.save(os.path.join(DST, str(res), sheet + '.png'))
-    return out
+def main():
+    suit_walk = transparent_views(SUIT_WALK_ART)
+    mecha_walk = transparent_views(MECHA_WALK_ART)
+    fake_robe_walk = transparent_views(FAKE_ROBE_WALK_ART)
+    fake_robe_attack = transparent_views(FAKE_ROBE_ATTACK_ART, cols=2)
+    attacks = keyed_views(ATTACK_ART, cols=2, rows=1)
+    # 325-337 layout: Fake walk 0-3, attack 4, fire effects 5-6,
+    # death animation 7-11, corpse 12.
+    fake_views = fake_robe_walk + fake_robe_attack[:1]
+    mixed_views = mecha_walk + suit_walk + attacks
+    mixed_frames = {
+        **MECHA_WALK_FRAMES,
+        **HITLER_SUIT_WALK_FRAMES,
+        **HITLER_SUIT_ATTACK_FRAMES,
+    }
+    for resolution in (64, 128):
+        pack('325_337', 13, {**SUIT_WALK_FRAMES, **FAKE_ATTACK_FRAME},
+             fake_views, resolution, target_widths=FAKE_ROBE_WIDTHS,
+             default_height=50)
+        heights = {**{i: 60 for i in MECHA_WALK_FRAMES},
+                   **{i: 50 for i in HITLER_SUIT_WALK_FRAMES},
+                   **{i: 52 for i in HITLER_SUIT_ATTACK_FRAMES}}
+        pack('338_363', 26, mixed_frames, mixed_views, resolution,
+             target_heights=heights)
+        print('wrote', resolution, 'boss sprite sheets')
 
 
 if __name__ == '__main__':
-    for res in (64, 128):
-        for sheet, cfg in SHEETS.items():
-            process(sheet, cfg, res)
-            print('wrote', res, sheet)
+    main()
