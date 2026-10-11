@@ -51,7 +51,9 @@ DECON    DAT        77,824  03-14-89   2:15p
 KEEN1    DAT       287,000  12-14-90   1:14p
 <button type="button" class="dos-link" id="launch-wolf">WOLF3D   EXE</button>        78,416  05-05-92   3:00p
 WL1      DAT       620,112  05-05-92   3:00p
-        9 File(s)    2,086,268 bytes
+<button type="button" class="dos-link" id="launch-redneck">RAMPAGE  EXE</button>       1,190,421  01-20-97   8:21p
+REDNECK  GRP      24,753,297  01-20-97   8:21p
+       11 File(s)   28,029,986 bytes
                        487,424 bytes free
 </div>
     <!-- A real command line, not just a clickable filename -- DICT.EXE
@@ -81,6 +83,17 @@ WL1      DAT       620,112  05-05-92   3:00p
     </div>
     <div class="dos-keen-body">
       <iframe class="dos-keen-frame" id="dos-wolf-frame" src="about:blank" title="Wolfenstein 3D" allow="autoplay; fullscreen; gamepad"></iframe>
+    </div>
+  </div>
+
+  <!-- RAMPAGE.EXE: local shareware demo running in the js-dos/DOSBox browser player. -->
+  <div class="dos-app dos-keen-app" id="redneck-app" hidden>
+    <div class="dos-app-header dos-keen-header">
+      <span>A:\OQ\RAMPAGE.EXE</span>
+      <button type="button" class="dos-keen-exit-btn" id="redneck-exit">Esc=Exit to DOS</button>
+    </div>
+    <div class="dos-keen-body">
+      <iframe class="dos-keen-frame" id="dos-redneck-frame" src="about:blank" title="Redneck Rampage" allow="autoplay; fullscreen; gamepad; pointer-lock" allowpointerlock></iframe>
     </div>
   </div>
 
@@ -174,7 +187,7 @@ WL1      DAT       620,112  05-05-92   3:00p
      the top like window.OqDictSource is. -->
 <script type="module" src="../shared/oq-analysis.js?v=14"></script>
 <script src="../shared/decon-app.js?v=6"></script>
-<script src="app.js?v=30"></script>
+<script src="app.js?v=41"></script>
 
 </body>
 </html>

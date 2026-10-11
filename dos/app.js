@@ -515,6 +515,59 @@
 
   const wolfApp = document.getElementById("wolf-app");
   const wolfFrame = document.getElementById("dos-wolf-frame");
+  const redneckApp = document.getElementById("redneck-app");
+  const redneckFrame = document.getElementById("dos-redneck-frame");
+
+  function launchRedneck() {
+    dirScreen.hidden = true;
+    dictApp.hidden = true;
+    deconApp.hidden = true;
+    keenApp.hidden = true;
+    wolfApp.hidden = true;
+    redneckApp.hidden = false;
+    if (window.OqScreensaver && window.OqScreensaver.host) {
+      window.OqScreensaver.host.setIdleMs(0);
+      window.OqScreensaver.host.stop();
+    }
+    if (redneckFrame && redneckFrame.src.endsWith("about:blank")) {
+      redneckFrame.src = "../vendor/redneck/dosbox-runner.html?v=10";
+    }
+  }
+
+  function exitRedneck() {
+    redneckApp.hidden = true;
+    if (redneckFrame) {
+      const child = redneckFrame.contentWindow;
+      const save = child && child.saveRedneckLocalChanges;
+      let saveResult = null;
+      if (typeof save === "function") {
+        try {
+          saveResult = save.call(child);
+        } catch (error) {
+          console.warn("Could not save Redneck local files:", error);
+        }
+      }
+      let frameClosed = false;
+      const closeFrame = () => {
+        if (frameClosed) return;
+        frameClosed = true;
+        redneckFrame.src = "about:blank";
+      };
+      if (saveResult && typeof saveResult.then === "function") {
+        window.setTimeout(closeFrame, 2000);
+        saveResult.catch((error) => {
+          console.warn("Could not save Redneck local files:", error);
+        }).then(closeFrame, closeFrame);
+      } else {
+        closeFrame();
+      }
+    }
+    if (window.OqScreensaver && window.OqScreensaver.host) {
+      window.OqScreensaver.host.setIdleMs(45000);
+    }
+    dirScreen.hidden = false;
+    dosCmd.focus();
+  }
 
   function launchWolf() {
     dirScreen.hidden = true;
@@ -603,14 +656,22 @@
       dictApp.hidden = true;
       deconApp.hidden = true;
       keenApp.hidden = true;
+      redneckApp.hidden = true;
       if (wolfApp.hidden) {
         launchWolf();
       }
+    } else if (screen === "redneck" || screen === "rampage") {
+      dictApp.hidden = true;
+      deconApp.hidden = true;
+      keenApp.hidden = true;
+      wolfApp.hidden = true;
+      if (redneckApp.hidden) launchRedneck();
     } else {
       if (!dictApp.hidden) exitDict();
       if (!deconApp.hidden) exitDecon();
       if (!keenApp.hidden) exitKeen();
       if (!wolfApp.hidden) exitWolf();
+      if (!redneckApp.hidden) exitRedneck();
     }
   });
 
@@ -625,6 +686,12 @@
     window.OqRouter.navigate({ screen: "wolf" });
   });
   document.getElementById("wolf-exit").addEventListener("click", () => {
+    window.OqRouter.navigate({ screen: null });
+  });
+  document.getElementById("launch-redneck").addEventListener("click", () => {
+    window.OqRouter.navigate({ screen: "redneck" });
+  });
+  document.getElementById("redneck-exit").addEventListener("click", () => {
     window.OqRouter.navigate({ screen: null });
   });
 
@@ -678,13 +745,13 @@
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden || !keenApp.hidden || !wolfApp.hidden)) {
+    if (event.key === "Escape" && (!dictApp.hidden || !deconApp.hidden || !keenApp.hidden || !wolfApp.hidden || !redneckApp.hidden)) {
       window.OqRouter.navigate({ screen: null, filter: null, word: null });
     }
   });
 
   window.addEventListener("message", (event) => {
-    if (event.data && (event.data.type === "doom-exit" || event.data.type === "keen-exit" || event.data.type === "wolf-exit")) {
+    if (event.data && (event.data.type === "doom-exit" || event.data.type === "keen-exit" || event.data.type === "wolf-exit" || event.data.type === "redneck-exit")) {
       window.OqRouter.navigate({ screen: null });
     }
   });
@@ -720,7 +787,9 @@ KEEN     EXE        51,200  12-14-90   1:14p
 KEEN1    DAT       287,000  12-14-90   1:14p
 WOLF3D   EXE        78,416  05-05-92   3:00p
 WL1      DAT       620,112  05-05-92   3:00p
-        9 File(s)    2,086,268 bytes
+RAMPAGE  EXE     1,190,421  01-20-97   8:21p
+REDNECK  GRP    24,753,297  01-20-97   8:21p
+       11 File(s)   28,029,986 bytes
                        487,424 bytes free`;
 
   // The real MS-DOS command was VER (built into COMMAND.COM, not a
@@ -817,6 +886,12 @@ DOS/4GW fatal error (15): protected mode available only with 386 or 486`;
         printLine(`WOLF3D.EXE [/?]\n\n  /?        Display this help`);
       } else {
         window.OqRouter.navigate({ screen: "wolf" });
+      }
+    } else if (cmd === "RAMPAGE" || cmd === "RAMPAGE.EXE" || cmd === "REDNECK" || cmd === "REDNECK.EXE") {
+      if (args[0] === "/?") {
+        printLine(`RAMPAGE.EXE [/?]\n\n  Requires Redneck Rampage game data in vendor/redneck/game-data/.\n  /?        Display this help`);
+      } else {
+        window.OqRouter.navigate({ screen: "redneck" });
       }
     } else if (cmd === "DOOM" || cmd === "DOOM.EXE") {
       printLine(DOOM_ERROR);
