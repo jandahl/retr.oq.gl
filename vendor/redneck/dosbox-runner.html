@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Redneck Rampage Demo</title>
-  <link rel="stylesheet" href="https://unpkg.com/js-dos@8.5.3/dist/js-dos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/js-dos@8.5.3/dist/js-dos.css">
   <style>
     html, body, #player { width: 100%; height: 100%; margin: 0; background: #000; }
     #player { position: fixed; inset: 0; }
@@ -41,7 +41,9 @@
         showSetup('Open this page through the local HTTP server.');
         return;
       }
-      var bundleUrl = 'game-data/redneck-demo.jsdos?v=4';
+      var bundleUrl = 'game-data/redneck-demo.jsdos?v=10';
+      var demoBundleUrl = new URL(bundleUrl, location.href);
+      var emulatorPath = 'https://v8.js-dos.com/latest/emulators/';
       var ci = null;
       var playerProps = null;
       var savePromise = null;
@@ -106,6 +108,30 @@
         bindGameCanvas();
         if (gameCanvas) clearInterval(canvasBindTimer);
       }, 100);
+      function loadDosRuntime() {
+        return new Promise(function (resolve, reject) {
+          var sources = [
+            'https://cdn.jsdelivr.net/npm/js-dos@8.5.3/dist/js-dos.js',
+            'https://unpkg.com/js-dos@8.5.3/dist/js-dos.js'
+          ];
+          var index = 0;
+          function tryNext() {
+            if (window.Dos) return resolve();
+            if (index >= sources.length) {
+              return reject(new Error('js-dos could not load from jsDelivr or unpkg.'));
+            }
+            var script = document.createElement('script');
+            script.src = sources[index++];
+            script.onload = function () {
+              if (window.Dos) resolve();
+              else tryNext();
+            };
+            script.onerror = tryNext;
+            document.head.appendChild(script);
+          }
+          tryNext();
+        });
+      }
       fetch(bundleUrl, { method: 'HEAD' }).then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
         // Some static hosts return the site's SPA fallback as HTTP 200 for
@@ -115,9 +141,10 @@
         if (/text\/html/i.test(contentType)) {
           throw new Error('The server returned HTML instead of the local game bundle.');
         }
-        if (!window.Dos) throw new Error('js-dos did not load from its CDN.');
+      }).then(loadDosRuntime).then(function () {
         playerProps = window.Dos(document.getElementById('player'), {
-          url: bundleUrl,
+          url: demoBundleUrl.href,
+          pathPrefix: emulatorPath,
           lang: 'en',
           backend: 'dosbox',
           mouseCapture: false,
@@ -125,10 +152,11 @@
           autoSave: true,
           imageRendering: 'pixelated',
           renderAspect: '4/3',
+          renderBackend: 'canvas',
           theme: 'dark',
           onEvent: function (event, commandInterface) {
             var status = document.getElementById('runtime-status');
-            if (event === 'emu-ready') status.textContent = 'DOSBox ready; opening first-run setup...';
+            if (event === 'emu-ready') status.textContent = 'Starting Redneck Rampage...';
             if (event === 'ci-ready' && commandInterface) {
               ci = commandInterface;
               bindGameCanvas();
@@ -137,29 +165,11 @@
               });
               ci.events().onStdout(function (line) { if (line) console.log('DOS:', line); });
               var attempts = 0;
-              var lastProgram = '';
-              var setupLaunchStarted = false;
               var timer = setInterval(function () {
                 ci.getRunningProgram().then(function (program) {
                   if (program) {
                     status.textContent = 'DOSBox running: ' + program;
                     document.title = 'Redneck Rampage Demo — ' + program;
-                    if (program === 'SETMAIN' && !setupLaunchStarted) {
-                      setupLaunchStarted = true;
-                      status.textContent = 'Saving default setup and launching Redneck Rampage...';
-                      window.setTimeout(function () {
-                        // SETMAIN opens its menu with Sound Setup selected;
-                        // the ninth Down selects “Save and launch”.
-                        for (var i = 0; i < 9; i++) {
-                          window.setTimeout(function () { ci.simulateKeyPress(264); }, i * 180);
-                        }
-                        window.setTimeout(function () { ci.simulateKeyPress(257); }, 9 * 180 + 220);
-                      }, 1200);
-                    }
-                    if (lastProgram === 'SETMAIN' && program !== 'SETMAIN') {
-                      saveRedneckLocalChanges().catch(function () {});
-                    }
-                    lastProgram = program;
                   } else if (++attempts >= 10) {
                     status.textContent = 'DOSBox started, but no game process was detected. Check the browser console.';
                     clearInterval(timer);
@@ -172,11 +182,10 @@
           }
         });
       }).catch(function (error) {
-        showSetup('The Redneck shareware demo could not be loaded. Confirm that the demo bundle is present in the site deployment.', String(error && error.message || error));
+        showSetup('The Redneck demo could not start. Check that its game bundle is deployed and the js-dos runtime CDNs are reachable.', String(error && error.message || error));
         console.error(error);
       });
     })();
   </script>
-  <script src="https://unpkg.com/js-dos@8.5.3/dist/js-dos.js" onerror="document.getElementById('setup').hidden=false;document.getElementById('message').textContent='Could not load the js-dos browser runtime from unpkg.';document.getElementById('player').hidden=true"></script>
 </body>
 </html>
