@@ -127,8 +127,11 @@
 
     function isGameActive() {
       try {
-        const keen = document.getElementById("keen-app");
-        if (keen && !keen.hidden) return true;
+        const gameIds = ["keen-app", "wolf-app", "redneck-app"];
+        if (gameIds.some((id) => {
+          const game = document.getElementById(id);
+          return game && !game.hidden;
+        })) return true;
         const doom = document.getElementById("win-doom95");
         if (doom && doom.classList && !doom.classList.contains("minimized")) return true;
       } catch (e) {}

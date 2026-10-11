@@ -180,7 +180,7 @@ test("turning reduced motion off restores Aqua's 75s idle", () => {
   assert.deepEqual(host.timeouts.map((item) => item.ms), [75000]);
 });
 
-test("screensaver does not start when Keen or Doom 95 is active", () => {
+test("screensaver does not start while a DOS game or Doom 95 is active", () => {
   const host = loadHost({ pathname: "/dos/", readyState: "loading" });
   const keenEl = host.makeEl("section");
   keenEl.id = "keen-app";
@@ -199,6 +199,18 @@ test("screensaver does not start when Keen or Doom 95 is active", () => {
   // Timer should be re-scheduled
   assert.equal(host.timeouts.length, 1);
   assert.notEqual(host.timeouts[0].id, timeoutId);
+
+  for (const id of ["wolf-app", "redneck-app"]) {
+    const gameHost = loadHost({ pathname: "/dos/", readyState: "loading" });
+    const gameEl = gameHost.makeEl("section");
+    gameEl.id = id;
+    gameEl.hidden = false;
+    gameHost.body.appendChild(gameEl);
+
+    const gameApi = gameHost.sandbox.OqScreensaver.attach({ src: "../vendor/screensavers/maze/index.html?v=ss4", idleMs: 45000 });
+    gameHost.timeouts[0].fn();
+    assert.equal(gameHost.document.getElementById("oq-ss-overlay").hidden, true, `${id} keeps screensaver hidden`);
+  }
 
   // Doom 95 in win95
   const hostWin95 = loadHost({ pathname: "/win95/", readyState: "loading" });
