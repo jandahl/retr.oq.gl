@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Redneck Rampage Demo</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/js-dos@8.5.3/dist/js-dos.css">
+  <link rel="stylesheet" href="runtime/js-dos.css?v=1">
   <style>
     html, body, #player { width: 100%; height: 100%; margin: 0; background: #000; }
     #player { position: fixed; inset: 0; }
@@ -41,9 +41,9 @@
         showSetup('Open this page through the local HTTP server.');
         return;
       }
-      var bundleUrl = 'game-data/redneck-demo.jsdos?v=10';
+      var bundleUrl = 'game-data/redneck-demo.jsdos?v=11';
       var demoBundleUrl = new URL(bundleUrl, location.href);
-      var emulatorPath = 'https://v8.js-dos.com/latest/emulators/';
+      var emulatorPath = new URL('runtime/emulators/', location.href).href;
       var ci = null;
       var playerProps = null;
       var savePromise = null;
@@ -110,26 +110,16 @@
       }, 100);
       function loadDosRuntime() {
         return new Promise(function (resolve, reject) {
-          var sources = [
-            'https://cdn.jsdelivr.net/npm/js-dos@8.5.3/dist/js-dos.js',
-            'https://unpkg.com/js-dos@8.5.3/dist/js-dos.js'
-          ];
-          var index = 0;
-          function tryNext() {
-            if (window.Dos) return resolve();
-            if (index >= sources.length) {
-              return reject(new Error('js-dos could not load from jsDelivr or unpkg.'));
-            }
-            var script = document.createElement('script');
-            script.src = sources[index++];
-            script.onload = function () {
-              if (window.Dos) resolve();
-              else tryNext();
-            };
-            script.onerror = tryNext;
-            document.head.appendChild(script);
-          }
-          tryNext();
+          var script = document.createElement('script');
+          script.src = new URL('runtime/js-dos.js?v=1', location.href).href;
+          script.onload = function () {
+            if (window.Dos) resolve();
+            else reject(new Error('The local js-dos runtime did not initialize.'));
+          };
+          script.onerror = function () {
+            reject(new Error('The local js-dos runtime could not be loaded.'));
+          };
+          document.head.appendChild(script);
         });
       }
       fetch(bundleUrl, { method: 'HEAD' }).then(function (response) {
