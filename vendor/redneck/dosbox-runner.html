@@ -108,6 +108,13 @@
       }, 100);
       fetch(bundleUrl, { method: 'HEAD' }).then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
+        // Some static hosts return the site's SPA fallback as HTTP 200 for
+        // missing assets. js-dos then tries to parse that HTML as a bundle and
+        // leaves the player black at 0%, so reject it as missing game data.
+        var contentType = response.headers.get('content-type') || '';
+        if (/text\/html/i.test(contentType)) {
+          throw new Error('The server returned HTML instead of the local game bundle.');
+        }
         if (!window.Dos) throw new Error('js-dos did not load from its CDN.');
         playerProps = window.Dos(document.getElementById('player'), {
           url: bundleUrl,
