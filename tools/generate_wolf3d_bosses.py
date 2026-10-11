@@ -134,11 +134,18 @@ def reskin_frame(fr, idx, cfg):
                 if is_warm(px[x, y]):
                     px[x, y] = orange(px[x, y])
         skin = orange((232, 136, 88, 255))
-        for y in range(y0 + int(fh * 0.50), y0 + int(fh * 0.66)):
-            for x in range(x0 + int(fw * 0.22), x1 - int(fw * 0.22) + 1):
+        shade = orange((200, 112, 64, 255))
+        cx = (x0 + x1) // 2
+        # moustache: the shaded browns above the mouth survive a simple dark-pixel
+        # test, so flatten the whole central lower face to skin, then draw a mouth
+        for y in range(y1 - 5 * k, y1 + 1):
+            for x in range(cx - 2 * k, cx + 2 * k + 1):
                 p = px[x, y]
-                if p[3] and lum(p) < 100 and not is_blood(p):
+                if p[3] and lum(p) < 150 and not is_blood(p):
                     px[x, y] = skin
+        for x in range(cx - k, cx + k + 1):
+            px[x, y1 - 2 * k] = (170, 60, 50, 255)
+            px[x, y1 - 2 * k + 1] = shade
         # 3. hair: recolour the dark grey cap, then grow a swept pompadour
         hair_rows = range(max(0, y0 - 8 * k), y0 + int(fh * 0.22))
         hair = []
