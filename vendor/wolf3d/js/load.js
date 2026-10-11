@@ -88,29 +88,9 @@ $(document).ready(function() {
             },
             complete : function() {
                 progress.remove();
-                var prompt = $("<div>")
-                    .addClass("title-prompt")
-                    .text("PRESS ANY KEY OR CLICK TO PLAY")
-                    .css({
-                        position: "absolute",
-                        bottom: "16px",
-                        left: "0",
-                        width: "100%",
-                        textAlign: "center",
-                        color: "#fff",
-                        fontFamily: "monospace",
-                        fontSize: "14px",
-                        letterSpacing: "0.1em",
-                        textShadow: "1px 1px 2px #000, 0 0 6px #000",
-                        cursor: "pointer",
-                        zIndex: 100
-                    })
-                    .appendTo("#title-screen");
-
                 function dismissTitle() {
                     $(document).off("keydown.title", dismissTitle);
                     $("#title-screen").off("click.title touchstart.title", dismissTitle);
-                    prompt.remove();
                     $("#title-screen").fadeOut(1000, function() {
                         Wolf.Sound.init();
                         Wolf.Input.init();
