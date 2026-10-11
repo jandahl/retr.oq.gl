@@ -172,7 +172,7 @@
           }
         });
       }).catch(function (error) {
-        showSetup('The local Redneck shareware demo bundle is missing. Recreate it from a legally obtained Redneck Rampage demo archive; game data is not included in the repository.', String(error && error.message || error));
+        showSetup('The Redneck shareware demo could not be loaded. Confirm that the demo bundle is present in the site deployment.', String(error && error.message || error));
         console.error(error);
       });
     })();
