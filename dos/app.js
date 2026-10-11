@@ -530,7 +530,7 @@
       window.OqScreensaver.host.stop();
     }
     if (redneckFrame && redneckFrame.src.endsWith("about:blank")) {
-      redneckFrame.src = "../vendor/redneck/dosbox-runner.html?v=16";
+      redneckFrame.src = "../vendor/redneck/dosbox-runner.html?v=17";
     }
   }
 
