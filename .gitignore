@@ -4,4 +4,6 @@ __pycache__/
 .venv/
 node_modules/
 vendor/redneck/runtime/
-vendor/redneck/game-data/
+vendor/redneck/game-data/*
+!vendor/redneck/game-data/redneck-demo.jsdos
+!vendor/redneck/game-data/README.md
