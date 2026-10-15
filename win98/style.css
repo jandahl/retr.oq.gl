@@ -132,11 +132,13 @@ body {
   outline: none;
 }
 
-.desktop-icon:active {
-  /* 98.css's own button:active swaps the bevel direction (box-shadow) and
-     nudges the text-shadow -- both no-ops here since box-shadow/
-     text-shadow are already reset above, but padding:0 on :active would
-     otherwise still apply and shift the icon by a pixel on press. */
+.desktop-icons .desktop-icon:hover,
+.desktop-icons .desktop-icon:active,
+.desktop-icons .desktop-icon:focus {
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
+  outline: none;
   padding: 0.25rem;
 }
 
@@ -227,6 +229,16 @@ body {
   padding: 0.25rem;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+}
+
+.control-panel-icons .control-panel-icon:hover,
+.control-panel-icons .control-panel-icon:active,
+.control-panel-icons .control-panel-icon:focus {
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
+  outline: none;
+  padding: 0.25rem;
 }
 
 .control-panel-icon-glyph {

@@ -635,15 +635,25 @@
         <span class="desktop-icon-label">Upgrade Wizard</span>
       `;
 
-      // Open on dblclick (fine pointer) or click (touch/coarse)
+      // Single click selects (and deselects other icons). Open on dblclick (fine pointer) or click (touch/coarse)
       iconEl.addEventListener("click", () => {
+        const desktop = iconEl.closest("#desktop") || document;
+        desktop.querySelectorAll(".desktop-icon.selected").forEach((el) => {
+          if (el !== iconEl) el.classList.remove("selected");
+        });
+        iconEl.classList.add("selected");
         if (window.matchMedia("(pointer: coarse)").matches) {
           openWizard();
         }
       });
-      iconEl.addEventListener("dblclick", openWizard);
+      iconEl.addEventListener("dblclick", () => {
+        openWizard();
+      });
       iconEl.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") openWizard();
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openWizard();
+        }
       });
 
       desktopIcons.appendChild(iconEl);
@@ -662,15 +672,23 @@
           <span class="prog-icon-label">Upgrade Wizard</span>
         `;
         progBtn.addEventListener("click", () => {
-          groupMain.querySelectorAll(".prog-icon").forEach(b => b.classList.remove("selected"));
+          const winMain = progBtn.closest("#win-group-main") || document;
+          winMain.querySelectorAll(".prog-icon.selected").forEach((b) => {
+            if (b !== progBtn) b.classList.remove("selected");
+          });
           progBtn.classList.add("selected");
           if (window.matchMedia("(pointer: coarse)").matches) {
             openWizard();
           }
         });
-        progBtn.addEventListener("dblclick", openWizard);
+        progBtn.addEventListener("dblclick", () => {
+          openWizard();
+        });
         progBtn.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") openWizard();
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openWizard();
+          }
         });
         groupMain.appendChild(progBtn);
       }
