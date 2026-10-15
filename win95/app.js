@@ -675,17 +675,19 @@
   });
 
   if (doomWin && doomFrame) {
-    function focusDoom() {
-      if (!doomWin.classList.contains("minimized")) {
-        try {
-          doomFrame.focus();
-          if (doomFrame.contentWindow) {
-            doomFrame.contentWindow.focus();
-            const canvas = doomFrame.contentDocument?.getElementById("canvas");
-            if (canvas) canvas.focus();
-          }
-        } catch (_) {}
+    function focusDoom(event) {
+      if (doomWin.classList.contains("minimized")) return;
+      if (event && event.target && event.target.closest(".title-bar, .win95-resize-handle, button, a")) {
+        return;
       }
+      try {
+        doomFrame.focus();
+        if (doomFrame.contentWindow) {
+          doomFrame.contentWindow.focus();
+          const canvas = doomFrame.contentDocument?.getElementById("canvas");
+          if (canvas) canvas.focus();
+        }
+      } catch (_) {}
     }
 
     doomWin.addEventListener("pointerdown", focusDoom);
