@@ -31,6 +31,8 @@
   // two top-level windows. My Computer/About/Recycle Bin/Settings stay
   // plain chrome with no router state.
   const winOq = document.getElementById("win-oq");
+  const doomWin = document.getElementById("win-doom95");
+  const doomFrame = document.getElementById("doom95-frame");
   // Word Deconstructor lives inside #win-oq (property-sheet tabs). One desktop
   // / Start affordance (OQ!); resolveOpen still maps a leftover win-decon id
   // onto this shell + pendingOqScreen for deep links / router ids.
@@ -67,8 +69,8 @@
           window.OqScreensaver.host.setIdleMs(0);
         }
         const frame = document.getElementById("doom95-frame");
-        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes("?v=4"))) {
-          frame.src = "../vendor/dwasm/runner.html?v=4";
+        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes("?v=5"))) {
+          frame.src = "../vendor/dwasm/runner.html?v=5";
         }
         if (frame) {
           try {
@@ -82,8 +84,21 @@
     // all funnel through this one openWindow() (see shared/redmond/
     // window-manager.js's own comment) -- routing them to OqRouter.navigate()
     // instead of opening directly keeps the URL and the visible window in
-    // sync no matter which of those three triggered it.
     routeOpen(win) {
+      if (win.id === "win-doom95") {
+        const params = window.OqRouter.getParams();
+        if (params.get("screen") !== "doom95" && params.get("screen") !== "doom") {
+          window.OqRouter.navigate({
+            screen: "doom95",
+            room: null,
+            filter: null,
+            word: null,
+            order: null,
+          });
+          return true;
+        }
+        return false;
+      }
       if (win.id === "win-welcome-desk") {
         const params = window.OqRouter.getParams();
         if (params.get("screen") !== "mikisoq") {
@@ -118,6 +133,10 @@
         const frame = document.getElementById("doom95-frame");
         if (frame) {
           frame.src = "about:blank";
+        }
+        const screen = window.OqRouter.getParams().get("screen");
+        if (screen === "doom95" || screen === "doom") {
+          window.OqRouter.navigate({ screen: null, room: null, filter: null, word: null, order: null });
         }
       }
       if (win.id === "win-oq") {
@@ -635,6 +654,13 @@
     } else if (!winOq.classList.contains("minimized")) {
       closeWindow(winOq);
     }
+    if (screen === "doom95" || screen === "doom") {
+      if (doomWin && doomWin.classList.contains("minimized")) {
+        forceOpenWindow(doomWin);
+      }
+    } else if (doomWin && !doomWin.classList.contains("minimized")) {
+      closeWindow(doomWin);
+    }
   }
 
   window.OqRouter.onChange(syncRoute);
@@ -642,15 +668,12 @@
 
   window.addEventListener("message", (event) => {
     if (event.data && event.data.type === "doom-exit") {
-      const doomWin = document.getElementById("win-doom95");
       if (doomWin) {
         closeWindow(doomWin);
       }
     }
   });
 
-  const doomWin = document.getElementById("win-doom95");
-  const doomFrame = document.getElementById("doom95-frame");
   if (doomWin && doomFrame) {
     function focusDoom() {
       if (!doomWin.classList.contains("minimized")) {

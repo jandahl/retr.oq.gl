@@ -296,6 +296,21 @@
         }
 
         userFileDict["doom1.wad"] = ["i", new Uint8Array(arrayBuffer)];
+
+        // Optional overlay PWAD (USA Enemies: MAGA Trooper + Uncle Sam Imp)
+        try {
+          const wadName = "usa_enemies.wad";
+          const overlayResp = await fetch(wadName);
+          if (overlayResp.ok) {
+            const overlayBuffer = await overlayResp.arrayBuffer();
+            userFileDict[wadName] = ["i", new Uint8Array(overlayBuffer)];
+            Module.arguments = ['-iwad', 'doom1.wad', '-file', wadName];
+            console.info("Loaded overlay PWAD: " + wadName);
+          }
+        } catch (overlayErr) {
+          console.warn("Overlay PWAD not loaded:", overlayErr);
+        }
+
         statusElement.textContent = "Initializing DOOM engine...";
 
         if (touchEnabled) {
