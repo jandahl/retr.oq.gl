@@ -46,8 +46,10 @@
      and not OQ!'s own icon -- this is the one spot on the desktop that's
      about the theme's setting, not about any one app. */
   --icon-greenland-flag: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%20%3Crect%20width%3D%2216%22%20height%3D%228%22%20fill%3D%22%23ffffff%22%2F%3E%20%3Crect%20y%3D%228%22%20width%3D%2216%22%20height%3D%228%22%20fill%3D%22%23c8102e%22%2F%3E%20%3CclipPath%20id%3D%22c%22%3E%3Ccircle%20cx%3D%226%22%20cy%3D%228%22%20r%3D%224%22%2F%3E%3C%2FclipPath%3E%20%3Cg%20clip-path%3D%22url%28%23c%29%22%3E%20%3Crect%20x%3D%222%22%20y%3D%224%22%20width%3D%228%22%20height%3D%224%22%20fill%3D%22%23c8102e%22%2F%3E%20%3Crect%20x%3D%222%22%20y%3D%228%22%20width%3D%228%22%20height%3D%224%22%20fill%3D%22%23ffffff%22%2F%3E%20%3C%2Fg%3E%20%3Ccircle%20cx%3D%226%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22none%22%20stroke%3D%22%23000000%22%20stroke-width%3D%220.4%22%20opacity%3D%220.35%22%2F%3E%20%3C%2Fsvg%3E");
-  /* Classic Windows 98 arrow: black outline, white fill. */
-  --cursor-arrow: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMiAxIEwyIDE0LjUgTDUuMiAxMS4zIEw3LjMgMTYgTDkuNCAxNSBMNy40IDEwLjUgTDEyIDEwLjUgWiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEuMSIvPjwvc3ZnPgo=") 2 1, default;
+  /* Classic Windows 98 arrow: dual-resolution bitmap for high-DPI/Retina
+     and high-velocity mouse tracking without vector rasterization jitter,
+     plus SVG vector and system arrow fallbacks. */
+  --cursor-arrow: -webkit-image-set(url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAATklEQVR4nLXQ4Q4AEAiF0d7/pTObzBK6F9/WPw5L5GHahgdqN4haLKJjDKI+FJkAFAkBBFkCWWQLZJDTRT8fd2CvUIA7jC0xOAT/Igv3CkU3CwRYEnZYAAAAAElFTkSuQmCC") 1x, url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAY0lEQVR4nO3UQQoAIAhEUe9/6VoFUVBJmTPWB7f6aJHIry818yig5AHBAnhAMAE3IdiAGxAOgCWEC2AB4QSchHADTkA4AdXB2cQHbIcJkOYp3wEMFptBMAALi+ICtKk/GihABkMjLA3FVFUkAAAAAElFTkSuQmCC") 2x) 2 1, url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMiAxIEwyIDE0LjUgTDUuMiAxMS4zIEw3LjMgMTYgTDkuNCAxNSBMNy40IDEwLjUgTDEyIDEwLjUgWiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEuMSIvPjwvc3ZnPgo=") 2 1, default;
 }
 
 .icon-computer { background-image: var(--icon-computer); }
