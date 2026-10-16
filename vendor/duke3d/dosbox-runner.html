@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Duke Nukem 3D Shareware</title>
+  <link rel="stylesheet" href="../redneck/runtime/js-dos.css?v=1">
+  <style>
+    html, body, #player { width: 100%; height: 100%; margin: 0; background: #000; }
+    #player { position: fixed; inset: 0; }
+    #setup { box-sizing: border-box; max-width: 44rem; margin: 4rem auto; padding: 2rem; color: #d0c0a0; border: 2px solid #8a6040; background: #080404; font: 1rem/1.6 "Courier New", monospace; }
+    #setup h1 { color: #c0a060; text-align: center; letter-spacing: .14em; }
+    #setup code { color: #fff; overflow-wrap: anywhere; }
+    #setup a { color: #ffd070; }
+    #error { color: #ffb0a0; }
+    #runtime-status { position: fixed; z-index: 5; right: .5rem; bottom: .35rem; color: #d0c0a0; background: rgba(0,0,0,.7); font: 11px/1.3 "Courier New", monospace; }
+    #mouse-hint { position: fixed; z-index: 6; top: .75rem; left: 50%; transform: translateX(-50%); max-width: calc(100% - 2rem); padding: .4rem .7rem; color: #fff; background: rgba(0,0,0,.8); font: 13px/1.4 Arial, sans-serif; text-align: center; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="player"></div>
+  <div id="runtime-status" role="status" aria-live="polite">Loading DOSBox...</div>
+  <div id="mouse-hint" hidden role="status" aria-live="polite">This browser can't lock the mouse. Move the pointer over the game to look; use Esc=Exit to DOS above to leave.</div>
+  <section id="setup" hidden role="status" aria-live="polite">
+    <h1 id="title">SETUP INCOMPLETE</h1>
+    <p id="message"></p>
+    <p id="error"></p>
+  </section>
+  <script>
+    (function () {
+      'use strict';
+      var setup = document.getElementById('setup');
+      function showSetup(message, error) {
+        document.getElementById('player').hidden = true;
+        document.getElementById('runtime-status').hidden = true;
+        document.getElementById('message').textContent = message;
+        document.getElementById('error').textContent = error || '';
+        setup.hidden = false;
+      }
+      if (location.protocol === 'file:') {
+        showSetup('Open this page through the local HTTP server.');
+        return;
+      }
+      var bundleUrl = 'game-data/duke3d-demo.jsdos?v=1';
+      var demoBundleUrl = new URL(bundleUrl, location.href);
+      var emulatorPath = new URL('../redneck/runtime/emulators/', location.href).href;
+      var ci = null;
+      var playerProps = null;
+      var savePromise = null;
+      var gameCanvas = null;
+      var mouseFallback = false;
+      var mouseHint = document.getElementById('mouse-hint');
+
+      function useRelativeMouse() {
+        mouseFallback = true;
+        mouseHint.hidden = false;
+      }
+
+      function bindGameCanvas() {
+        var canvas = document.querySelector('#player canvas');
+        if (!canvas || canvas === gameCanvas) return;
+        gameCanvas = canvas;
+        canvas.addEventListener('click', function () {
+          var requestLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+          if (!requestLock || document.pointerLockElement === canvas) return;
+          try {
+            var request = requestLock.call(canvas);
+            if (request && request.catch) request.catch(useRelativeMouse);
+          } catch (error) {
+            useRelativeMouse();
+          }
+        }, true);
+        canvas.addEventListener('mousemove', function (event) {
+          if (!mouseFallback || !ci || document.pointerLockElement === canvas) return;
+          var dx = event.movementX || 0;
+          var dy = event.movementY || 0;
+          if (dx || dy) ci.sendMouseRelativeMotion(dx, dy);
+        });
+      }
+
+      function saveDukeLocalChanges() {
+        if (!playerProps || typeof playerProps.save !== 'function') return Promise.resolve(false);
+        if (savePromise) return savePromise;
+        savePromise = playerProps.save().then(function (saved) {
+          console.log('Duke3D local files saved:', saved);
+          return saved;
+        }).catch(function (error) {
+          console.warn('Could not save Duke3D local files:', error);
+          throw error;
+        }).then(function (saved) {
+          savePromise = null;
+          return saved;
+        }, function (error) {
+          savePromise = null;
+          throw error;
+        });
+        return savePromise;
+      }
+      window.saveDukeLocalChanges = saveDukeLocalChanges;
+      document.addEventListener('pointerlockerror', useRelativeMouse);
+      document.addEventListener('pointerlockchange', function () {
+        if (gameCanvas && document.pointerLockElement === gameCanvas) {
+          mouseFallback = false;
+          mouseHint.hidden = true;
+        }
+      });
+      var canvasBindTimer = setInterval(function () {
+        bindGameCanvas();
+        if (gameCanvas) clearInterval(canvasBindTimer);
+      }, 100);
+      function loadDosRuntime() {
+        return new Promise(function (resolve, reject) {
+          var script = document.createElement('script');
+          script.src = new URL('../redneck/runtime/js-dos.js?v=1', location.href).href;
+          script.onload = function () {
+            if (window.Dos) resolve();
+            else reject(new Error('The local js-dos runtime did not initialize.'));
+          };
+          script.onerror = function () {
+            reject(new Error('The local js-dos runtime could not be loaded.'));
+          };
+          document.head.appendChild(script);
+        });
+      }
+      fetch(bundleUrl, { method: 'HEAD' }).then(function (response) {
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        var contentType = response.headers.get('content-type') || '';
+        if (/text\/html/i.test(contentType)) {
+          throw new Error('The server returned HTML instead of the local game bundle.');
+        }
+      }).then(loadDosRuntime).then(function () {
+        playerProps = window.Dos(document.getElementById('player'), {
+          url: demoBundleUrl.href,
+          pathPrefix: emulatorPath,
+          lang: 'en',
+          backend: 'dosbox',
+          mouseCapture: false,
+          autoStart: true,
+          autoSave: true,
+          imageRendering: 'pixelated',
+          renderAspect: '4/3',
+          renderBackend: 'canvas',
+          theme: 'dark',
+          onEvent: function (event, commandInterface) {
+            var status = document.getElementById('runtime-status');
+            if (event === 'emu-ready') status.textContent = 'Starting Duke Nukem 3D...';
+            if (event === 'ci-ready' && commandInterface) {
+              ci = commandInterface;
+              bindGameCanvas();
+              ci.events().onMessage(function (type) {
+                if (type === 'error' || type === 'warn') console[type]('js-dos:', ...Array.prototype.slice.call(arguments, 1));
+              });
+              ci.events().onStdout(function (line) { if (line) console.log('DOS:', line); });
+              var attempts = 0;
+              var timer = setInterval(function () {
+                ci.getRunningProgram().then(function (program) {
+                  if (program) {
+                    status.textContent = 'DOSBox running: ' + program;
+                    document.title = 'Duke Nukem 3D — ' + program;
+                  } else if (++attempts >= 10) {
+                    status.textContent = 'DOSBox started, but no game process was detected. Check the browser console.';
+                    clearInterval(timer);
+                  }
+                }).catch(function (error) { console.warn('Could not inspect DOSBox process:', error); });
+              }, 1000);
+              ci.events().onExit(function () { clearInterval(timer); });
+              ci.events().onUnload(function () { return saveDukeLocalChanges(); });
+            }
+          }
+        });
+      }).catch(function (error) {
+        showSetup('Duke Nukem 3D could not start. Check that its game bundle is deployed and the js-dos runtime is reachable.', String(error && error.message || error));
+        console.error(error);
+      });
+    })();
+  </script>
+</body>
+</html>
