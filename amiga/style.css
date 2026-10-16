@@ -1106,9 +1106,18 @@ body.wb-mode-3 .about-art {
 
 .desktop-marquee {
   position: absolute;
-  border: 2px dashed var(--wb-orange);
-  outline: 1px solid var(--wb-black);
-  background: rgba(255, 136, 0, 0.12);
+  /* Chunky low-res 2px alternating pen pattern (Workbench 4-color XOR dither) */
+  border-width: 2px;
+  border-style: solid;
+  border-image: repeating-linear-gradient(
+    90deg,
+    var(--wb-orange) 0px,
+    var(--wb-orange) 4px,
+    var(--wb-black) 4px,
+    var(--wb-black) 8px
+  ) 2;
+  box-shadow: 0 0 0 2px var(--wb-black);
+  background: rgba(255, 136, 0, 0.15);
   pointer-events: none;
   z-index: 9;
   box-sizing: border-box;
