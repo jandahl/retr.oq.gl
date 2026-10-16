@@ -137,6 +137,41 @@ def test_win31_wizard_affordance_and_query(page, base_url):
     # Check that Program Manager Main group has the icon
     assert page.query_selector('#win-group-main .prog-icon[data-open="wizard"]') is not None
 
+    # Verify no Hot Dog Stand mention in era options
+    content = page.text_content("#oq-wizard-dialog")
+    assert "Hot Dog Stand" not in content
+
+    # Test Win 3.1 upgrading to Win95: clicking Continue starts warp and transitions without throwing error
+    opt_win95 = page.wait_for_selector('.oq-wizard-era-option[data-era="win95"]')
+    opt_win95.click()
+    page.wait_for_timeout(50)
+    assert "selected" in (opt_win95.get_attribute("class") or "")
+    page.click("#oq-wizard-next")
+    # Progress step becomes visible
+    page.wait_for_selector("#oq-wizard-step-progress:not([hidden])", timeout=4000)
+
+
+@pytest.mark.parametrize("theme", THEMES)
+def test_wizard_centering_and_active_state(page, base_url, theme):
+    goto_theme(page, base_url, theme, extra="wizard=1")
+    page.wait_for_selector("#oq-wizard-overlay:not([hidden])", timeout=4000)
+
+    # Check centered bounding box: center of dialog should be near center of viewport
+    box = page.locator("#oq-wizard-dialog").bounding_box()
+    assert box is not None
+    viewport = page.viewport_size
+    dialog_center_x = box["x"] + box["width"] / 2
+    dialog_center_y = box["y"] + box["height"] / 2
+    assert abs(dialog_center_x - viewport["width"] / 2) < 20
+    assert abs(dialog_center_y - viewport["height"] / 2) < 30
+
+    # Verify selected era has .selected class and active highlight
+    selected_opt = page.wait_for_selector(".oq-wizard-era-option.selected")
+    assert selected_opt is not None
+    # No mention of Hot Dog Stand
+    dialog_text = page.text_content("#oq-wizard-dialog")
+    assert "Hot Dog Stand" not in dialog_text
+
 
 def test_win31_wizard_icon_select_and_unselect(page, base_url):
     page.goto(f"{base_url}/win31/index.html?nosplash=1")

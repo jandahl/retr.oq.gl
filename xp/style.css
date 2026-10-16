@@ -141,6 +141,20 @@ body {
   }
 }
 
+body {
+  cursor: var(--cursor-arrow, default);
+}
+
+body * {
+  cursor: inherit;
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  cursor: text;
+}
+
 .desktop {
   position: fixed;
   inset: 0;
