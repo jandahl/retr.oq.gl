@@ -192,3 +192,22 @@ def test_win31_wizard_icon_select_and_unselect(page, base_url):
     assert "selected" not in cls_after
 
 
+@pytest.mark.parametrize("theme", THEMES)
+def test_desktop_drag_rubberband_selection(page, base_url, theme):
+    goto_theme(page, base_url, theme)
+    # Drag from (5, 5) to (120, 200) across desktop icons
+    page.mouse.move(5, 5)
+    page.mouse.down()
+    page.mouse.move(120, 200)
+    # Marquee element should be active during drag
+    marquee = page.query_selector(".desktop-marquee")
+    assert marquee is not None
+    page.mouse.up()
+    page.wait_for_timeout(100)
+    # Marquee element removed after release
+    assert page.query_selector(".desktop-marquee") is None
+
+    selected = page.query_selector_all(".desktop-icon.selected")
+    assert len(selected) >= 1
+
+

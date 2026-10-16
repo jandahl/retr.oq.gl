@@ -862,3 +862,11 @@ button,
     opacity: 1;
   }
 }
+
+.desktop-marquee {
+  position: absolute;
+  border: 1px dotted #000000;
+  background: transparent;
+  pointer-events: none;
+  z-index: 9;
+}

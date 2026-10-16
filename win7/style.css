@@ -1071,3 +1071,11 @@ html, body {
   gap: 6px;
   margin-top: 1rem;
 }
+
+.desktop-marquee {
+  position: absolute;
+  border: 1px solid #3390ff;
+  background: rgba(51, 144, 255, 0.22);
+  pointer-events: none;
+  z-index: 9;
+}

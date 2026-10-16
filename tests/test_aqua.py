@@ -770,3 +770,22 @@ def test_oq_window_shows_both_attributions_when_merged(page, base_url):
     assert "GPL" in attr
     status = page.locator("#oq-status").inner_text()
     assert "katersat" in status.lower() or "entries loaded" in status.lower()
+
+
+def test_aqua_desktop_drag_rubberband_selection(page, base_url):
+    goto_aqua(page, base_url)
+    # Icons are docked on the right side of the screen
+    viewport = page.viewport_size
+    start_x = viewport["width"] - 200
+    end_x = viewport["width"] - 20
+    page.mouse.move(start_x, 80)
+    page.mouse.down()
+    page.mouse.move(end_x, 300)
+    marquee = page.query_selector(".desktop-marquee")
+    assert marquee is not None
+    page.mouse.up()
+    page.wait_for_timeout(100)
+    assert page.query_selector(".desktop-marquee") is None
+
+    selected = page.query_selector_all(".desktop-icon.selected")
+    assert len(selected) >= 1

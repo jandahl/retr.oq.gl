@@ -223,6 +223,17 @@ html, body {
   outline: 1px dotted #000000;
   outline-offset: 2px;
 }
+.desktop-icon.selected span {
+  background: #000000;
+  color: #ffffff;
+}
+.desktop-marquee {
+  position: absolute;
+  border: 1px dotted #000000;
+  background: transparent;
+  pointer-events: none;
+  z-index: 9;
+}
 
 #boot-screen {
   position: fixed;

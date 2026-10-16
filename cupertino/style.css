@@ -1807,3 +1807,11 @@ select {
   font-size: 11px;
 }
 
+.desktop-marquee {
+  position: absolute;
+  border: 1px solid rgba(49, 106, 197, 0.7);
+  background: rgba(180, 213, 255, 0.28);
+  pointer-events: none;
+  z-index: 9;
+}
+

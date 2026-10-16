@@ -1079,3 +1079,11 @@ body.wb-mode-3 .about-art {
   box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #788282, 3px 3px 5px rgba(0,0,0,0.4);
 }
 
+.desktop-marquee {
+  position: absolute;
+  border: 1px dotted var(--wb-orange);
+  background: transparent;
+  pointer-events: none;
+  z-index: 9;
+}
+
