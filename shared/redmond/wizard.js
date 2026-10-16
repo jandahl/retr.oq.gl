@@ -790,25 +790,10 @@
         <span class="desktop-icon-label">Upgrade Wizard</span>
       `;
 
-      // Single click selects (and deselects other icons). Open on dblclick (fine pointer) or click (touch/coarse)
-      iconEl.addEventListener("click", () => {
-        const desktop = iconEl.closest("#desktop") || document;
-        desktop.querySelectorAll(".desktop-icon.selected").forEach((el) => {
-          if (el !== iconEl) el.classList.remove("selected");
-        });
-        iconEl.classList.add("selected");
-        if (window.matchMedia("(pointer: coarse)").matches) {
-          openWizard();
-        }
-      });
+      // Handled natively by window-manager.js initDesktopIcons delegation.
+      // Fallback open trigger if initDesktopIcons was not initialized with delegation:
       iconEl.addEventListener("dblclick", () => {
         openWizard();
-      });
-      iconEl.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openWizard();
-        }
       });
 
       desktopIcons.appendChild(iconEl);
@@ -826,27 +811,22 @@
           <span class="prog-icon-glyph icon-wizard icon-wizard-31" aria-hidden="true"></span>
           <span class="prog-icon-label">Upgrade Wizard</span>
         `;
-        progBtn.addEventListener("click", () => {
-          const winMain = progBtn.closest("#win-group-main") || document;
-          winMain.querySelectorAll(".prog-icon.selected").forEach((b) => {
-            if (b !== progBtn) b.classList.remove("selected");
-          });
-          progBtn.classList.add("selected");
-          if (window.matchMedia("(pointer: coarse)").matches) {
-            openWizard();
-          }
-        });
         progBtn.addEventListener("dblclick", () => {
           openWizard();
         });
-        progBtn.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            openWizard();
-          }
-        });
         groupMain.appendChild(progBtn);
       }
+
+      // In Win31, clicking empty space in group windows or the desktop deselects icons
+      const winProgman = document.getElementById("win-progman");
+      const winMain = document.getElementById("win-group-main");
+      function clearProgSelection(event) {
+        if (!event.target.closest(".prog-icon")) {
+          document.querySelectorAll(".prog-icon.selected").forEach((el) => el.classList.remove("selected"));
+        }
+      }
+      if (winProgman) winProgman.addEventListener("pointerdown", clearProgSelection);
+      if (winMain) winMain.addEventListener("pointerdown", clearProgSelection);
     }
   }
 

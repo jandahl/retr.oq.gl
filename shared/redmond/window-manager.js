@@ -734,33 +734,57 @@
       }
       return document.getElementById(icon.dataset.open);
     }
-    for (const icon of desktop.querySelectorAll(iconSelector)) {
-      icon.addEventListener("click", () => {
-        if (selectedIcon) selectedIcon.classList.remove("selected");
-        icon.classList.add("selected");
-        selectedIcon = icon;
-        if (opensOnSingleClick) {
-          const target = targetFor(icon);
-          if (target) openWindow(target);
-        }
-      });
-      if (!opensOnSingleClick) {
-        icon.addEventListener("dblclick", () => {
-          const target = targetFor(icon);
-          if (target) openWindow(target);
-        });
+    function launch(icon) {
+      if (icon.dataset.open === "wizard" && window.OqRedmondWizard && typeof window.OqRedmondWizard.open === "function") {
+        window.OqRedmondWizard.open();
+        return;
       }
-      icon.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        const target = targetFor(icon);
-        if (target) openWindow(target);
+      const target = targetFor(icon);
+      if (target) openWindow(target);
+    }
+
+    desktop.addEventListener("click", (event) => {
+      const icon = event.target.closest(iconSelector);
+      if (!icon || !desktop.contains(icon)) return;
+      if (selectedIcon && selectedIcon !== icon) {
+        selectedIcon.classList.remove("selected");
+      }
+      desktop.querySelectorAll(".desktop-icon.selected, .prog-icon.selected").forEach((el) => {
+        if (el !== icon) el.classList.remove("selected");
+      });
+      icon.classList.add("selected");
+      selectedIcon = icon;
+      if (opensOnSingleClick) {
+        launch(icon);
+      }
+    });
+
+    if (!opensOnSingleClick) {
+      desktop.addEventListener("dblclick", (event) => {
+        const icon = event.target.closest(iconSelector);
+        if (!icon || !desktop.contains(icon)) return;
+        launch(icon);
       });
     }
+
+    desktop.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const icon = event.target.closest(iconSelector);
+      if (!icon || !desktop.contains(icon)) return;
+      event.preventDefault();
+      launch(icon);
+    });
+
     desktop.addEventListener("pointerdown", (event) => {
-      if (event.target === desktop && selectedIcon) {
-        selectedIcon.classList.remove("selected");
-        selectedIcon = null;
+      const isBareDesktop = event.target === desktop || !event.target.closest(".window, .desktop-icon, .prog-icon, #start-menu, #taskbar");
+      if (isBareDesktop) {
+        if (selectedIcon) {
+          selectedIcon.classList.remove("selected");
+          selectedIcon = null;
+        }
+        desktop.querySelectorAll(".desktop-icon.selected, .prog-icon.selected").forEach((el) => {
+          el.classList.remove("selected");
+        });
       }
     });
   }

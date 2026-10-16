@@ -110,6 +110,24 @@ def test_wizard_desktop_icon_and_start_menu_exist(page, base_url, theme):
     assert page.query_selector("#start-menu-wizard") is not None
 
 
+@pytest.mark.parametrize("theme", THEMES)
+def test_wizard_desktop_icon_select_and_unselect(page, base_url, theme):
+    goto_theme(page, base_url, theme)
+    icon = page.wait_for_selector('.desktop-icon[data-open="wizard"]', timeout=4000)
+    assert icon is not None
+    # Single click selects
+    icon.click()
+    page.wait_for_timeout(100)
+    cls = icon.get_attribute("class") or ""
+    assert "selected" in cls
+
+    # Clicking empty desktop unselects
+    page.mouse.click(600, 300)
+    page.wait_for_timeout(100)
+    cls_after = icon.get_attribute("class") or ""
+    assert "selected" not in cls_after
+
+
 def test_win31_wizard_affordance_and_query(page, base_url):
     page.goto(f"{base_url}/win31/index.html?nosplash=1&wizard=1")
     page.wait_for_selector("#oq-wizard-overlay:not([hidden])", timeout=4000)
@@ -118,5 +136,24 @@ def test_win31_wizard_affordance_and_query(page, base_url):
     assert "oq-wizard-win31" in dialog_cls
     # Check that Program Manager Main group has the icon
     assert page.query_selector('#win-group-main .prog-icon[data-open="wizard"]') is not None
+
+
+def test_win31_wizard_icon_select_and_unselect(page, base_url):
+    page.goto(f"{base_url}/win31/index.html?nosplash=1")
+    icon = page.wait_for_selector('#win-group-main .prog-icon[data-open="wizard"]', state="attached", timeout=4000)
+    assert icon is not None
+    # Program Manager is visible; double-click group icon to open Main group window
+    page.dblclick(".prog-icon[data-open='win-group-main']")
+    page.wait_for_selector('#win-group-main:not(.minimized)', timeout=4000)
+    icon.click()
+    page.wait_for_timeout(100)
+    cls = icon.get_attribute("class") or ""
+    assert "selected" in cls
+
+    # Clicking empty space in Program Manager window deselects
+    page.mouse.click(50, 50)
+    page.wait_for_timeout(100)
+    cls_after = icon.get_attribute("class") or ""
+    assert "selected" not in cls_after
 
 
