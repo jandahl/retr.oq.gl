@@ -140,19 +140,36 @@
     };
   }
 
-  const WIZARD_ICON_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath d='M1 11 L1 15 L5 15 L14 6 L10 2 Z' fill='%23c0c0c0' stroke='%23000000'/%3E%3Cpath d='M10 2 L14 6 L15 5 L11 1 Z' fill='%23000080' stroke='%23000000'/%3E%3Crect x='1' y='11' width='4' height='4' fill='%23ffcc00'/%3E%3Cpath d='M3 2 L4 2 L4 5 L3 5 Z' fill='%23ffcc00'/%3E%3Cpath d='M2 3 L5 3 L5 4 L2 4 Z' fill='%23ffcc00'/%3E%3Cpath d='M8 1 L9 1 L9 3 L8 3 Z' fill='%23ffcc00'/%3E%3Cpath d='M7 2 L10 2 L10 2.5 L7 2.5 Z' fill='%23ffcc00'/%3E%3Cpath d='M14 9 L15 9 L15 11 L14 11 Z' fill='%23ffcc00'/%3E%3Cpath d='M13 10 L16 10 L16 10.5 L13 10.5 Z' fill='%23ffcc00'/%3E%3C/svg%3E`;
+  const ICON_SETUP_31 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Crect x='3' y='4' width='16' height='24' fill='%23c0c0c0' stroke='%23000000' stroke-width='1'/%3E%3Crect x='6' y='7' width='10' height='3' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3Crect x='8' y='8' width='6' height='1' fill='%23000000'/%3E%3Crect x='6' y='12' width='10' height='3' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3Crect x='8' y='13' width='6' height='1' fill='%23000000'/%3E%3Crect x='13' y='18' width='3' height='3' fill='%2300ff00'/%3E%3Crect x='7' y='19' width='4' height='1' fill='%23808080'/%3E%3Crect x='15' y='11' width='14' height='14' fill='%23000080' stroke='%23000000' stroke-width='1'/%3E%3Crect x='18' y='11' width='8' height='5' fill='%23c0c0c0' stroke='%23000000' stroke-width='1'/%3E%3Crect x='20' y='12' width='4' height='3' fill='%23ffffff'/%3E%3Crect x='17' y='18' width='10' height='6' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3Crect x='19' y='20' width='6' height='1' fill='%23c00000'/%3E%3C/svg%3E`;
+
+  const ICON_SETUP_9X = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' shape-rendering='crispEdges'%3E%3Cpolygon points='3,8 15,2 29,7 17,14' fill='%23d4b184' stroke='%23000000' stroke-width='1'/%3E%3Cpolygon points='3,8 17,14 17,29 3,21' fill='%239e7247' stroke='%23000000' stroke-width='1'/%3E%3Cpolygon points='29,7 17,14 17,29 29,20' fill='%23b88958' stroke='%23000000' stroke-width='1'/%3E%3Crect x='7' y='10' width='6' height='2' fill='%23ffffff'/%3E%3Ccircle cx='21' cy='19' r='8' fill='%23ffffff' stroke='%23808080' stroke-width='1'/%3E%3Ccircle cx='21' cy='19' r='6' fill='%23e0e0e0'/%3E%3Ccircle cx='21' cy='19' r='2.5' fill='%23b88958' stroke='%23808080' stroke-width='1'/%3E%3Cpath d='M16 16 L20 18 L19 22 Z' fill='%2300ffff' opacity='0.7'/%3E%3Cpath d='M22 17 L25 21 L22 22 Z' fill='%23ff00ff' opacity='0.7'/%3E%3C/svg%3E`;
+
+  const ICON_SETUP_XP = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='xpc' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%236bb5ff'/%3E%3Cstop offset='100%25' stop-color='%231952a8'/%3E%3C/linearGradient%3E%3ClinearGradient id='xpd' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='50%25' stop-color='%23d0e0f0'/%3E%3Cstop offset='100%25' stop-color='%23a0b8d8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='3' y='4' width='22' height='16' rx='2' fill='url(%23xpc)' stroke='%230f3675' stroke-width='1.5'/%3E%3Crect x='5' y='6' width='18' height='11' rx='1' fill='%23e8f2fe'/%3E%3Cpath d='M5 13 C8 11 15 15 23 11 L23 17 L5 17 Z' fill='%235aa834'/%3E%3Ccircle cx='20' cy='21' r='9' fill='url(%23xpd)' stroke='%236688aa' stroke-width='1.5'/%3E%3Ccircle cx='20' cy='21' r='3' fill='%23e8f2fe' stroke='%236688aa' stroke-width='1'/%3E%3C/svg%3E`;
+
+  const ICON_SETUP_7 = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='w7b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%2300b4f0'/%3E%3Cstop offset='100%25' stop-color='%23006bb0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4' y='6' width='24' height='20' rx='3' fill='%23f4f8fc' stroke='%237090b0' stroke-width='1.5'/%3E%3Crect x='6' y='8' width='20' height='6' rx='1' fill='url(%23w7b)'/%3E%3Ccircle cx='22' cy='22' r='8' fill='%2340b030' stroke='%23ffffff' stroke-width='1.5'/%3E%3Cpolygon points='19,22 21,24 25,19 26,20 21,26 18,23' fill='%23ffffff'/%3E%3C/svg%3E`;
 
   function injectWizardStyles() {
     if (document.getElementById("oq-wizard-style")) return;
     const style = document.createElement("style");
     style.id = "oq-wizard-style";
     style.textContent = `
-      .icon-wizard {
-        background-image: url("${WIZARD_ICON_SVG}");
+      .icon-wizard-31 {
+        background-image: url("${ICON_SETUP_31}");
       }
-      .icon-wizard-31 { background: linear-gradient(135deg, #000080 0 45%, #fff 46% 54%, #c0c0c0 55%); }
-      .icon-wizard-9x { background: linear-gradient(135deg, #008080 0 45%, #fff 46% 54%, #000080 55%); }
-      .icon-wizard-modern { background: linear-gradient(135deg, #1d4ed8 0 45%, #fff 46% 54%, #60a5fa 55%); }
+      .icon-wizard-9x {
+        background-image: url("${ICON_SETUP_9X}");
+      }
+      .icon-wizard-modern {
+        background-image: url("${ICON_SETUP_XP}");
+      }
+      .icon-wizard-7 {
+        background-image: url("${ICON_SETUP_7}");
+      }
+      .icon-wizard {
+        background-image: url("${ICON_SETUP_9X}");
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
       .oq-wizard-overlay {
         position: fixed !important;
         inset: 0 !important;
@@ -172,8 +189,8 @@
         display: none !important;
       }
       .oq-wizard-dialog {
-        width: min(32rem, calc(100vw - 20px)) !important;
-        max-height: min(36rem, calc(100vh - 40px));
+        width: min(34rem, calc(100vw - 20px)) !important;
+        max-height: min(34rem, calc(100vh - 30px));
         display: flex;
         flex-direction: column;
         user-select: none;
@@ -182,187 +199,249 @@
         position: relative !important;
         z-index: 100000 !important;
       }
-      /* Win 3.1: scale down to fit comfortably inside html { zoom: 2 } */
-      .oq-wizard-win31 {
-        width: min(19rem, calc(100vw - 16px)) !important;
-        max-height: calc(100vh - 20px) !important;
-        background: #ffffff !important;
-      }
-      .oq-wizard-win31 .win31-dialog-body {
-        background: #ffffff !important;
-        padding: 6px 8px !important;
-      }
-      .oq-wizard-win31 .oq-wizard-header {
-        padding-bottom: 4px;
-        margin-bottom: 6px;
-      }
-      .oq-wizard-win31 .oq-wizard-header-text h2 {
-        font-size: 11px;
-      }
-      .oq-wizard-win31 .oq-wizard-header-text p {
-        font-size: 9px;
-      }
-      .oq-wizard-win31 .oq-wizard-era-list {
-        max-height: 10rem;
-        gap: 3px;
-      }
-      .oq-wizard-win31 .oq-wizard-era-option {
-        padding: 3px 4px;
-      }
-      .oq-wizard-win31 .oq-wizard-era-title {
-        font-size: 10px;
-      }
-      .oq-wizard-win31 .oq-wizard-era-tagline,
-      .oq-wizard-win31 .oq-wizard-era-desc {
-        font-size: 9px;
-      }
-      /* Win 95: strictly single-color solid title bar */
-      .oq-wizard-win95 .title-bar {
-        background: #000080 !important;
-      }
-      .oq-wizard-header {
+      .oq-wizard-body {
+        padding: 0 !important;
+        margin: 0 !important;
         display: flex;
-        align-items: center;
-        gap: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(128, 128, 128, 0.4);
-        margin-bottom: 10px;
+        flex-direction: column;
+        overflow: hidden;
       }
-      .oq-wizard-header-icon {
-        width: 32px;
-        height: 32px;
-        flex: 0 0 32px;
-        background-image: url("${WIZARD_ICON_SVG}");
+
+      /* Wizard 97 Layout (Win95, Win98, XP, Win7) */
+      .oq-wizard-main-layout {
+        display: flex;
+        flex-direction: row;
+        min-height: 250px;
+        background: inherit;
+      }
+      .oq-wizard-watermark {
+        width: 140px;
+        flex: 0 0 140px;
+        background: #000080;
+        background: linear-gradient(180deg, #000080 0%, #000050 60%, #004080 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 16px 12px;
+        color: #ffffff;
+        box-shadow: inset -1px 0 0 #808080, inset -2px 0 0 #dfdfdf;
+        position: relative;
+        overflow: hidden;
+      }
+      .oq-wizard-watermark-art {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto;
         background-repeat: no-repeat;
         background-size: contain;
         image-rendering: pixelated;
       }
-      .oq-wizard-header-text h2 {
-        margin: 0;
-        font-size: 13px;
+      .oq-wizard-watermark-title {
         font-weight: bold;
+        font-size: 14px;
         line-height: 1.2;
+        letter-spacing: 0.5px;
+        color: #ffffff;
+        text-shadow: 1px 1px 0 #000000;
+        margin-top: 10px;
       }
-      .oq-wizard-header-text p {
-        margin: 2px 0 0;
+      .oq-wizard-watermark-foot {
+        font-size: 10px;
+        opacity: 0.8;
+        line-height: 1.3;
+      }
+
+      /* XP Watermark */
+      .oq-wizard-xp .oq-wizard-watermark {
+        background: linear-gradient(180deg, #0055ea 0%, #083c9c 100%);
+        box-shadow: inset -1px 0 0 rgba(0,0,0,0.15);
+      }
+      /* Win 7 Watermark */
+      .oq-wizard-win7 .oq-wizard-watermark {
+        background: linear-gradient(180deg, #1e3a5f 0%, #0e1e35 100%);
+        box-shadow: inset -1px 0 0 rgba(255,255,255,0.2);
+      }
+
+      .oq-wizard-content-pane {
+        flex: 1;
+        padding: 12px 14px 10px;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .oq-wizard-page-title {
+        margin: 0 0 4px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      .oq-wizard-page-desc {
+        margin: 0 0 8px;
         font-size: 11px;
-        opacity: 0.85;
+        line-height: 1.3;
       }
-      .oq-wizard-steps-container {
+      .oq-wizard-fieldset {
         flex: 1;
+        border: 1px solid #808080;
+        box-shadow: inset 1px 1px 0 #dfdfdf, 1px 1px 0 #ffffff;
+        padding: 6px 10px 8px;
+        margin: 0;
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
+        max-height: 195px;
+        background: inherit;
       }
-      .oq-wizard-step {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
-      .oq-wizard-step[hidden] {
-        display: none !important;
+      .oq-wizard-fieldset legend {
+        padding: 0 4px;
+        font-size: 11px;
+        font-weight: bold;
       }
       .oq-wizard-era-list {
         display: flex;
         flex-direction: column;
         gap: 6px;
-        margin: 8px 0;
-        overflow-y: auto;
-        max-height: 13.5rem;
-        padding-right: 2px;
-        scrollbar-width: thin;
+        margin: 0;
+        padding: 0;
       }
       .oq-wizard-era-option {
         display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 5px 6px;
+        flex-direction: column;
+        margin-bottom: 2px;
         cursor: pointer;
-        border: 1px solid transparent;
-        border-radius: 2px;
       }
-      .oq-wizard-era-option:hover {
-        background: rgba(0, 0, 128, 0.08);
-      }
-      .oq-wizard-era-option.selected {
-        background: rgba(0, 0, 128, 0.15);
-        border-color: rgba(0, 0, 128, 0.35);
-      }
-      .oq-wizard-era-badge {
-        font-weight: bold;
-        padding: 1px 5px;
-        border-radius: 3px;
-        font-size: 10px;
-        min-width: 2.2rem;
-        text-align: center;
-        background: #000080;
-        color: #ffffff;
-      }
-      .oq-wizard-xp .oq-wizard-era-badge {
-        background: #0055ea;
-      }
-      .oq-wizard-win7 .oq-wizard-era-badge {
-        background: #1a6cb0;
-      }
-      .oq-wizard-era-details {
-        flex: 1;
-        line-height: 1.25;
-      }
-      .oq-wizard-era-title {
-        font-weight: bold;
+      .oq-wizard-era-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
         font-size: 11px;
+        font-weight: bold;
       }
-      .oq-wizard-era-tagline {
-        font-size: 10px;
-        opacity: 0.8;
+      .oq-wizard-era-label input[type="radio"] {
+        cursor: pointer;
+        margin: 0;
       }
       .oq-wizard-era-desc {
+        margin: 2px 0 0 20px;
         font-size: 10px;
-        margin-top: 2px;
-        opacity: 0.7;
+        line-height: 1.3;
+        opacity: 0.85;
       }
-      .oq-wizard-progress-pane {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 10px 0;
-      }
-      .oq-wizard-status-line {
-        font-size: 11px;
-        font-family: inherit;
-        min-height: 1.2rem;
-      }
-      .oq-wizard-time-rem {
+      .oq-wizard-current-tag {
         font-size: 10px;
-        opacity: 0.8;
-        font-style: italic;
+        font-weight: normal;
+        opacity: 0.75;
+      }
+
+      /* Divider & Actions */
+      .oq-wizard-divider {
+        height: 2px;
+        border-top: 1px solid #808080;
+        border-bottom: 1px solid #ffffff;
+        margin: 0;
       }
       .oq-wizard-actions {
         display: flex;
         justify-content: flex-end;
         align-items: center;
         gap: 6px;
-        margin-top: 10px;
-        padding-top: 8px;
-        border-top: 1px solid rgba(128, 128, 128, 0.3);
+        padding: 8px 12px;
+        background: inherit;
       }
       .oq-wizard-actions button {
         min-width: 72px;
+        min-height: 22px;
       }
-      /* Win 3.1 specific adjustments */
-      .oq-wizard-win31 .oq-wizard-actions {
-        justify-content: flex-end;
+
+      /* Win 95 Title Bar: solid Navy */
+      .oq-wizard-win95 .title-bar {
+        background: #000080 !important;
+      }
+
+      /* Win 3.1 Dialog overrides */
+      .oq-wizard-win31 {
+        width: min(23rem, calc(100vw - 16px)) !important;
+        background: #c0c0c0 !important;
+        border: 1px solid #000000 !important;
+        box-shadow: inset -1px -1px 0 #000000, inset 1px 1px 0 #ffffff, inset -2px -2px 0 #808080, inset 2px 2px 0 #c0c0c0 !important;
+        padding: 3px !important;
+      }
+      .oq-wizard-win31 .win31-dialog-body {
+        background: #c0c0c0 !important;
+        padding: 8px 10px !important;
+        gap: 8px !important;
+      }
+      .oq-wizard-win31 .title-bar {
+        background: #000080 !important;
+        color: #ffffff !important;
+        height: 18px !important;
+        padding: 2px !important;
+      }
+      .oq-wizard-win31 .oq-wizard-w31-header {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .oq-wizard-win31 .oq-wizard-w31-icon {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 32px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        image-rendering: pixelated;
+      }
+      .oq-wizard-win31 .oq-wizard-w31-desc {
+        font-size: 11px;
+        line-height: 1.35;
+      }
+      .oq-wizard-win31 .oq-wizard-w31-listbox {
+        background: #ffffff;
+        box-shadow: inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff, inset 2px 2px 0 #808080, inset -2px -2px 0 #c0c0c0;
+        padding: 3px 2px;
+        max-height: 140px;
+        overflow-y: auto;
+      }
+      .oq-wizard-win31 .oq-wizard-era-option {
+        padding: 2px 4px;
+        margin: 0;
       }
       .oq-wizard-win31 .oq-wizard-era-option.selected {
         background: #000080;
         color: #ffffff;
       }
-      .oq-wizard-win31 .oq-wizard-era-option.selected .oq-wizard-era-badge {
-        background: #ffffff;
-        color: #000080;
+      .oq-wizard-win31 .oq-wizard-era-option.selected .oq-wizard-era-desc {
+        color: #ffffff;
+        opacity: 0.9;
       }
-      /* Custom simulated progress bar for win31 / general fallbacks */
+      .oq-wizard-win31 .oq-wizard-era-label {
+        font-size: 10px;
+      }
+      .oq-wizard-win31 .oq-wizard-era-desc {
+        font-size: 9px;
+        margin-left: 18px;
+      }
+      .oq-wizard-win31 .win31-dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .oq-wizard-win31 .win31-dialog-actions button {
+        min-width: 68px;
+        min-height: 22px;
+        font-size: 11px;
+      }
+
+      /* Progress Step */
+      .oq-wizard-progress-pane {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px 8px;
+        flex: 1;
+      }
       .oq-wizard-progress-box {
-        height: 20px;
+        height: 18px;
         border: 1px solid #000000;
         background: #ffffff;
         box-shadow: inset 1px 1px 0 #808080;
@@ -381,6 +460,15 @@
       .oq-wizard-win7 .oq-wizard-progress-fill {
         background: linear-gradient(180deg, #0bd82c, #05a020);
       }
+      .oq-wizard-status-line {
+        font-size: 11px;
+        min-height: 1.2rem;
+      }
+      .oq-wizard-time-rem {
+        font-size: 10px;
+        opacity: 0.8;
+        font-style: italic;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -397,61 +485,126 @@
     overlay.className = c.overlay;
     overlay.hidden = true;
 
-    overlay.innerHTML = `
-      <section id="oq-wizard-dialog" class="${c.dialog}" role="dialog" aria-modal="true" aria-labelledby="oq-wizard-title">
-        <div class="title-bar">
-          <div class="title-bar-text" id="oq-wizard-title">Windows Upgrade &amp; Time Warp Wizard</div>
-          <div class="title-bar-controls">
-            <button type="button" aria-label="Close" class="win-close" id="oq-wizard-x-btn"></button>
-          </div>
-        </div>
-        <div class="${c.body}">
-          <div class="oq-wizard-header">
-            <div class="oq-wizard-header-icon" aria-hidden="true"></div>
-            <div class="oq-wizard-header-text">
-              <h2 id="oq-wizard-step-title">Select Target Windows Era</h2>
-              <p id="oq-wizard-step-desc">Choose which version of Windows you want to warp to.</p>
-            </div>
-          </div>
+    const isWin31 = (theme === "win31");
+    const watermarkIcon = isWin31
+      ? ICON_SETUP_31
+      : (theme === "win95" || theme === "win98")
+      ? ICON_SETUP_9X
+      : (theme === "xp")
+      ? ICON_SETUP_XP
+      : ICON_SETUP_7;
 
-          <div class="oq-wizard-steps-container">
-            <!-- Step 1: Era Picker -->
+    if (isWin31) {
+      // Windows 3.1 Authentic Program Manager Setup Dialog
+      overlay.innerHTML = `
+        <section id="oq-wizard-dialog" class="${c.dialog}" role="dialog" aria-modal="true" aria-labelledby="oq-wizard-title">
+          <div class="title-bar">
+            <button type="button" class="win-sysmenu" aria-label="System menu" id="oq-wizard-x-btn"></button>
+            <div class="title-bar-text" id="oq-wizard-title">Windows Setup</div>
+          </div>
+          <div class="${c.body}">
             <div class="oq-wizard-step" id="oq-wizard-step-pick">
-              <div class="oq-wizard-era-list" role="radiogroup" aria-label="Windows versions">
+              <div class="oq-wizard-w31-header">
+                <div class="oq-wizard-w31-icon icon-wizard-31" aria-hidden="true"></div>
+                <div class="oq-wizard-w31-desc">
+                  Select the Windows environment you want to warp to, then click Continue.
+                </div>
+              </div>
+              <div style="font-size: 10px; font-weight: bold; margin: 6px 0 2px;">Target Version:</div>
+              <div class="oq-wizard-w31-listbox oq-wizard-era-list" role="radiogroup" aria-label="Windows versions">
                 ${ERAS.map((era) => `
                   <div class="oq-wizard-era-option ${era.id === theme ? 'current' : ''}" data-era="${era.id}" role="radio" tabindex="0" aria-checked="${era.id === theme}">
-                    <span class="oq-wizard-era-badge">${era.badge}</span>
-                    <div class="oq-wizard-era-details">
-                      <div class="oq-wizard-era-title">${era.name} (${era.year}) ${era.id === theme ? '<small style="opacity:0.75">[Current]</small>' : ''}</div>
-                      <div class="oq-wizard-era-tagline">${era.tagline}</div>
-                      <div class="oq-wizard-era-desc">${era.desc}</div>
-                    </div>
+                    <label class="oq-wizard-era-label">
+                      <input type="radio" name="w31_target_era" value="${era.id}" ${era.id === theme ? 'checked' : ''}>
+                      <span>${era.name} (${era.year}) ${era.id === theme ? '<span class="oq-wizard-current-tag">[Current]</span>' : ''}</span>
+                    </label>
+                    <div class="oq-wizard-era-desc">${era.tagline}</div>
                   </div>
                 `).join("")}
               </div>
             </div>
 
-            <!-- Step 2: Preparing / Installing -->
             <div class="oq-wizard-step" id="oq-wizard-step-progress" hidden>
               <div class="oq-wizard-progress-pane">
-                <p>Please wait while the Wizard prepares to transition your system...</p>
+                <p style="margin:0;font-size:11px;">Please wait while Setup updates your system configuration...</p>
                 <div class="oq-wizard-progress-box" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                   <div class="oq-wizard-progress-fill" id="oq-wizard-pbar"></div>
                 </div>
-                <div class="oq-wizard-status-line" id="oq-wizard-status">Checking system configuration...</div>
-                <div class="oq-wizard-time-rem" id="oq-wizard-time">Estimated time remaining: 39 minutes</div>
+                <div class="oq-wizard-status-line" id="oq-wizard-status">Checking SYSTEM.INI...</div>
+                <div class="oq-wizard-time-rem" id="oq-wizard-time">Copying files...</div>
               </div>
             </div>
-          </div>
 
-          <div class="${c.buttonRow}">
-            <button type="button" id="oq-wizard-back" disabled>&lt; Back</button>
-            <button type="button" id="oq-wizard-next" class="${c.btnDefault}">Next &gt;</button>
-            <button type="button" id="oq-wizard-cancel">Cancel</button>
+            <div class="win31-dialog-actions ${c.buttonRow}">
+              <button type="button" id="oq-wizard-next" class="${c.btnDefault}">Continue</button>
+              <button type="button" id="oq-wizard-cancel">Cancel</button>
+            </div>
           </div>
-        </div>
-      </section>
-    `;
+        </section>
+      `;
+    } else {
+      // Classic Wizard 97 Setup Layout for Win 95, Win 98, XP, Win 7
+      overlay.innerHTML = `
+        <section id="oq-wizard-dialog" class="${c.dialog}" role="dialog" aria-modal="true" aria-labelledby="oq-wizard-title">
+          <div class="title-bar">
+            <div class="title-bar-text" id="oq-wizard-title">Windows Upgrade Wizard</div>
+            <div class="title-bar-controls">
+              <button type="button" aria-label="Close" class="win-close" id="oq-wizard-x-btn"></button>
+            </div>
+          </div>
+          <div class="${c.body}">
+            <div class="oq-wizard-main-layout">
+              <div class="oq-wizard-watermark" aria-hidden="true">
+                <div class="oq-wizard-watermark-art" style="background-image: url('${watermarkIcon}');"></div>
+                <div class="oq-wizard-watermark-title">Windows<br>Setup</div>
+                <div class="oq-wizard-watermark-foot">Time-Warp &amp; Upgrade Subsystem</div>
+              </div>
+
+              <div class="oq-wizard-content-pane">
+                <div class="oq-wizard-step" id="oq-wizard-step-pick">
+                  <h2 class="oq-wizard-page-title" id="oq-wizard-step-title">Select Target Windows Era</h2>
+                  <p class="oq-wizard-page-desc" id="oq-wizard-step-desc">Choose which version of Windows you want Setup to install.</p>
+
+                  <fieldset class="oq-wizard-fieldset">
+                    <legend>Available Operating Systems</legend>
+                    <div class="oq-wizard-era-list" role="radiogroup" aria-label="Windows versions">
+                      ${ERAS.map((era) => `
+                        <div class="oq-wizard-era-option ${era.id === theme ? 'current' : ''}" data-era="${era.id}" role="radio" tabindex="0" aria-checked="${era.id === theme}">
+                          <label class="oq-wizard-era-label">
+                            <input type="radio" name="target_era" value="${era.id}" ${era.id === theme ? 'checked' : ''}>
+                            <span>${era.name} (${era.year}) ${era.id === theme ? '<span class="oq-wizard-current-tag">[Current]</span>' : ''}</span>
+                          </label>
+                          <div class="oq-wizard-era-desc">${era.desc}</div>
+                        </div>
+                      `).join("")}
+                    </div>
+                  </fieldset>
+                </div>
+
+                <div class="oq-wizard-step" id="oq-wizard-step-progress" hidden>
+                  <div class="oq-wizard-progress-pane">
+                    <p style="margin:0;font-size:11px;">Please wait while the Wizard prepares to transition your operating system...</p>
+                    <div class="oq-wizard-progress-box" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                      <div class="oq-wizard-progress-fill" id="oq-wizard-pbar"></div>
+                    </div>
+                    <div class="oq-wizard-status-line" id="oq-wizard-status">Checking system configuration...</div>
+                    <div class="oq-wizard-time-rem" id="oq-wizard-time">Estimated time remaining: 39 minutes</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="oq-wizard-divider" aria-hidden="true"></div>
+
+            <div class="${c.buttonRow}">
+              <button type="button" id="oq-wizard-back" disabled>&lt; Back</button>
+              <button type="button" id="oq-wizard-next" class="${c.btnDefault}">Next &gt;</button>
+              <button type="button" id="oq-wizard-cancel">Cancel</button>
+            </div>
+          </div>
+        </section>
+      `;
+    }
 
     document.body.appendChild(overlay);
 
@@ -476,6 +629,8 @@
         const isMatch = opt.dataset.era === eraId;
         opt.classList.toggle("selected", isMatch);
         opt.setAttribute("aria-checked", String(isMatch));
+        const radio = opt.querySelector('input[type="radio"]');
+        if (radio) radio.checked = isMatch;
       });
       try {
         localStorage.setItem(STORAGE_KEY, eraId);
@@ -597,7 +752,7 @@
       li.className = "start-menu-item";
       
       const icon = document.createElement("span");
-      icon.className = `start-menu-icon icon-wizard icon-wizard-${theme === "win31" ? "31" : theme === "win95" || theme === "win98" || theme === "xp" ? "9x" : "modern"}`;
+      icon.className = `start-menu-icon icon-wizard icon-wizard-${theme === "win31" ? "31" : theme === "win7" ? "7" : theme === "xp" ? "modern" : "9x"}`;
       icon.setAttribute("aria-hidden", "true");
 
       li.append(icon, document.createTextNode(" Upgrade Wizard…"));
@@ -631,7 +786,7 @@
       }
       iconEl.setAttribute("data-open", "wizard");
       iconEl.innerHTML = `
-        <span class="desktop-icon-glyph icon-wizard icon-wizard-${theme === "win95" || theme === "win98" || theme === "xp" ? "9x" : "modern"}" aria-hidden="true"></span>
+        <span class="desktop-icon-glyph icon-wizard icon-wizard-${theme === "win7" ? "7" : theme === "xp" ? "modern" : "9x"}" aria-hidden="true"></span>
         <span class="desktop-icon-label">Upgrade Wizard</span>
       `;
 
