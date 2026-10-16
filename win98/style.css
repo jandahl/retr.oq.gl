@@ -69,6 +69,17 @@ html, body {
 
 body {
   font-family: "Pixelated MS Sans Serif", Arial, sans-serif;
+  cursor: var(--cursor-arrow);
+}
+
+body * {
+  cursor: inherit;
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  cursor: text;
 }
 
 .desktop {

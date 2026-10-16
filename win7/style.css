@@ -159,6 +159,17 @@ html, body {
 body {
   position: relative; /* so .desktop's own position:absolute below sizes against body's real (dvh) box, not the viewport's -- see that rule's own comment */
   font-family: "Segoe UI", "Pixelated MS Sans Serif", Tahoma, Arial, sans-serif;
+  cursor: var(--cursor-arrow);
+}
+
+body * {
+  cursor: inherit;
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  cursor: text;
 }
 
 .desktop {

@@ -32,7 +32,7 @@
       name: "Windows 98",
       year: "1998",
       tagline: "An easier, more reliable Windows",
-      desc: "The polished classic desktop: Active Desktop heritage, Quick Launch, single-column Start, and Hot Dog Stand.",
+      desc: "The polished classic desktop: Active Desktop heritage, Quick Launch, single-column Start, and Windows Update.",
       badge: "98"
     },
     {
@@ -184,6 +184,10 @@
         justify-content: center !important;
         background: rgba(0, 0, 0, 0.45) !important;
         z-index: 99999 !important;
+        cursor: var(--cursor-arrow, default);
+      }
+      .oq-wizard-overlay * {
+        cursor: inherit;
       }
       .oq-wizard-overlay[hidden] {
         display: none !important;
@@ -197,6 +201,11 @@
         visibility: visible !important;
         opacity: 1 !important;
         position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
         z-index: 100000 !important;
       }
       .oq-wizard-body {
@@ -307,10 +316,43 @@
         display: flex;
         flex-direction: column;
         margin-bottom: 2px;
+        padding: 3px 6px;
+        border-radius: 2px;
         cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .oq-wizard-win95 .oq-wizard-era-option.selected,
+      .oq-wizard-win98 .oq-wizard-era-option.selected {
+        background: #000080;
+        color: #ffffff;
+      }
+      .oq-wizard-win95 .oq-wizard-era-option.selected .oq-wizard-era-desc,
+      .oq-wizard-win98 .oq-wizard-era-option.selected .oq-wizard-era-desc {
+        color: #ffffff;
+        opacity: 0.92;
+      }
+      .oq-wizard-win95 .oq-wizard-era-option.selected .oq-wizard-current-tag,
+      .oq-wizard-win98 .oq-wizard-era-option.selected .oq-wizard-current-tag {
+        color: #ffff80;
+      }
+      .oq-wizard-xp .oq-wizard-era-option.selected {
+        background: #316ac5;
+        color: #ffffff;
+      }
+      .oq-wizard-xp .oq-wizard-era-option.selected .oq-wizard-era-desc {
+        color: #ffffff;
+        opacity: 0.92;
+      }
+      .oq-wizard-xp .oq-wizard-era-option.selected .oq-wizard-current-tag {
+        color: #ffff80;
+      }
+      .oq-wizard-win7 .oq-wizard-era-option.selected {
+        background: rgba(51, 153, 255, 0.18);
+        border: 1px solid rgba(51, 153, 255, 0.5);
+        color: #000000;
       }
       .oq-wizard-era-label {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 6px;
         cursor: pointer;
@@ -320,9 +362,10 @@
       .oq-wizard-era-label input[type="radio"] {
         cursor: pointer;
         margin: 0;
+        vertical-align: middle;
       }
       .oq-wizard-era-desc {
-        margin: 2px 0 0 20px;
+        margin: 2px 0 0 22px;
         font-size: 10px;
         line-height: 1.3;
         opacity: 0.85;
@@ -659,15 +702,17 @@
 
     function resetToPick() {
       isInstalling = false;
-      stepPick.hidden = false;
-      stepProgress.hidden = true;
-      stepTitle.textContent = "Select Target Windows Era";
-      stepDesc.textContent = "Choose which version of Windows you want to warp to.";
-      btnBack.disabled = true;
-      btnNext.disabled = false;
-      btnNext.textContent = "Next >";
-      btnCancel.disabled = false;
-      pbar.style.width = "0%";
+      if (stepPick) stepPick.hidden = false;
+      if (stepProgress) stepProgress.hidden = true;
+      if (stepTitle) stepTitle.textContent = "Select Target Windows Era";
+      if (stepDesc) stepDesc.textContent = "Choose which version of Windows you want to warp to.";
+      if (btnBack) btnBack.disabled = true;
+      if (btnNext) {
+        btnNext.disabled = false;
+        btnNext.textContent = isWin31 ? "Continue" : "Next >";
+      }
+      if (btnCancel) btnCancel.disabled = false;
+      if (pbar) pbar.style.width = "0%";
     }
 
     function startWarp() {
@@ -678,13 +723,13 @@
       }
 
       isInstalling = true;
-      stepPick.hidden = true;
-      stepProgress.hidden = false;
-      stepTitle.textContent = `Upgrading to ${ERAS.find(e => e.id === selectedEra).name}...`;
-      stepDesc.textContent = "Setup is copying files and initializing the new operating system.";
-      btnBack.disabled = true;
-      btnNext.disabled = true;
-      btnCancel.disabled = true;
+      if (stepPick) stepPick.hidden = true;
+      if (stepProgress) stepProgress.hidden = false;
+      if (stepTitle) stepTitle.textContent = `Upgrading to ${ERAS.find(e => e.id === selectedEra).name}...`;
+      if (stepDesc) stepDesc.textContent = "Setup is copying files and initializing the new operating system.";
+      if (btnBack) btnBack.disabled = true;
+      if (btnNext) btnNext.disabled = true;
+      if (btnCancel) btnCancel.disabled = true;
 
       const target = ERAS.find(e => e.id === selectedEra);
       const steps = [

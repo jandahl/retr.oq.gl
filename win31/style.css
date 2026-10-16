@@ -123,6 +123,16 @@ body {
   user-select: none;
 }
 
+body * {
+  cursor: inherit;
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  cursor: text;
+}
+
 button:not(:disabled),
 [role="button"]:not(:disabled),
 a,
