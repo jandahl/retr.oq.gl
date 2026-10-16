@@ -1173,3 +1173,11 @@ body.hotdog-stand select::picker(select) {
     background: #ffd400;
   }
 }
+
+.desktop-marquee {
+  position: absolute;
+  border: 1px dotted #ffffff;
+  background: transparent;
+  pointer-events: none;
+  z-index: 9;
+}

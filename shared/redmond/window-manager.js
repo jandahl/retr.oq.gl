@@ -775,18 +775,118 @@
       launch(icon);
     });
 
+    // ---------- Rubber-band (marquee) drag-selection ----------
+    let marqueeEl = null;
+    let dragStart = null;
+    let isDragging = false;
+    const DRAG_THRESHOLD = 4;
+
+    function getDeskZoom() {
+      return parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    }
+
     desktop.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
       const isBareDesktop = event.target === desktop || !event.target.closest(".window, .desktop-icon, .prog-icon, #start-menu, #taskbar");
       if (isBareDesktop) {
-        if (selectedIcon) {
-          selectedIcon.classList.remove("selected");
-          selectedIcon = null;
+        if (!event.ctrlKey && !event.shiftKey) {
+          if (selectedIcon) {
+            selectedIcon.classList.remove("selected");
+            selectedIcon = null;
+          }
+          desktop.querySelectorAll(".desktop-icon.selected, .prog-icon.selected").forEach((el) => {
+            el.classList.remove("selected");
+          });
         }
-        desktop.querySelectorAll(".desktop-icon.selected, .prog-icon.selected").forEach((el) => {
-          el.classList.remove("selected");
-        });
+
+        const deskRect = desktop.getBoundingClientRect();
+        const zoom = getDeskZoom();
+        dragStart = {
+          x: (event.clientX - deskRect.left) / zoom,
+          y: (event.clientY - deskRect.top) / zoom,
+          pointerId: event.pointerId,
+          ctrlKey: event.ctrlKey,
+          shiftKey: event.shiftKey,
+          initialSelected: new Set(desktop.querySelectorAll(".desktop-icon.selected, .prog-icon.selected")),
+        };
+        isDragging = false;
       }
     });
+
+    window.addEventListener("pointermove", (event) => {
+      if (!dragStart || event.pointerId !== dragStart.pointerId) return;
+      const deskRect = desktop.getBoundingClientRect();
+      const zoom = getDeskZoom();
+      const curX = (event.clientX - deskRect.left) / zoom;
+      const curY = (event.clientY - deskRect.top) / zoom;
+      const dx = curX - dragStart.x;
+      const dy = curY - dragStart.y;
+
+      if (!isDragging) {
+        if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+        isDragging = true;
+        if (!marqueeEl) {
+          marqueeEl = document.createElement("div");
+          marqueeEl.className = "desktop-marquee";
+          desktop.appendChild(marqueeEl);
+        }
+      }
+
+      const left = Math.min(dragStart.x, curX);
+      const top = Math.min(dragStart.y, curY);
+      const width = Math.abs(dx);
+      const height = Math.abs(dy);
+
+      marqueeEl.style.left = `${left}px`;
+      marqueeEl.style.top = `${top}px`;
+      marqueeEl.style.width = `${width}px`;
+      marqueeEl.style.height = `${height}px`;
+
+      const mRect = {
+        left: Math.min(dragStart.x, curX) * zoom + deskRect.left,
+        top: Math.min(dragStart.y, curY) * zoom + deskRect.top,
+        right: Math.max(dragStart.x, curX) * zoom + deskRect.left,
+        bottom: Math.max(dragStart.y, curY) * zoom + deskRect.top,
+      };
+
+      const icons = desktop.querySelectorAll(".desktop-icon, .prog-icon");
+      icons.forEach((icon) => {
+        const iRect = icon.getBoundingClientRect();
+        const overlaps = !(
+          iRect.right < mRect.left ||
+          iRect.left > mRect.right ||
+          iRect.bottom < mRect.top ||
+          iRect.top > mRect.bottom
+        );
+
+        if (dragStart.ctrlKey || dragStart.shiftKey) {
+          const wasSelected = dragStart.initialSelected.has(icon);
+          if (overlaps) {
+            icon.classList.toggle("selected", !wasSelected);
+          } else {
+            icon.classList.toggle("selected", wasSelected);
+          }
+        } else {
+          icon.classList.toggle("selected", overlaps);
+        }
+      });
+    });
+
+    function finishDrag(event) {
+      if (!dragStart) return;
+      if (event && event.pointerId !== dragStart.pointerId) return;
+      dragStart = null;
+      if (marqueeEl) {
+        marqueeEl.remove();
+        marqueeEl = null;
+      }
+      isDragging = false;
+      const selected = desktop.querySelectorAll(".desktop-icon.selected, .prog-icon.selected");
+      selectedIcon = selected.length === 1 ? selected[0] : null;
+    }
+
+    window.addEventListener("pointerup", finishDrag);
+    window.addEventListener("pointercancel", finishDrag);
   }
 
   window.OqRedmond.initDesktopIcons = initDesktopIcons;

@@ -961,3 +961,11 @@ textarea {
   gap: 6px;
   margin-top: 1rem;
 }
+
+.desktop-marquee {
+  position: absolute;
+  border: 1px solid #1d5fc6;
+  background: rgba(49, 106, 197, 0.2);
+  pointer-events: none;
+  z-index: 9;
+}

@@ -539,13 +539,114 @@
       });
     }
   }
+  // ---------- Rubber-band (marquee) drag-selection ----------
+  let marqueeEl = null;
+  let dragStart = null;
+  let isDragging = false;
+  const MARQUEE_DRAG_THRESHOLD = 4;
+
+  function getDeskZoom() {
+    return (window.OqOsx && window.OqOsx.getZoomFactor) ? window.OqOsx.getZoomFactor() : 1;
+  }
+
   desktop.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
     if (event.target.closest(".desktop-icon, .osx-window, .desktop-context-menu, #dock")) return;
     if (event.target === desktop || event.target.classList.contains("desktop-icons")) {
-      clearDesktopSelection();
-      syncAppMenu(null);
+      if (!event.metaKey && !event.shiftKey) {
+        clearDesktopSelection();
+        syncAppMenu(null);
+      }
+
+      const deskRect = desktop.getBoundingClientRect();
+      const zoom = getDeskZoom();
+      dragStart = {
+        x: (event.clientX - deskRect.left) / zoom,
+        y: (event.clientY - deskRect.top) / zoom,
+        pointerId: event.pointerId,
+        metaKey: event.metaKey,
+        shiftKey: event.shiftKey,
+        initialSelected: new Set(desktop.querySelectorAll(".desktop-icon.selected")),
+      };
+      isDragging = false;
     }
   });
+
+  window.addEventListener("pointermove", (event) => {
+    if (!dragStart || event.pointerId !== dragStart.pointerId) return;
+    const deskRect = desktop.getBoundingClientRect();
+    const zoom = getDeskZoom();
+    const curX = (event.clientX - deskRect.left) / zoom;
+    const curY = (event.clientY - deskRect.top) / zoom;
+    const dx = curX - dragStart.x;
+    const dy = curY - dragStart.y;
+
+    if (!isDragging) {
+      if (Math.hypot(dx, dy) < MARQUEE_DRAG_THRESHOLD) return;
+      isDragging = true;
+      if (!marqueeEl) {
+        marqueeEl = document.createElement("div");
+        marqueeEl.className = "desktop-marquee";
+        desktop.appendChild(marqueeEl);
+      }
+    }
+
+    const left = Math.min(dragStart.x, curX);
+    const top = Math.min(dragStart.y, curY);
+    const width = Math.abs(dx);
+    const height = Math.abs(dy);
+
+    marqueeEl.style.left = `${left}px`;
+    marqueeEl.style.top = `${top}px`;
+    marqueeEl.style.width = `${width}px`;
+    marqueeEl.style.height = `${height}px`;
+
+    const mRect = {
+      left: Math.min(dragStart.x, curX) * zoom + deskRect.left,
+      top: Math.min(dragStart.y, curY) * zoom + deskRect.top,
+      right: Math.max(dragStart.x, curX) * zoom + deskRect.left,
+      bottom: Math.max(dragStart.y, curY) * zoom + deskRect.top,
+    };
+
+    const icons = desktop.querySelectorAll(".desktop-icon");
+    icons.forEach((icon) => {
+      const iRect = icon.getBoundingClientRect();
+      const overlaps = !(
+        iRect.right < mRect.left ||
+        iRect.left > mRect.right ||
+        iRect.bottom < mRect.top ||
+        iRect.top > mRect.bottom
+      );
+
+      if (dragStart.metaKey || dragStart.shiftKey) {
+        const wasSelected = dragStart.initialSelected.has(icon);
+        if (overlaps) {
+          icon.classList.toggle("selected", !wasSelected);
+        } else {
+          icon.classList.toggle("selected", wasSelected);
+        }
+      } else {
+        icon.classList.toggle("selected", overlaps);
+      }
+    });
+  });
+
+  function finishMarqueeDrag(event) {
+    if (!dragStart) return;
+    if (event && event.pointerId !== dragStart.pointerId) return;
+    dragStart = null;
+    if (marqueeEl) {
+      marqueeEl.remove();
+      marqueeEl = null;
+    }
+    isDragging = false;
+    const selected = desktop.querySelectorAll(".desktop-icon.selected");
+    selectedIcon = selected.length === 1 ? selected[0] : null;
+    if (selected.length > 0) syncAppMenu(null);
+  }
+
+  window.addEventListener("pointerup", finishMarqueeDrag);
+  window.addEventListener("pointercancel", finishMarqueeDrag);
 
   // Finder icon-view / list-view items (Macintosh HD)
   for (const item of document.querySelectorAll(".finder-item[data-open], .finder-list-row[data-open]")) {
