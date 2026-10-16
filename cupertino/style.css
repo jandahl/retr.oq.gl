@@ -341,10 +341,20 @@ select {
   line-clamp: 2;
 }
 
+.desktop-icon.selected {
+  position: relative;
+}
+
+.desktop-icon.selected .desktop-icon-glyph {
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6)) brightness(1.1);
+}
+
 .desktop-icon.selected .desktop-icon-label,
 .desktop-icon:focus-visible .desktop-icon-label {
-  background: var(--aqua-accent);
-  color: #fff;
+  background: rgba(24, 72, 152, 0.95);
+  color: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7), 0 2px 6px rgba(0, 0, 0, 0.5);
   text-shadow: none;
 }
 
@@ -1809,8 +1819,10 @@ select {
 
 .desktop-marquee {
   position: absolute;
-  border: 1px solid rgba(49, 106, 197, 0.7);
-  background: rgba(180, 213, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  outline: 1px solid rgba(16, 44, 96, 0.7);
+  background: rgba(140, 195, 255, 0.4);
+  box-shadow: 0 0 10px rgba(0, 50, 120, 0.35);
   pointer-events: none;
   z-index: 9;
 }

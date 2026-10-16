@@ -266,14 +266,33 @@ textarea {
    .desktop-icon:hover). The ancestor-scoped selectors below are specific
    enough to win and strip it back to nothing: real Windows never
    outlines/bevels a desktop icon as one rectangle on hover or press. */
+.desktop-icons .desktop-icon,
 .desktop-icons .desktop-icon:hover,
 .desktop-icons .desktop-icon:active,
-.desktop-icons .desktop-icon:focus {
-  background: transparent;
-  box-shadow: none;
-  border-color: transparent;
+.desktop-icons .desktop-icon:focus,
+.desktop-icons .desktop-icon.focused {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
   outline: none;
   padding: 0.25rem;
+  animation: none !important;
+  -webkit-animation: none !important;
+}
+
+.desktop-icons .desktop-icon::before,
+.desktop-icons .desktop-icon::after,
+.desktop-icons .desktop-icon:hover::before,
+.desktop-icons .desktop-icon:hover::after,
+.desktop-icons .desktop-icon:active::before,
+.desktop-icons .desktop-icon:active::after,
+.desktop-icons .desktop-icon:focus::before,
+.desktop-icons .desktop-icon:focus::after,
+.desktop-icons .desktop-icon.focused::before,
+.desktop-icons .desktop-icon.focused::after {
+  content: none !important;
+  display: none !important;
 }
 
 .desktop-icon:focus-visible .desktop-icon-label {

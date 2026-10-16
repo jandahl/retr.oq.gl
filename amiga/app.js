@@ -269,6 +269,7 @@
     if (event.button !== 0) return;
     const isBareDesktop = event.target === desktop || !event.target.closest(".window, .desktop-icon, .wb-menu-bar");
     if (isBareDesktop) {
+      event.preventDefault();
       if (!event.shiftKey) {
         for (const icon of document.querySelectorAll(".desktop-icon.is-selected")) {
           icon.classList.remove("is-selected");

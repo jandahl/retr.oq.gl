@@ -80,15 +80,40 @@ html, body {
   line-height: 1.2;
   -webkit-font-smoothing: none;
   font-smooth: never;
+  cursor: var(--cursor-arrow);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body * {
+  cursor: inherit;
 }
 
 /* House convention: no hand/pointer cursor. Real Intuition used a
    pixel pointer, never a pointing-hand. Growbox is the one exception. */
 button,
+a,
+a:link,
+a:visited,
 .desktop-icon,
 [role="menu-item"],
-.gadget {
+[role="menuitem"],
+.gadget,
+.wb-screenbar,
+.wb-screen-title,
+.wb-screen-depth,
+.wb-screen-clock,
+.wb-titlebar,
+.wb-desktop {
   cursor: var(--cursor-arrow);
+}
+
+input[type="text"],
+input[type="search"],
+textarea {
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* ---------- Screen bar ---------- */
@@ -1081,9 +1106,20 @@ body.wb-mode-3 .about-art {
 
 .desktop-marquee {
   position: absolute;
-  border: 1px dotted var(--wb-orange);
-  background: transparent;
+  /* Chunky low-res 2px alternating pen pattern (Workbench 4-color XOR dither) */
+  border-width: 2px;
+  border-style: solid;
+  border-image: repeating-linear-gradient(
+    90deg,
+    var(--wb-orange) 0px,
+    var(--wb-orange) 4px,
+    var(--wb-black) 4px,
+    var(--wb-black) 8px
+  ) 2;
+  box-shadow: 0 0 0 2px var(--wb-black);
+  background: rgba(255, 136, 0, 0.15);
   pointer-events: none;
   z-index: 9;
+  box-sizing: border-box;
 }
 
