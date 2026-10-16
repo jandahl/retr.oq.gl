@@ -200,7 +200,7 @@ test("screensaver does not start while a DOS game or Doom 95 is active", () => {
   assert.equal(host.timeouts.length, 1);
   assert.notEqual(host.timeouts[0].id, timeoutId);
 
-  for (const id of ["wolf-app", "redneck-app"]) {
+  for (const id of ["wolf-app", "redneck-app", "duke-app"]) {
     const gameHost = loadHost({ pathname: "/dos/", readyState: "loading" });
     const gameEl = gameHost.makeEl("section");
     gameEl.id = id;

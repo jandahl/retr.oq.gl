@@ -127,7 +127,7 @@
 
     function isGameActive() {
       try {
-        const gameIds = ["keen-app", "wolf-app", "redneck-app"];
+        const gameIds = ["keen-app", "wolf-app", "redneck-app", "duke-app"];
         if (gameIds.some((id) => {
           const game = document.getElementById(id);
           return game && !game.hidden;
