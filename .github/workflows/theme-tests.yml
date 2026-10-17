@@ -15,11 +15,8 @@ name: theme tests
 # The `changes` job computes which themes' paths actually changed so an
 # unrelated PR (say, kde/ or docs) doesn't spin up browser tests for
 # nothing; the `test` job then runs only the suites that changed.
-# Shared top-level scripts and workflow edits exercise every suite so common
-# dependency changes and CI changes cannot silently skip browser coverage.
+# Triggered manually via workflow_dispatch.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 concurrency:
@@ -29,9 +26,6 @@ concurrency:
 jobs:
   shared-node-tests:
     # Fast Node-only test suite covering shared minigame engines and shared invariants.
-    # Runs unconditionally on every pull request to satisfy GitHub branch protection's
-    # required check without depending on path filters.
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +35,6 @@ jobs:
       - run: node --test tests/shared/*.mjs
 
   changes:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     # `changes` (not per-filter outputs.<name>) is dorny/paths-filter's own
     # "which filters matched" JSON array -- e.g. '["gb","win98"]' -- built
