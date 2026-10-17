@@ -35,10 +35,35 @@
   const doomFrame = document.getElementById("doom95-frame");
   const dukeWin = document.getElementById("win-duke3d");
   const dukeFrame = document.getElementById("duke3d-frame");
+
   // Word Deconstructor lives inside #win-oq (property-sheet tabs). One desktop
   // / Start affordance (OQ!); resolveOpen still maps a leftover win-decon id
   // onto this shell + pendingOqScreen for deep links / router ids.
   let pendingOqScreen = null;
+
+  const doomGame = window.OqRedmond.initGameWindow({
+    windowEl: doomWin,
+    frameEl: doomFrame,
+    srcGetter: () => "../vendor/dwasm/runner.html?v=5",
+    closeWindow: (win) => closeWindow(win),
+    exitMessageType: "doom-exit",
+  });
+
+  const dukeGame = window.OqRedmond.initGameWindow({
+    windowEl: dukeWin,
+    frameEl: dukeFrame,
+    srcGetter: () => {
+      const mod = window.OqRouter.getParams().get("mod");
+      return `../vendor/duke3d/dosbox-runner.html?v=2${mod ? `&mod=${encodeURIComponent(mod)}` : ""}`;
+    },
+    closeWindow: (win) => closeWindow(win),
+    exitMessageType: "duke-exit",
+    onSave: (child) => {
+      if (typeof child.saveDukeLocalChanges === "function") {
+        child.saveDukeLocalChanges();
+      }
+    },
+  });
 
   const { openWindow, forceOpenWindow, closeWindow, isTopmost } = window.OqRedmond.initWindowManager({
     desktop,
@@ -66,38 +91,8 @@
         win.classList.add("assistant-fullscreen");
         if (window.OqBob) window.OqBob.open();
       }
-      if (win.id === "win-doom95") {
-        if (window.OqScreensaver && window.OqScreensaver.host) {
-          window.OqScreensaver.host.setIdleMs(0);
-        }
-        const frame = document.getElementById("doom95-frame");
-        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes("?v=5"))) {
-          frame.src = "../vendor/dwasm/runner.html?v=5";
-        }
-        if (frame) {
-          try {
-            frame.focus();
-            if (frame.contentWindow) frame.contentWindow.focus();
-          } catch (_) {}
-        }
-      }
-      if (win.id === "win-duke3d") {
-        if (window.OqScreensaver && window.OqScreensaver.host) {
-          window.OqScreensaver.host.setIdleMs(0);
-        }
-        const frame = document.getElementById("duke3d-frame");
-        const mod = window.OqRouter.getParams().get("mod");
-        const targetSrc = `../vendor/duke3d/dosbox-runner.html?v=2${mod ? `&mod=${encodeURIComponent(mod)}` : ""}`;
-        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes(targetSrc))) {
-          frame.src = targetSrc;
-        }
-        if (frame) {
-          try {
-            frame.focus();
-            if (frame.contentWindow) frame.contentWindow.focus();
-          } catch (_) {}
-        }
-      }
+      if (win.id === "win-doom95") doomGame.onOpen();
+      if (win.id === "win-duke3d") dukeGame.onOpen();
     },
     // Desktop icon / Start menu / taskbar-restore clicks on OQ! or DECON
     // all funnel through this one openWindow() (see shared/redmond/
@@ -160,30 +155,14 @@
     },
     routeClose(win) {
       if (win.id === "win-duke3d") {
-        if (window.OqScreensaver && window.OqScreensaver.host) {
-          window.OqScreensaver.host.setIdleMs(45000);
-        }
-        const frame = document.getElementById("duke3d-frame");
-        if (frame) {
-          const child = frame.contentWindow;
-          if (child && typeof child.saveDukeLocalChanges === "function") {
-            try { child.saveDukeLocalChanges(); } catch (_) {}
-          }
-          frame.src = "about:blank";
-        }
+        dukeGame.onClose();
         const screen = window.OqRouter.getParams().get("screen");
         if (screen === "duke3d" || screen === "duke") {
           window.OqRouter.navigate({ screen: null, room: null, filter: null, word: null, order: null });
         }
       }
       if (win.id === "win-doom95") {
-        if (window.OqScreensaver && window.OqScreensaver.host) {
-          window.OqScreensaver.host.setIdleMs(45000);
-        }
-        const frame = document.getElementById("doom95-frame");
-        if (frame) {
-          frame.src = "about:blank";
-        }
+        doomGame.onClose();
         const screen = window.OqRouter.getParams().get("screen");
         if (screen === "doom95" || screen === "doom") {
           window.OqRouter.navigate({ screen: null, room: null, filter: null, word: null, order: null });
@@ -729,27 +708,7 @@
         closeWindow(doomWin);
       }
     }
-    if (event.data && event.data.type === "duke-exit") {
-      if (dukeWin) {
-        closeWindow(dukeWin);
-      }
-    }
   });
-
-  if (dukeWin && dukeFrame) {
-    function focusDuke(event) {
-      if (dukeWin.classList.contains("minimized")) return;
-      if (event && event.target && event.target.closest(".title-bar, .win95-resize-handle, button, a")) {
-        return;
-      }
-      try {
-        dukeFrame.focus();
-        if (dukeFrame.contentWindow) dukeFrame.contentWindow.focus();
-      } catch (_) {}
-    }
-    dukeWin.addEventListener("pointerdown", focusDuke);
-    dukeWin.addEventListener("focus", focusDuke);
-  }
 
   if (doomWin && doomFrame) {
     function focusDoom(event) {

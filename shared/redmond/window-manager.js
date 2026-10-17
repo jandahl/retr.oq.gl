@@ -926,4 +926,81 @@
   }
 
   window.OqRedmond.initStartMenu = initStartMenu;
+
+  // ---------- Game Window Helper ----------
+  //
+  // Manages shared behavior for game/app iframes hosted inside Redmond windows
+  // (Doom 95, Duke Nukem 3D, etc.):
+  // - Pauses screensaver idle timer on launch (setIdleMs(0)) and restores on close (45000)
+  // - Lazy-loads runner iframe src with cache-busting and optional query parameters
+  // - Focuses runner canvas/window on window click without capturing title bar/chrome
+  // - Unloads iframe src on close with optional local change persistence save
+  // - Listens for exit postMessage from runner to close the parent window
+  function initGameWindow({
+    windowEl,
+    frameEl,
+    srcGetter,
+    closeWindow,
+    exitMessageType,
+    onSave,
+  }) {
+    if (!windowEl || !frameEl) return { onOpen: () => {}, onClose: () => {} };
+
+    function onOpen() {
+      if (window.OqScreensaver && window.OqScreensaver.host) {
+        window.OqScreensaver.host.setIdleMs(0);
+      }
+      const targetSrc = typeof srcGetter === "function" ? srcGetter() : srcGetter;
+      if (frameEl && (frameEl.src.endsWith("about:blank") || !frameEl.src.includes(targetSrc))) {
+        frameEl.src = targetSrc;
+      }
+      if (frameEl) {
+        try {
+          frameEl.focus();
+          if (frameEl.contentWindow) frameEl.contentWindow.focus();
+        } catch (_) {}
+      }
+    }
+
+    function onClose() {
+      if (window.OqScreensaver && window.OqScreensaver.host) {
+        window.OqScreensaver.host.setIdleMs(45000);
+      }
+      if (frameEl) {
+        const child = frameEl.contentWindow;
+        if (child && typeof onSave === "function") {
+          try { onSave(child); } catch (_) {}
+        }
+        frameEl.src = "about:blank";
+      }
+    }
+
+    function focusGame(event) {
+      if (windowEl.classList.contains("minimized")) return;
+      if (event && event.target && event.target.closest(".title-bar, .win95-resize-handle, .win98-resize-handle, button, a")) {
+        return;
+      }
+      try {
+        frameEl.focus();
+        if (frameEl.contentWindow) frameEl.contentWindow.focus();
+      } catch (_) {}
+    }
+
+    windowEl.addEventListener("pointerdown", focusGame);
+    windowEl.addEventListener("focus", focusGame);
+
+    if (exitMessageType) {
+      window.addEventListener("message", (event) => {
+        if (event.data && event.data.type === exitMessageType) {
+          if (typeof closeWindow === "function") {
+            closeWindow(windowEl);
+          }
+        }
+      });
+    }
+
+    return { onOpen, onClose };
+  }
+
+  window.OqRedmond.initGameWindow = initGameWindow;
 })();
