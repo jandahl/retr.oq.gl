@@ -1,0 +1,782 @@
+/* Itumak Tallimat (Palm V / Vx) Theme Stylesheet
+   Industrial Design: Sleek anodized slate aluminum chassis with tapered waist,
+   reflective 160x160 monochrome LCD with authentic passive-matrix lag/ghosting,
+   silk-screened Graffiti writing area, and reverse-EL backlight. */
+
+:root {
+  /* Chassis Colors */
+  --palm-case-top: #656c73;
+  --palm-case-mid: #4a5056;
+  --palm-case-bottom: #35393e;
+  --palm-bezel: #24272a;
+  --palm-silkscreen: #3a3f45;
+  --palm-silk-line: #525860;
+  --palm-silk-icon: #7c858e;
+  --palm-silk-icon-active: #ffffff;
+  
+  /* Buttons */
+  --palm-btn-metal: #788088;
+  --palm-btn-dark: #2a2e32;
+  --palm-rocker: #50565c;
+
+  /* LCD Reflective Monochrome Palette (Standard mode) */
+  --lcd-bg: #98a38d;
+  --lcd-bg-dim: #8b9580;
+  --lcd-pixel: #141b12;
+  --lcd-pixel-ghost: rgba(20, 27, 18, 0.28);
+  --lcd-pixel-light: #586350;
+  --lcd-grid: rgba(0, 0, 0, 0.04);
+  --lcd-highlight-bg: #141b12;
+  --lcd-highlight-text: #98a38d;
+
+  /* Fonts */
+  --palm-font-system: "Geneva", "Chicago", "MS Sans Serif", "Tahoma", -apple-system, sans-serif;
+  --palm-font-mono: ui-monospace, "SF Mono", "Courier New", monospace;
+  --palm-font-size: 11px;
+}
+
+/* Reverse-EL Indiglo Backlight Mode (Hold Power / Toggle EL) */
+body.backlight-on {
+  --lcd-bg: #09262b;
+  --lcd-bg-dim: #061c20;
+  --lcd-pixel: #4bf8d3;
+  --lcd-pixel-ghost: rgba(75, 248, 211, 0.35);
+  --lcd-pixel-light: #208e7b;
+  --lcd-grid: rgba(75, 248, 211, 0.06);
+  --lcd-highlight-bg: #4bf8d3;
+  --lcd-highlight-text: #09262b;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  position: fixed;
+  background: #181a1d;
+  font-family: var(--palm-font-system);
+  font-size: var(--palm-font-size);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Handheld Shell Container */
+.palm-shell {
+  position: fixed;
+  top: var(--app-top, 0);
+  left: 0;
+  right: 0;
+  height: var(--app-height, 100dvh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 30%, #282c31 0%, #121416 100%);
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+/* The iconic Palm V tapered aluminum chassis */
+.palm-body {
+  width: min(390px, 100%);
+  height: 100%;
+  max-height: 780px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(170deg, var(--palm-case-top) 0%, var(--palm-case-mid) 45%, var(--palm-case-bottom) 100%);
+  border-radius: 20px 20px 26px 26px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 1px 0 2px rgba(255, 255, 255, 0.2),
+    inset -1px 0 2px rgba(0, 0, 0, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.7),
+    0 12px 30px rgba(0, 0, 0, 0.75),
+    0 2px 6px rgba(0, 0, 0, 0.5);
+  padding: 10px 14px 12px;
+  position: relative;
+  /* Distinctive Palm V curved waist groove styling */
+  clip-path: polygon(
+    0% 0%, 100% 0%,
+    100% 25%, 98.8% 40%, 98.8% 60%, 100% 75%,
+    100% 100%, 0% 100%,
+    0% 75%, 1.2% 60%, 1.2% 40%, 0% 25%
+  );
+}
+
+/* Chassis Top Header: Power Button & Speaker Slot */
+.palm-top-trim {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 18px;
+  padding: 0 4px 6px;
+}
+
+.palm-power-btn {
+  background: linear-gradient(to bottom, #4a5056, #2d3135);
+  border: 1px solid #1a1c1e;
+  border-radius: 4px;
+  color: #adb5bd;
+  font-size: 8px;
+  font-weight: bold;
+  padding: 1px 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.palm-power-btn:active {
+  transform: translateY(1px);
+  background: #202326;
+}
+
+.palm-brand-stamp {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #8c959e;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(0,0,0,0.4);
+}
+
+/* Dark Screen Bezel */
+.palm-screen-bezel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--palm-bezel);
+  border-radius: 6px;
+  padding: 6px 6px 4px;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.9),
+    inset 0 0 1px rgba(0, 0, 0, 0.8),
+    0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* The 160x160 LCD display area */
+.palm-lcd {
+  flex: 1 1 auto;
+  min-height: 0;
+  background-color: var(--lcd-bg);
+  background-image: 
+    radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 70%),
+    repeating-linear-gradient(0deg, transparent, transparent 1px, var(--lcd-grid) 1px, var(--lcd-grid) 2px),
+    repeating-linear-gradient(90deg, transparent, transparent 1px, var(--lcd-grid) 1px, var(--lcd-grid) 2px);
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.45);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.35),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.1);
+  color: var(--lcd-pixel);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  /* Authentic LCD response latency */
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+/* Faint passive-matrix ghosting trail overlay */
+.palm-lcd::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+
+.palm-lcd.lcd-ghosting::after {
+  opacity: 1;
+  background: var(--lcd-pixel-ghost);
+}
+
+/* Palm OS Title Bar */
+.palm-titlebar {
+  height: 18px;
+  background: var(--lcd-pixel);
+  color: var(--lcd-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  font-weight: bold;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.palm-title-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.palm-menu-trigger {
+  border: 1px solid var(--lcd-bg);
+  background: transparent;
+  color: var(--lcd-bg);
+  font-size: 8px;
+  font-weight: bold;
+  padding: 0 3px;
+  line-height: 12px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.palm-title-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+}
+
+/* Palm OS Dropdown Menu */
+.palm-menu-dropdown {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  background: var(--lcd-bg);
+  border: 1px solid var(--lcd-pixel);
+  box-shadow: 2px 2px 0 var(--lcd-pixel);
+  z-index: 50;
+  min-width: 130px;
+  padding: 2px 0;
+}
+
+.palm-menu-dropdown[hidden] {
+  display: none;
+}
+
+.palm-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 2px 8px;
+  font-family: inherit;
+  font-size: 10px;
+  color: var(--lcd-pixel);
+  cursor: pointer;
+}
+
+.palm-menu-item:hover,
+.palm-menu-item:focus,
+.palm-menu-item.active {
+  background: var(--lcd-highlight-bg);
+  color: var(--lcd-highlight-text);
+  outline: none;
+}
+
+.palm-menu-divider {
+  border-top: 1px dotted var(--lcd-pixel);
+  margin: 2px 0;
+}
+
+/* Screen Views */
+.palm-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.palm-screen[hidden] {
+  display: none !important;
+}
+
+/* Category Tab / Header bar under titlebar */
+.palm-category-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1px 2px 3px;
+  border-bottom: 1px solid var(--lcd-pixel);
+  margin-bottom: 3px;
+  font-size: 10px;
+}
+
+.palm-picker-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dotted var(--lcd-pixel);
+  color: var(--lcd-pixel);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 0 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Standard Palm OS Buttons */
+.palm-btn {
+  background: transparent;
+  border: 1px solid var(--lcd-pixel);
+  border-radius: 4px;
+  color: var(--lcd-pixel);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 2px 6px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.palm-btn:active,
+.palm-btn.is-active {
+  background: var(--lcd-highlight-bg);
+  color: var(--lcd-highlight-text);
+}
+
+/* OQ! Dictionary List Screen */
+.palm-search-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.palm-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--lcd-pixel);
+  border-radius: 0;
+  color: var(--lcd-pixel);
+  font-family: var(--palm-font-system);
+  font-size: 11px;
+  padding: 1px 2px;
+  outline: none;
+}
+
+.palm-status-text {
+  font-size: 9px;
+  margin: 1px 0;
+  color: var(--lcd-pixel-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Lined Memo / Record List style */
+.palm-list-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid var(--lcd-pixel);
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 17px,
+    var(--lcd-grid) 17px,
+    var(--lcd-grid) 18px
+  );
+  scrollbar-width: thin;
+  scrollbar-color: var(--lcd-pixel) transparent;
+}
+
+.palm-list-item {
+  padding: 2px 4px;
+  min-height: 18px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px dotted rgba(20, 27, 18, 0.2);
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 14px;
+}
+
+.palm-list-item:hover,
+.palm-list-item.selected {
+  background: var(--lcd-highlight-bg);
+  color: var(--lcd-highlight-text);
+}
+
+.palm-item-headword {
+  font-weight: bold;
+}
+
+.palm-item-gloss {
+  font-size: 9px;
+  opacity: 0.85;
+  margin-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Word Deconstructor Screen */
+.palm-decon-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+  margin-top: 4px;
+}
+
+.palm-decon-table th,
+.palm-decon-table td {
+  border: 1px solid var(--lcd-pixel);
+  padding: 2px 4px;
+  text-align: left;
+}
+
+.palm-decon-table th {
+  background: var(--lcd-pixel);
+  color: var(--lcd-bg);
+}
+
+/* Date Book / Morph Game Screen */
+.palm-morph-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--lcd-pixel);
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+.palm-morph-target {
+  text-align: center;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 4px;
+  border: 1px solid var(--lcd-pixel);
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.palm-morph-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 auto;
+}
+
+.palm-choice-btn {
+  text-align: left;
+  border: 1px solid var(--lcd-pixel);
+  background: transparent;
+  padding: 3px 6px;
+  border-radius: 3px;
+  color: var(--lcd-pixel);
+  font-family: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.palm-choice-btn:active,
+.palm-choice-btn.selected {
+  background: var(--lcd-highlight-bg);
+  color: var(--lcd-highlight-text);
+}
+
+/* Palm OS Virtual Popup Keyboard (abc / 123) */
+.palm-keyboard-dialog {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--lcd-bg);
+  border-top: 2px solid var(--lcd-pixel);
+  padding: 3px 2px;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.palm-keyboard-dialog[hidden] {
+  display: none !important;
+}
+
+.palm-keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+.palm-kbd-key {
+  min-width: 17px;
+  height: 18px;
+  padding: 0 2px;
+  background: transparent;
+  border: 1px solid var(--lcd-pixel);
+  border-radius: 2px;
+  color: var(--lcd-pixel);
+  font-family: var(--palm-font-mono);
+  font-size: 9px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.palm-kbd-key:active {
+  background: var(--lcd-highlight-bg);
+  color: var(--lcd-highlight-text);
+}
+
+.palm-kbd-key.wide {
+  min-width: 32px;
+  font-size: 8px;
+}
+
+.palm-kbd-key.space {
+  min-width: 80px;
+}
+
+/* ========================================================= */
+/* SILKSCREEN GRAFFITI INPUT AREA                             */
+/* ========================================================= */
+.palm-silkscreen {
+  background: var(--palm-silkscreen);
+  border-radius: 3px;
+  margin-top: 4px;
+  padding: 3px 4px 2px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+  position: relative;
+  touch-action: none;
+}
+
+/* Silk Screen Soft Touch Icons (Applications, Menu, Calc, Find) */
+.palm-silk-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #2f3338 60%, #1e2023 100%);
+  border: 1px solid #1a1c1e;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--palm-silk-icon);
+  padding: 0;
+}
+
+.palm-silk-btn:active {
+  background: #111214;
+  color: var(--palm-silk-icon-active);
+  transform: scale(0.96);
+}
+
+.palm-silk-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.palm-silk-btn span {
+  font-size: 6px;
+  font-weight: bold;
+  letter-spacing: -0.2px;
+  margin-top: 1px;
+}
+
+/* The Central Graffiti Drawing Quadrants */
+.palm-graffiti-box {
+  flex: 1 1 auto;
+  height: 48px;
+  margin: 0 4px;
+  background: #2b2f34;
+  border: 1px solid #1c1e21;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.7);
+  display: flex;
+  position: relative;
+  cursor: crosshair;
+}
+
+/* Canvas overlay for drawing stroke */
+.palm-graffiti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  z-index: 5;
+  touch-action: none;
+}
+
+.palm-graffiti-quadrant {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  position: relative;
+  pointer-events: none;
+}
+
+.palm-graffiti-quadrant.letters {
+  border-right: 1px dashed var(--palm-silk-line);
+}
+
+.palm-graffiti-label {
+  font-size: 8px;
+  font-weight: bold;
+  color: #636b74;
+}
+
+.palm-graffiti-guide {
+  font-size: 11px;
+  color: #484f56;
+  text-align: center;
+  line-height: 1;
+}
+
+.palm-keyboard-toggle-dot {
+  pointer-events: auto;
+  font-size: 7px;
+  font-weight: bold;
+  color: #7b848e;
+  background: #1e2124;
+  border: 1px solid #3d434a;
+  border-radius: 2px;
+  padding: 1px 3px;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.palm-keyboard-toggle-dot:active {
+  background: #4bf8d3;
+  color: #09262b;
+}
+
+/* ========================================================= */
+/* PHYSICAL HARDWARE BUTTONS & ROCKER (Palm V Silhouette)    */
+/* ========================================================= */
+.palm-hardware-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px 0;
+  position: relative;
+}
+
+/* The 4 Oval Application Shortcut Buttons */
+.palm-app-btn {
+  width: 26px;
+  height: 22px;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #626970 0%, #3e4348 100%);
+  border: 1px solid #24272a;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #c0c6cc;
+  padding: 0;
+}
+
+.palm-app-btn:active,
+.palm-app-btn.is-active {
+  background: linear-gradient(180deg, #2e3236 0%, #454b51 100%);
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.palm-app-btn svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+}
+
+/* Central Up/Down Rocker Button */
+.palm-rocker-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 4px;
+}
+
+.palm-rocker {
+  width: 38px;
+  height: 30px;
+  background: linear-gradient(180deg, #5c636a 0%, #383c41 100%);
+  border: 1px solid #1e2023;
+  border-radius: 15px;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.35),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.7),
+    0 2px 4px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+.palm-rocker-half {
+  flex: 1 1 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #adb5bd;
+  padding: 0;
+}
+
+.palm-rocker-half:active {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+}
+
+.palm-rocker-half.up {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.palm-rocker-half svg {
+  width: 10px;
+  height: 6px;
+  fill: currentColor;
+}
+
+/* Stylus Silo Notch on the top right edge */
+.palm-stylus-notch {
+  position: absolute;
+  top: 10px;
+  right: -3px;
+  width: 4px;
+  height: 36px;
+  background: linear-gradient(to right, #24272a, #626970);
+  border-radius: 2px 0 0 2px;
+  cursor: pointer;
+  title: "Stylus";
+}
