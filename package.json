@@ -1,5 +1,6 @@
 {
   "private": true,
+  "type": "module",
   "name": "retr-oq-tooling",
   "version": "0.0.0",
   "devDependencies": {
