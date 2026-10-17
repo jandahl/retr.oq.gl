@@ -91,6 +91,13 @@ jobs:
               - "tests/requirements.txt"
               - "shared/*.js"
               - ".github/workflows/theme-tests.yml"
+            itumak:
+              - "itumak/**"
+              - "tests/test_itumak.py"
+              - "tests/conftest.py"
+              - "tests/requirements.txt"
+              - "shared/*.js"
+              - ".github/workflows/theme-tests.yml"
             gb:
               - "gb/**"
               - "vendor/nes/fonts/**"

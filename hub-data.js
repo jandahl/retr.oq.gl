@@ -279,6 +279,34 @@ window.OqHubMachines = [
     `,
   },
   {
+    href: "itumak/",
+    name: "Itumak",
+    year: "1999",
+    category: "handheld",
+    hasGames: true,
+    meta: "Palm OS · V/Vx",
+    iconNote: "Palm V slate chassis, 160x160 LCD, Graffiti silkscreen",
+    icon: `
+      <rect width="32" height="32" fill="#50565c"/>
+      <rect x="5" y="1" width="22" height="30" rx="3" fill="#60666d"/>
+      <rect x="7" y="3" width="18" height="26" rx="1" fill="#24272a"/>
+      <rect x="8" y="4" width="16" height="15" fill="#98a38d"/>
+      <rect x="9" y="5" width="14" height="2" fill="#141b12"/>
+      <rect x="9" y="8" width="10" height="1" fill="#141b12"/>
+      <rect x="9" y="11" width="12" height="1" fill="#141b12"/>
+      <rect x="9" y="14" width="8" height="1" fill="#141b12"/>
+      <rect x="8" y="20" width="16" height="6" fill="#3a3f45"/>
+      <circle cx="10" cy="23" r="1" fill="#7c858e"/>
+      <circle cx="22" cy="23" r="1" fill="#7c858e"/>
+      <rect x="12" y="21" width="8" height="4" fill="#2b2f34"/>
+      <circle cx="9" cy="28" r="1" fill="#c0c6cc"/>
+      <circle cx="12" cy="28" r="1" fill="#c0c6cc"/>
+      <rect x="14.5" y="27.5" width="3" height="2" rx="0.5" fill="#50565c"/>
+      <circle cx="20" cy="28" r="1" fill="#c0c6cc"/>
+      <circle cx="23" cy="28" r="1" fill="#c0c6cc"/>
+    `,
+  },
+  {
     href: "win98/",
     name: "Redmond",
     year: "1992–2009",
