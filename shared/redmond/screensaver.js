@@ -134,6 +134,8 @@
         })) return true;
         const doom = document.getElementById("win-doom95");
         if (doom && doom.classList && !doom.classList.contains("minimized")) return true;
+        const duke = document.getElementById("win-duke3d");
+        if (duke && duke.classList && !duke.classList.contains("minimized")) return true;
       } catch (e) {}
       return false;
     }

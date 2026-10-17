@@ -58,6 +58,10 @@
         <span class="desktop-icon-glyph icon-doom95" aria-hidden="true"></span>
         <span class="desktop-icon-label">Doom 95</span>
       </div>
+      <div class="desktop-icon" role="button" tabindex="0" data-open="win-duke3d">
+        <span class="desktop-icon-glyph icon-duke3d" aria-hidden="true"></span>
+        <span class="desktop-icon-label">Duke Nukem 3D</span>
+      </div>
     </div>
 
 
@@ -278,6 +282,28 @@
       <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
       <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
     </section>
+
+    <section class="window win95-window" id="win-duke3d" data-icon="duke3d" style="top: 3rem; left: 5rem; width: 40rem; height: 30rem;">
+      <div class="title-bar">
+        <div class="title-bar-text">Duke Nukem 3D</div>
+        <div class="title-bar-controls">
+          <button aria-label="Minimize" class="win-minimize"></button>
+          <button aria-label="Maximize" class="win-maximize"></button>
+          <button aria-label="Close" class="win-close"></button>
+        </div>
+      </div>
+      <div class="window-body win95-window-body doom95-window-body">
+        <iframe class="doom95-frame" id="duke3d-frame" src="about:blank" title="Duke Nukem 3D" allow="autoplay; fullscreen; gamepad; pointer-lock" allowpointerlock></iframe>
+      </div>
+      <div class="win95-resize-handle win95-resize-n" data-dir="n"></div>
+      <div class="win95-resize-handle win95-resize-s" data-dir="s"></div>
+      <div class="win95-resize-handle win95-resize-e" data-dir="e"></div>
+      <div class="win95-resize-handle win95-resize-w" data-dir="w"></div>
+      <div class="win95-resize-handle win95-resize-ne" data-dir="ne"></div>
+      <div class="win95-resize-handle win95-resize-nw" data-dir="nw"></div>
+      <div class="win95-resize-handle win95-resize-se" data-dir="se"></div>
+      <div class="win95-resize-handle win95-resize-sw" data-dir="sw"></div>
+    </section>
   </div>
 
 
@@ -312,6 +338,9 @@
     </li>
     <li role="menu-item" class="start-menu-item" data-open="win-doom95">
       <span class="start-menu-icon icon-doom95" aria-hidden="true"></span> Doom 95
+    </li>
+    <li role="menu-item" class="start-menu-item" data-open="win-duke3d">
+      <span class="start-menu-icon icon-duke3d" aria-hidden="true"></span> Duke Nukem 3D
     </li>
     <li class="start-menu-divider"></li>
     <li role="menu-item" class="start-menu-item start-menu-item--disabled">

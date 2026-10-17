@@ -33,6 +33,8 @@
   const winOq = document.getElementById("win-oq");
   const doomWin = document.getElementById("win-doom95");
   const doomFrame = document.getElementById("doom95-frame");
+  const dukeWin = document.getElementById("win-duke3d");
+  const dukeFrame = document.getElementById("duke3d-frame");
   // Word Deconstructor lives inside #win-oq (property-sheet tabs). One desktop
   // / Start affordance (OQ!); resolveOpen still maps a leftover win-decon id
   // onto this shell + pendingOqScreen for deep links / router ids.
@@ -79,12 +81,41 @@
           } catch (_) {}
         }
       }
+      if (win.id === "win-duke3d") {
+        if (window.OqScreensaver && window.OqScreensaver.host) {
+          window.OqScreensaver.host.setIdleMs(0);
+        }
+        const frame = document.getElementById("duke3d-frame");
+        if (frame && frame.src.endsWith("about:blank")) {
+          frame.src = "../vendor/duke3d/dosbox-runner.html?v=1";
+        }
+        if (frame) {
+          try {
+            frame.focus();
+            if (frame.contentWindow) frame.contentWindow.focus();
+          } catch (_) {}
+        }
+      }
     },
     // Desktop icon / Start menu / taskbar-restore clicks on OQ! or DECON
     // all funnel through this one openWindow() (see shared/redmond/
     // window-manager.js's own comment) -- routing them to OqRouter.navigate()
     // instead of opening directly keeps the URL and the visible window in
     routeOpen(win) {
+      if (win.id === "win-duke3d") {
+        const params = window.OqRouter.getParams();
+        if (params.get("screen") !== "duke3d" && params.get("screen") !== "duke") {
+          window.OqRouter.navigate({
+            screen: "duke3d",
+            room: null,
+            filter: null,
+            word: null,
+            order: null,
+          });
+          return true;
+        }
+        return false;
+      }
       if (win.id === "win-doom95") {
         const params = window.OqRouter.getParams();
         if (params.get("screen") !== "doom95" && params.get("screen") !== "doom") {
@@ -126,6 +157,23 @@
       return false;
     },
     routeClose(win) {
+      if (win.id === "win-duke3d") {
+        if (window.OqScreensaver && window.OqScreensaver.host) {
+          window.OqScreensaver.host.setIdleMs(45000);
+        }
+        const frame = document.getElementById("duke3d-frame");
+        if (frame) {
+          const child = frame.contentWindow;
+          if (child && typeof child.saveDukeLocalChanges === "function") {
+            try { child.saveDukeLocalChanges(); } catch (_) {}
+          }
+          frame.src = "about:blank";
+        }
+        const screen = window.OqRouter.getParams().get("screen");
+        if (screen === "duke3d" || screen === "duke") {
+          window.OqRouter.navigate({ screen: null, room: null, filter: null, word: null, order: null });
+        }
+      }
       if (win.id === "win-doom95") {
         if (window.OqScreensaver && window.OqScreensaver.host) {
           window.OqScreensaver.host.setIdleMs(45000);
@@ -661,6 +709,13 @@
     } else if (doomWin && !doomWin.classList.contains("minimized")) {
       closeWindow(doomWin);
     }
+    if (screen === "duke3d" || screen === "duke") {
+      if (dukeWin && dukeWin.classList.contains("minimized")) {
+        forceOpenWindow(dukeWin);
+      }
+    } else if (dukeWin && !dukeWin.classList.contains("minimized")) {
+      closeWindow(dukeWin);
+    }
   }
 
   window.OqRouter.onChange(syncRoute);
@@ -672,7 +727,27 @@
         closeWindow(doomWin);
       }
     }
+    if (event.data && event.data.type === "duke-exit") {
+      if (dukeWin) {
+        closeWindow(dukeWin);
+      }
+    }
   });
+
+  if (dukeWin && dukeFrame) {
+    function focusDuke(event) {
+      if (dukeWin.classList.contains("minimized")) return;
+      if (event && event.target && event.target.closest(".title-bar, .win95-resize-handle, button, a")) {
+        return;
+      }
+      try {
+        dukeFrame.focus();
+        if (dukeFrame.contentWindow) dukeFrame.contentWindow.focus();
+      } catch (_) {}
+    }
+    dukeWin.addEventListener("pointerdown", focusDuke);
+    dukeWin.addEventListener("focus", focusDuke);
+  }
 
   if (doomWin && doomFrame) {
     function focusDoom(event) {
