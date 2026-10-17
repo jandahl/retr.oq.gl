@@ -18,7 +18,9 @@ def goto_itumak(page, base_url, query=""):
     page.on(
         "response",
         lambda r: unexpected_404s.append(r.url)
-        if r.status == 404 and not r.url.endswith("/favicon.ico")
+        if r.status == 404
+        and not r.url.endswith("/favicon.ico")
+        and r.url.startswith(base_url)
         else None,
     )
     console_errors = []

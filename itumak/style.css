@@ -637,6 +637,7 @@ html, body {
   box-sizing: border-box;
   position: relative;
   pointer-events: none;
+  z-index: 10;
 }
 
 .palm-graffiti-quadrant.letters {
