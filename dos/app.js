@@ -522,7 +522,7 @@
   const dukeApp = document.getElementById("duke-app");
   const dukeFrame = document.getElementById("dos-duke-frame");
 
-  function launchDuke() {
+  function launchDuke(mod = null) {
     dirScreen.hidden = true;
     dictApp.hidden = true;
     deconApp.hidden = true;
@@ -534,8 +534,9 @@
       window.OqScreensaver.host.setIdleMs(0);
       window.OqScreensaver.host.stop();
     }
-    if (dukeFrame && dukeFrame.src.endsWith("about:blank")) {
-      dukeFrame.src = "../vendor/duke3d/dosbox-runner.html?v=1";
+    const targetSrc = `../vendor/duke3d/dosbox-runner.html?v=2${mod ? `&mod=${encodeURIComponent(mod)}` : ""}`;
+    if (dukeFrame && (dukeFrame.src.endsWith("about:blank") || !dukeFrame.src.includes(targetSrc))) {
+      dukeFrame.src = targetSrc;
     }
   }
 
@@ -732,7 +733,7 @@
       keenApp.hidden = true;
       wolfApp.hidden = true;
       redneckApp.hidden = true;
-      if (dukeApp.hidden) launchDuke();
+      if (dukeApp.hidden) launchDuke(params.get("mod"));
     } else {
       if (!dictApp.hidden) exitDict();
       if (!deconApp.hidden) exitDecon();
@@ -971,9 +972,15 @@ DOS/4GW fatal error (15): protected mode available only with 386 or 486`;
       }
     } else if (cmd === "DUKE" || cmd === "DUKE.EXE" || cmd === "DUKE3D" || cmd === "DUKE3D.EXE") {
       if (args[0] === "/?") {
-        printLine(`DUKE3D.EXE [/?]\n\n  Requires Duke Nukem 3D shareware data in vendor/duke3d/game-data/.\n  /?        Display this help`);
+        printLine(`DUKE3D.EXE [/MOD:name] [/?]\n\n  Requires Duke Nukem 3D shareware data in vendor/duke3d/game-data/.\n  /MOD:name Optional mod overlay (e.g. /MOD:usa)\n  /?        Display this help`);
       } else {
-        window.OqRouter.navigate({ screen: "duke" });
+        let mod = null;
+        for (const arg of args) {
+          if (arg.toUpperCase().startsWith("/MOD:")) {
+            mod = arg.slice(5).trim().toLowerCase();
+          }
+        }
+        window.OqRouter.navigate({ screen: "duke", mod });
       }
     } else if (cmd === "DOOM" || cmd === "DOOM.EXE") {
       printLine(DOOM_ERROR);

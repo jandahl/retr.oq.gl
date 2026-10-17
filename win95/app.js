@@ -86,8 +86,10 @@
           window.OqScreensaver.host.setIdleMs(0);
         }
         const frame = document.getElementById("duke3d-frame");
-        if (frame && frame.src.endsWith("about:blank")) {
-          frame.src = "../vendor/duke3d/dosbox-runner.html?v=1";
+        const mod = window.OqRouter.getParams().get("mod");
+        const targetSrc = `../vendor/duke3d/dosbox-runner.html?v=2${mod ? `&mod=${encodeURIComponent(mod)}` : ""}`;
+        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes(targetSrc))) {
+          frame.src = targetSrc;
         }
         if (frame) {
           try {

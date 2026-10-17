@@ -225,16 +225,18 @@ test("screensaver does not start while a DOS game or Doom 95 is active", () => {
   const doomOverlay = hostWin95.document.getElementById("oq-ss-overlay");
   assert.equal(doomOverlay.hidden, true);
 
-  // Duke Nukem 3D in win95
-  const hostDuke = loadHost({ pathname: "/win95/", readyState: "loading" });
-  const dukeEl = hostDuke.makeEl("section");
-  dukeEl.id = "win-duke3d";
-  dukeEl.classList.add("window");
-  hostDuke.body.appendChild(dukeEl);
+  // Duke Nukem 3D in win95 and win98
+  for (const themePath of ["/win95/", "/win98/"]) {
+    const hostDuke = loadHost({ pathname: themePath, readyState: "loading" });
+    const dukeEl = hostDuke.makeEl("section");
+    dukeEl.id = "win-duke3d";
+    dukeEl.classList.add("window");
+    hostDuke.body.appendChild(dukeEl);
 
-  const apiDuke = hostDuke.sandbox.OqScreensaver.attach({ src: "../vendor/screensavers/maze/index.html?v=ss4", idleMs: 45000 });
-  hostDuke.timeouts[0].fn();
-  assert.equal(hostDuke.document.getElementById("oq-ss-overlay").hidden, true);
+    const apiDuke = hostDuke.sandbox.OqScreensaver.attach({ src: "../vendor/screensavers/maze/index.html?v=ss4", idleMs: 45000 });
+    hostDuke.timeouts[0].fn();
+    assert.equal(hostDuke.document.getElementById("oq-ss-overlay").hidden, true, `${themePath} keeps saver hidden`);
+  }
 });
 
 test("game-activity message pings the screensaver idle timer", () => {
