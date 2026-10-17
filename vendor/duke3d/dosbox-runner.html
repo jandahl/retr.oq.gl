@@ -41,8 +41,15 @@
         showSetup('Open this page through the local HTTP server.');
         return;
       }
+      var params = new URLSearchParams(location.search);
+      var mod = params.get('mod');
       var bundleUrl = 'game-data/duke3d-demo.jsdos?v=1';
+      if (mod) {
+        var modCandidate = 'game-data/duke3d-' + encodeURIComponent(mod) + '.jsdos';
+        bundleUrl = modCandidate;
+      }
       var demoBundleUrl = new URL(bundleUrl, location.href);
+      var fallbackBundleUrl = new URL('game-data/duke3d-demo.jsdos?v=1', location.href);
       var emulatorPath = new URL('../redneck/runtime/emulators/', location.href).href;
       var ci = null;
       var playerProps = null;
@@ -122,12 +129,23 @@
           document.head.appendChild(script);
         });
       }
-      fetch(bundleUrl, { method: 'HEAD' }).then(function (response) {
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        var contentType = response.headers.get('content-type') || '';
-        if (/text\/html/i.test(contentType)) {
-          throw new Error('The server returned HTML instead of the local game bundle.');
+      function verifyBundle(url) {
+        return fetch(url, { method: 'HEAD' }).then(function (response) {
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          var contentType = response.headers.get('content-type') || '';
+          if (/text\/html/i.test(contentType)) {
+            throw new Error('The server returned HTML instead of the local game bundle.');
+          }
+          return url;
+        });
+      }
+      verifyBundle(bundleUrl).catch(function (error) {
+        if (mod) {
+          console.warn('Mod bundle ' + bundleUrl + ' unavailable, falling back to base shareware:', error);
+          demoBundleUrl = fallbackBundleUrl;
+          return verifyBundle(fallbackBundleUrl.href);
         }
+        throw error;
       }).then(loadDosRuntime).then(function () {
         playerProps = window.Dos(document.getElementById('player'), {
           url: demoBundleUrl.href,

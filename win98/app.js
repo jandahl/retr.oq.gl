@@ -31,6 +31,8 @@
   // two top-level windows. My Computer/About/Recycle Bin/Settings stay
   // plain chrome with no router state.
   const winOq = document.getElementById("win-oq");
+  const dukeWin = document.getElementById("win-duke3d");
+  const dukeFrame = document.getElementById("duke3d-frame");
   // Word Deconstructor lives inside #win-oq (property-sheet tabs). One desktop
   // / Start affordance (OQ!); resolveOpen still maps a leftover win-decon id
   // onto this shell + pendingOqScreen for deep links / router ids.
@@ -58,6 +60,23 @@
     },
     onOpen(win) {
       if (win.id === "win-oq") startOqLoad();
+      if (win.id === "win-duke3d") {
+        if (window.OqScreensaver && window.OqScreensaver.host) {
+          window.OqScreensaver.host.setIdleMs(0);
+        }
+        const frame = document.getElementById("duke3d-frame");
+        const mod = window.OqRouter.getParams().get("mod");
+        const targetSrc = `../vendor/duke3d/dosbox-runner.html?v=2${mod ? `&mod=${encodeURIComponent(mod)}` : ""}`;
+        if (frame && (frame.src.endsWith("about:blank") || !frame.src.includes(targetSrc))) {
+          frame.src = targetSrc;
+        }
+        if (frame) {
+          try {
+            frame.focus();
+            if (frame.contentWindow) frame.contentWindow.focus();
+          } catch (_) {}
+        }
+      }
     },
     // Desktop icon / Start menu / taskbar-restore clicks on OQ! or DECON
     // all funnel through this one openWindow() (see shared/redmond/
@@ -65,6 +84,19 @@
     // instead of opening directly keeps the URL and the visible window in
     // sync no matter which of those three triggered it.
     routeOpen(win) {
+      if (win.id === "win-duke3d") {
+        const params = window.OqRouter.getParams();
+        if (params.get("screen") !== "duke3d" && params.get("screen") !== "duke") {
+          window.OqRouter.navigate({
+            screen: "duke3d",
+            filter: null,
+            word: null,
+            order: null,
+          });
+          return true;
+        }
+        return false;
+      }
       if (win.id === "win-oq") {
         const screen = pendingOqScreen === "decon" ? "decon" : "oq";
         pendingOqScreen = null;
@@ -78,6 +110,23 @@
       return false;
     },
     routeClose(win) {
+      if (win.id === "win-duke3d") {
+        if (window.OqScreensaver && window.OqScreensaver.host) {
+          window.OqScreensaver.host.setIdleMs(45000);
+        }
+        const frame = document.getElementById("duke3d-frame");
+        if (frame) {
+          const child = frame.contentWindow;
+          if (child && typeof child.saveDukeLocalChanges === "function") {
+            try { child.saveDukeLocalChanges(); } catch (_) {}
+          }
+          frame.src = "about:blank";
+        }
+        const screen = window.OqRouter.getParams().get("screen");
+        if (screen === "duke3d" || screen === "duke") {
+          window.OqRouter.navigate({ screen: null, filter: null, word: null, order: null });
+        }
+      }
       if (win.id === "win-oq") {
         window.OqRouter.navigate({ screen: null, filter: null, word: null, order: null });
       }
@@ -575,7 +624,37 @@
     } else {
       if (!winOq.classList.contains("minimized")) closeWindow(winOq);
     }
+    if (screen === "duke3d" || screen === "duke") {
+      if (dukeWin && dukeWin.classList.contains("minimized")) {
+        forceOpenWindow(dukeWin);
+      }
+    } else if (dukeWin && !dukeWin.classList.contains("minimized")) {
+      closeWindow(dukeWin);
+    }
   });
+
+  window.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "duke-exit") {
+      if (dukeWin) {
+        closeWindow(dukeWin);
+      }
+    }
+  });
+
+  if (dukeWin && dukeFrame) {
+    function focusDuke(event) {
+      if (dukeWin.classList.contains("minimized")) return;
+      if (event && event.target && event.target.closest(".title-bar, .win98-resize-handle, button, a")) {
+        return;
+      }
+      try {
+        dukeFrame.focus();
+        if (dukeFrame.contentWindow) dukeFrame.contentWindow.focus();
+      } catch (_) {}
+    }
+    dukeWin.addEventListener("pointerdown", focusDuke);
+    dukeWin.addEventListener("focus", focusDuke);
+  }
 
   // Boot screen: purely cosmetic overlay, dismissed on click or after a
   // timeout. The desktop underneath initializes normally regardless --
