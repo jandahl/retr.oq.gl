@@ -13,10 +13,8 @@ name: html lint
 #
 # Supersedes the old mac1984-ci.yml (manual-dispatch-only, mac1984 alone) --
 # same html-validate + linkinator recipe, generalized to a fixed page list
-# and running automatically instead of by hand.
+# and running manually via workflow_dispatch.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 concurrency:
@@ -28,7 +26,6 @@ env:
 
 jobs:
   validate:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
