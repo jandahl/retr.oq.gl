@@ -145,10 +145,8 @@
 
     if (name === "oq") {
       activeInputTarget = oqFilter;
-      oqFilter.focus();
     } else if (name === "decon") {
       activeInputTarget = deconWord;
-      deconWord.focus();
     } else {
       kbdDialog.hidden = true;
     }
@@ -497,6 +495,9 @@
   function startStroke(e) {
     e.preventDefault();
     e.stopPropagation();
+    if (document.activeElement && typeof document.activeElement.blur === "function") {
+      document.activeElement.blur();
+    }
     drawing = true;
     strokePoints = [];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
