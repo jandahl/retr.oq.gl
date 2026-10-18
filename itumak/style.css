@@ -93,6 +93,35 @@ a {
   cursor: default;
 }
 
+/* Authentic Palm OS text selection styling: 1-bit inverted pixel block */
+*::selection {
+  background-color: var(--lcd-highlight-bg) !important;
+  color: var(--lcd-highlight-text) !important;
+  -webkit-text-fill-color: var(--lcd-highlight-text) !important;
+  text-shadow: none !important;
+}
+
+*::-moz-selection {
+  background-color: var(--lcd-highlight-bg) !important;
+  color: var(--lcd-highlight-text) !important;
+  -webkit-text-fill-color: var(--lcd-highlight-text) !important;
+  text-shadow: none !important;
+}
+
+input::selection,
+textarea::selection {
+  background-color: var(--lcd-highlight-bg) !important;
+  color: var(--lcd-highlight-text) !important;
+  -webkit-text-fill-color: var(--lcd-highlight-text) !important;
+}
+
+input::-moz-selection,
+textarea::-moz-selection {
+  background-color: var(--lcd-highlight-bg) !important;
+  color: var(--lcd-highlight-text) !important;
+  -webkit-text-fill-color: var(--lcd-highlight-text) !important;
+}
+
 /* Authentic Palm OS Checkbox (pixel-drawn box with tick, no OS-native blue widgets) */
 input[type="checkbox"] {
   appearance: none;
@@ -259,8 +288,11 @@ body.backlight-on input[type="checkbox"]:checked::after {
 /* 160x160 VIRTUAL LOW-RES LCD DISPLAY                       */
 /* ========================================================= */
 .palm-lcd {
-  flex: 1 1 auto;
-  min-height: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 360px;
+  margin: 0 auto;
+  flex: 0 0 auto;
   background-color: var(--lcd-bg);
   border-radius: 3px;
   border: 1px solid rgba(0, 0, 0, 0.55);
@@ -484,8 +516,8 @@ body.backlight-on .palm-lcd-ghost-canvas {
 }
 
 .palm-icon-box {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -494,8 +526,7 @@ body.backlight-on .palm-lcd-ghost-canvas {
 .palm-icon-box svg {
   width: 36px;
   height: 36px;
-  stroke: currentColor;
-  stroke-width: 2.2;
+  display: block;
 }
 
 .palm-icon-label {
@@ -714,12 +745,12 @@ body.backlight-on .palm-lcd-ghost-canvas {
   right: 0;
   background: var(--lcd-bg);
   border-top: 2px solid var(--lcd-pixel);
-  padding: 3px 2px;
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.25);
+  padding: 6px 4px 8px;
+  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.35);
   z-index: 120;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .palm-keyboard-dialog[hidden] {
@@ -729,23 +760,24 @@ body.backlight-on .palm-lcd-ghost-canvas {
 .palm-keyboard-row {
   display: flex;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .palm-kbd-key {
-  min-width: 17px;
-  height: 18px;
-  padding: 0 2px;
+  min-width: 25px;
+  height: 26px;
+  padding: 0 4px;
   background: transparent;
   border: 1px solid var(--lcd-pixel);
   border-radius: 2px;
   color: var(--lcd-pixel);
-  font-family: var(--palm-font-mono);
-  font-size: 9px;
+  font-family: var(--palm-font-system);
+  font-size: 13px;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .palm-kbd-key:active {
@@ -754,12 +786,13 @@ body.backlight-on .palm-lcd-ghost-canvas {
 }
 
 .palm-kbd-key.wide {
-  min-width: 32px;
-  font-size: 8px;
+  min-width: 44px;
+  font-size: 11px;
 }
 
 .palm-kbd-key.space {
-  min-width: 80px;
+  min-width: 120px;
+  font-size: 11px;
 }
 
 /* ========================================================= */
