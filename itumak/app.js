@@ -5,7 +5,7 @@
   // Handles:
   // 1. Palm OS navigation (OQ! Dictionary, Decon, Morph, About)
   // 2. Hardware buttons & Rocker scrolling
-  // 3. LCD ghosting / latency simulator
+  // 3. LCD passive-matrix persistence/ghosting engine
   // 4. Reverse-EL Indiglo backlight toggle
   // 5. Graffiti single-stroke gesture recognizer & canvas inker
   // 6. On-screen virtual pixel keyboard (abc / 123)
@@ -16,6 +16,8 @@
 
   // DOM Elements
   const lcd = document.getElementById("palm-lcd");
+  const ghostCanvas = document.getElementById("palm-ghost-canvas");
+  const ghostCtx = ghostCanvas ? ghostCanvas.getContext("2d") : null;
   const appTitle = document.getElementById("palm-app-title");
   const dropdown = document.getElementById("palm-dropdown");
   const clockEl = document.getElementById("palm-clock");
@@ -90,13 +92,42 @@
   let activeInputTarget = oqFilter;
 
   // -------------------------------------------------------------
-  // LCD Ghosting Simulator
+  // Passive-Matrix LCD Ghosting & Persistence Engine
   // -------------------------------------------------------------
-  function triggerLcdGhosting() {
-    lcd.classList.add("lcd-ghosting");
-    setTimeout(() => {
-      lcd.classList.remove("lcd-ghosting");
-    }, 120);
+  function setupGhostCanvas() {
+    if (!ghostCanvas) return;
+    ghostCanvas.width = 160;
+    ghostCanvas.height = 160;
+  }
+  setupGhostCanvas();
+  window.addEventListener("resize", setupGhostCanvas);
+
+  let ghostDecayTimer = null;
+  function triggerLcdGhosting(intensity = 0.8) {
+    if (!ghostCtx || !ghostCanvas) return;
+    try {
+      // Paint ghosting smear into the ghost canvas representing passive-matrix lag
+      ghostCanvas.style.opacity = intensity;
+      const isBacklight = document.body.classList.contains("backlight-on");
+      ghostCtx.fillStyle = isBacklight ? "rgba(75, 248, 211, 0.28)" : "rgba(17, 24, 15, 0.25)";
+      
+      // Draw simulated ghosting lines across the display
+      for (let y = 0; y < 160; y += 4) {
+        if (Math.random() > 0.4) {
+          ghostCtx.fillRect(0, y, 160, 2);
+        }
+      }
+
+      clearTimeout(ghostDecayTimer);
+      ghostDecayTimer = setTimeout(() => {
+        ghostCanvas.style.opacity = "0";
+        setTimeout(() => {
+          if (ghostCtx) ghostCtx.clearRect(0, 0, 160, 160);
+        }, 160);
+      }, 140);
+    } catch {
+      // Fallback
+    }
   }
 
   // -------------------------------------------------------------
@@ -104,7 +135,7 @@
   // -------------------------------------------------------------
   function showScreen(name) {
     if (!SCREENS[name]) return;
-    triggerLcdGhosting();
+    triggerLcdGhosting(0.9);
     currentScreen = name;
     for (const [key, el] of Object.entries(SCREENS)) {
       el.hidden = key !== name;
@@ -136,13 +167,13 @@
   // Power / Backlight Toggle
   btnPower.addEventListener("click", () => {
     document.body.classList.toggle("backlight-on");
-    triggerLcdGhosting();
+    triggerLcdGhosting(1.0);
   });
 
   // Stylus tap feedback
   stylusSlot.addEventListener("click", () => {
     if (navigator.vibrate) navigator.vibrate([15]);
-    triggerLcdGhosting();
+    triggerLcdGhosting(0.5);
   });
 
   // Menu Dropdown toggle
@@ -160,7 +191,7 @@
         window.OqRouter.navigate({ screen: action });
       } else if (action === "toggle-el") {
         document.body.classList.toggle("backlight-on");
-        triggerLcdGhosting();
+        triggerLcdGhosting(1.0);
       } else if (action === "hub") {
         location.assign("../");
       }
@@ -197,7 +228,7 @@
 
   // Up/Down Rocker scrolling
   function scrollActiveView(delta) {
-    triggerLcdGhosting();
+    triggerLcdGhosting(0.7);
     if (currentScreen === "oq") {
       const items = oqResults.querySelectorAll(".palm-list-item");
       if (items.length === 0) return;
@@ -219,7 +250,7 @@
   }
 
   // -------------------------------------------------------------
-  // OQ! Dictionary Logic
+  // OQ! Dictionary Logic (Shows BOTH Lexeme and English Gloss)
   // -------------------------------------------------------------
   function renderOqResults(query) {
     if (!dictEntries) return;
@@ -244,19 +275,23 @@
       item.className = "palm-list-item" + (i === 0 ? " selected" : "");
       item.role = "option";
       
+      // Lexeme (headword) - syllabified for linguistic readability
       const head = document.createElement("span");
       head.className = "palm-item-headword";
-      head.textContent = row.word || "";
+      const lexemeText = row.lexeme || row.word || "";
+      head.textContent = syllabify ? syllabify(lexemeText) : lexemeText;
 
+      // English Gloss (translation)
       const gloss = document.createElement("span");
       gloss.className = "palm-item-gloss";
-      gloss.textContent = row.gloss_en || row.gloss || "";
+      gloss.textContent = row.gloss_en || row.gloss || "—";
 
       item.appendChild(head);
       item.appendChild(gloss);
 
       item.addEventListener("click", () => {
         selectedIndex = i;
+        triggerLcdGhosting(0.4);
         document.querySelectorAll(".palm-list-item").forEach((el, idx) => {
           el.classList.toggle("selected", idx === i);
         });
@@ -268,6 +303,7 @@
   }
 
   oqFilter.addEventListener("input", (e) => {
+    triggerLcdGhosting(0.3);
     renderOqResults(e.target.value);
     window.OqRouter.navigate({ filter: e.target.value || null }, { replace: true });
   });
@@ -280,10 +316,11 @@
     statusEl: deconStatus,
     resultsEl: deconResults,
     rootFirstCheckbox: deconRootFirst,
-    onStateChange: () => triggerLcdGhosting(),
+    onStateChange: () => triggerLcdGhosting(0.8),
   });
 
   deconAnalyzeBtn.addEventListener("click", () => {
+    triggerLcdGhosting(0.8);
     deconController.analyze();
   });
 
@@ -297,7 +334,7 @@
     morphEngine = window.OqMorphGame.createGame({
       puzzles: window.OqMorphPuzzles,
       onUpdate: (state) => {
-        triggerLcdGhosting();
+        triggerLcdGhosting(0.8);
         morphLives.textContent = "❤".repeat(Math.max(0, state.lives));
         morphScore.textContent = `Score: ${state.score}`;
         morphWord.textContent = state.targetWord || "---";
@@ -352,7 +389,7 @@
   ];
 
   function openKeyboard(mode) {
-    triggerLcdGhosting();
+    triggerLcdGhosting(0.5);
     kbdTitle.textContent = mode === "123" ? "Keyboard (123)" : "Keyboard (abc)";
     const layout = mode === "123" ? KBD_LAYOUT_123 : KBD_LAYOUT_ABC;
     
@@ -374,8 +411,10 @@
   }
 
   function injectChar(char) {
-    if (!activeInputTarget) return;
-    triggerLcdGhosting();
+    if (!activeInputTarget) {
+      activeInputTarget = currentScreen === "decon" ? deconWord : oqFilter;
+    }
+    triggerLcdGhosting(0.3);
     const start = activeInputTarget.selectionStart || activeInputTarget.value.length;
     const end = activeInputTarget.selectionEnd || activeInputTarget.value.length;
     const val = activeInputTarget.value;
@@ -385,8 +424,10 @@
   }
 
   function backspaceChar() {
-    if (!activeInputTarget) return;
-    triggerLcdGhosting();
+    if (!activeInputTarget) {
+      activeInputTarget = currentScreen === "decon" ? deconWord : oqFilter;
+    }
+    triggerLcdGhosting(0.3);
     const start = activeInputTarget.selectionStart;
     const end = activeInputTarget.selectionEnd;
     const val = activeInputTarget.value;
@@ -431,6 +472,7 @@
   // -------------------------------------------------------------
   const canvas = document.getElementById("graffiti-canvas");
   const ctx = canvas.getContext("2d");
+  const indicator = document.getElementById("graffiti-indicator");
   let drawing = false;
   let strokePoints = [];
 
@@ -443,8 +485,18 @@
     return { x, y };
   }
 
+  function showIndicator(text) {
+    if (!indicator) return;
+    indicator.textContent = text === " " ? "␣" : text;
+    indicator.classList.add("visible");
+    setTimeout(() => {
+      indicator.classList.remove("visible");
+    }, 450);
+  }
+
   function startStroke(e) {
     e.preventDefault();
+    e.stopPropagation();
     drawing = true;
     strokePoints = [];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -456,13 +508,14 @@
   function moveStroke(e) {
     if (!drawing) return;
     e.preventDefault();
+    e.stopPropagation();
     const pt = getCanvasCoords(e);
     strokePoints.push(pt);
 
     // Inking on canvas: 1-bit crisp stroke
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.lineCap = "square";
-    ctx.strokeStyle = document.body.classList.contains("backlight-on") ? "#4bf8d3" : "#141b12";
+    ctx.strokeStyle = document.body.classList.contains("backlight-on") ? "#4bf8d3" : "#11180f";
     
     ctx.beginPath();
     const len = strokePoints.length;
@@ -476,11 +529,13 @@
   function endStroke(e) {
     if (!drawing) return;
     e.preventDefault();
+    e.stopPropagation();
     drawing = false;
     if (strokePoints.length < 2) return;
 
     const char = recognizeGraffiti(strokePoints);
     if (char) {
+      showIndicator(char);
       if (char === "BACKSPACE") {
         backspaceChar();
       } else if (char === "ENTER") {
@@ -494,17 +549,17 @@
     // LCD persistence / ghosting decay for stroke
     setTimeout(() => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }, 150);
+    }, 160);
   }
 
   canvas.addEventListener("mousedown", startStroke);
   canvas.addEventListener("mousemove", moveStroke);
-  canvas.addEventListener("mouseup", endStroke);
+  window.addEventListener("mouseup", (e) => { if (drawing) endStroke(e); });
   canvas.addEventListener("touchstart", startStroke, { passive: false });
   canvas.addEventListener("touchmove", moveStroke, { passive: false });
   canvas.addEventListener("touchend", endStroke, { passive: false });
 
-  // Deterministic Unistroke Graffiti Recognizer
+  // Deterministic Palm Unistroke Graffiti Recognizer
   function recognizeGraffiti(pts) {
     const start = pts[0];
     const end = pts[pts.length - 1];
@@ -515,20 +570,25 @@
     const isNumberZone = start.x > midX;
 
     // Minimum stroke length
-    if (dist < 6 && pts.length < 5) return null;
+    if (dist < 4 && pts.length < 4) return null;
 
     // 1. Horizontal Swipes: Space (Left-to-Right) and Backspace (Right-to-Left)
-    if (Math.abs(dx) > Math.abs(dy) * 2 && Math.abs(dx) > 18) {
+    if (Math.abs(dx) > Math.abs(dy) * 1.8 && Math.abs(dx) > 16) {
       if (dx > 0) return " "; // Space
       if (dx < 0) return "BACKSPACE";
     }
 
     // 2. Simple Vertical Downstroke: "I" / "1"
-    if (dy > 14 && Math.abs(dx) < 8) {
+    if (dy > 12 && Math.abs(dx) < 9) {
       return isNumberZone ? "1" : "i";
     }
 
-    // 3. Find Bounding Box and Extrema
+    // 3. Simple Vertical Upstroke: "T" / "/"
+    if (dy < -12 && Math.abs(dx) < 9) {
+      return isNumberZone ? "7" : "t";
+    }
+
+    // 4. Calculate Bounding Box and Extrema
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     pts.forEach(p => {
       if (p.x < minX) minX = p.x;
@@ -541,49 +601,60 @@
     const h = maxY - minY;
 
     // Diagonal stroke down-left: Enter
-    if (dx < -15 && dy > 15) return "ENTER";
+    if (dx < -14 && dy > 14) return "ENTER";
 
-    // Inverted V gesture: "A" (starts bottom-left, goes up to apex, then down to bottom-right)
-    if (start.y > minY + h * 0.4 && end.y > minY + h * 0.4) {
+    // Inverted V gesture: "A" / "4" (starts bottom-left, goes up to apex, then down to bottom-right)
+    if (start.y > minY + h * 0.35 && end.y > minY + h * 0.35) {
       const minPt = pts.reduce((acc, p) => p.y < acc.y ? p : acc, pts[0]);
-      if (minPt.y <= minY + 4 && minPt.x > start.x && minPt.x < end.x) {
+      if (minPt.y <= minY + 4 && minPt.x > minX + 2 && minPt.x < maxX - 2) {
         return isNumberZone ? "4" : "a";
       }
     }
 
     // Normal V gesture: "V"
-    if (start.y < maxY - h * 0.4 && end.y < maxY - h * 0.4) {
+    if (start.y < maxY - h * 0.35 && end.y < maxY - h * 0.35) {
       const maxPt = pts.reduce((acc, p) => p.y > acc.y ? p : acc, pts[0]);
-      if (maxPt.y >= maxY - 4 && maxPt.x > start.x && maxPt.x < end.x) {
+      if (maxPt.y >= maxY - 4 && maxPt.x > minX + 2 && maxPt.x < maxX - 2) {
         return "v";
       }
     }
 
     // C shape: starts top-right, arches left, ends bottom-right
-    if (start.x > minX + w * 0.4 && end.x > minX + w * 0.4 && dx < 12) {
-      const leftPt = pts.reduce((acc, p) => p.x < acc.x ? p : acc, pts[0]);
+    if (start.x > minX + w * 0.35 && end.x > minX + w * 0.35 && dx < 12) {
+      const leftPt = pts.reduce((acc, p) => p.y < acc.y ? p : acc, pts[0]);
       if (leftPt.x <= minX + 4) {
         return isNumberZone ? "0" : "c";
       }
     }
 
     // O shape / Loop: start and end are close together
-    if (dist < 12 && w > 10 && h > 10) {
+    if (dist < 12 && w > 8 && h > 8) {
       return isNumberZone ? "0" : "o";
     }
 
     // L shape: vertical down then horizontal right
-    if (start.y < end.y && start.x < end.x && end.x > minX + w * 0.6) {
+    if (start.y < end.y && start.x < end.x && end.x > minX + w * 0.5) {
       return isNumberZone ? "2" : "l";
     }
 
-    // Default letter fallback by zone
-    if (isNumberZone) {
-      if (dy > 10) return "1";
-      return null;
+    // P or D shape: downstroke followed by loop right
+    if (dy > 10 && maxX > start.x + 8) {
+      return isNumberZone ? "9" : "p";
     }
 
-    return null;
+    // S shape: curve back and forth
+    if (h > 14 && w > 8 && Math.abs(dx) < 12) {
+      return isNumberZone ? "5" : "s";
+    }
+
+    // Fallbacks
+    if (isNumberZone) {
+      if (dy > 8) return "1";
+      return null;
+    } else {
+      if (dy > 8) return "i";
+      return null;
+    }
   }
 
   // -------------------------------------------------------------

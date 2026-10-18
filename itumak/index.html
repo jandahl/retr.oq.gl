@@ -28,6 +28,8 @@
       <div class="palm-screen-bezel">
         <!-- 160x160 LCD display -->
         <div class="palm-lcd" id="palm-lcd">
+          <!-- Passive-Matrix Liquid Crystal Ghosting Canvas -->
+          <canvas class="palm-lcd-ghost-canvas" id="palm-ghost-canvas"></canvas>
           <!-- Titlebar with Application Name, Menu Pill, Time & Battery -->
           <div class="palm-titlebar">
             <div class="palm-title-left">
@@ -145,20 +147,23 @@
 
           <!-- Central Graffiti Inking Box -->
           <div class="palm-graffiti-box" id="graffiti-box">
-            <canvas class="palm-graffiti-canvas" id="graffiti-canvas" width="160" height="48"></canvas>
+            <span class="palm-graffiti-indicator" id="graffiti-indicator">A</span>
             <!-- Letters input area (left) -->
             <div class="palm-graffiti-quadrant letters">
               <div class="palm-graffiti-label">ABC</div>
               <div class="palm-graffiti-guide">/ \</div>
-              <button type="button" class="palm-keyboard-toggle-dot" id="dot-abc" title="Open ABC Keyboard">abc</button>
             </div>
             <!-- Numbers input area (right) -->
             <div class="palm-graffiti-quadrant numbers">
               <div class="palm-graffiti-label" style="text-align: right;">123</div>
               <div class="palm-graffiti-guide">|</div>
-              <div style="display: flex; justify-content: flex-end;">
-                <button type="button" class="palm-keyboard-toggle-dot" id="dot-123" title="Open 123 Keyboard">123</button>
-              </div>
+            </div>
+            <!-- Canvas on top of quadrants for inking -->
+            <canvas class="palm-graffiti-canvas" id="graffiti-canvas" width="160" height="52"></canvas>
+            <!-- Keyboard toggle dots positioned on top of canvas corners -->
+            <div class="palm-graffiti-actions">
+              <button type="button" class="palm-keyboard-toggle-dot" id="dot-abc" title="Open ABC Keyboard">abc</button>
+              <button type="button" class="palm-keyboard-toggle-dot" id="dot-123" title="Open 123 Keyboard">123</button>
             </div>
           </div>
 

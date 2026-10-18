@@ -3,6 +3,24 @@
    reflective 160x160 monochrome LCD with authentic passive-matrix lag/ghosting,
    silk-screened Graffiti writing area, and reverse-EL backlight. */
 
+@font-face {
+  font-family: "Pixelated MS Sans Serif";
+  src: url("../vendor/win98/fonts/ms_sans_serif.woff2") format("woff2"),
+       url("../vendor/win98/fonts/ms_sans_serif.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pixelated MS Sans Serif";
+  src: url("../vendor/win98/fonts/ms_sans_serif_bold.woff2") format("woff2"),
+       url("../vendor/win98/fonts/ms_sans_serif_bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Chassis Colors */
   --palm-case-top: #656c73;
@@ -20,17 +38,17 @@
   --palm-rocker: #50565c;
 
   /* LCD Reflective Monochrome Palette (Standard mode) */
-  --lcd-bg: #98a38d;
-  --lcd-bg-dim: #8b9580;
-  --lcd-pixel: #141b12;
-  --lcd-pixel-ghost: rgba(20, 27, 18, 0.28);
-  --lcd-pixel-light: #586350;
-  --lcd-grid: rgba(0, 0, 0, 0.04);
-  --lcd-highlight-bg: #141b12;
-  --lcd-highlight-text: #98a38d;
+  --lcd-bg: #96a18b;
+  --lcd-bg-dim: #88937d;
+  --lcd-pixel: #11180f;
+  --lcd-pixel-ghost: rgba(17, 24, 15, 0.42);
+  --lcd-pixel-light: #525e4a;
+  --lcd-grid: rgba(0, 0, 0, 0.09);
+  --lcd-highlight-bg: #11180f;
+  --lcd-highlight-text: #96a18b;
 
-  /* Fonts */
-  --palm-font-system: "Geneva", "Chicago", "MS Sans Serif", "Tahoma", -apple-system, sans-serif;
+  /* Authentic Palm OS 160x160 typography: crisp, pixel-locked */
+  --palm-font-system: "Pixelated MS Sans Serif", "Geneva", "Chicago", monospace, sans-serif;
   --palm-font-mono: ui-monospace, "SF Mono", "Courier New", monospace;
   --palm-font-size: 11px;
 }
@@ -40,9 +58,9 @@ body.backlight-on {
   --lcd-bg: #09262b;
   --lcd-bg-dim: #061c20;
   --lcd-pixel: #4bf8d3;
-  --lcd-pixel-ghost: rgba(75, 248, 211, 0.35);
+  --lcd-pixel-ghost: rgba(75, 248, 211, 0.45);
   --lcd-pixel-light: #208e7b;
-  --lcd-grid: rgba(75, 248, 211, 0.06);
+  --lcd-grid: rgba(75, 248, 211, 0.12);
   --lcd-highlight-bg: #4bf8d3;
   --lcd-highlight-text: #09262b;
 }
@@ -61,6 +79,7 @@ html, body {
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+  image-rendering: pixelated;
 }
 
 /* Handheld Shell Container */
@@ -158,61 +177,73 @@ html, body {
     0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* The 160x160 LCD display area */
+/* ========================================================= */
+/* 160x160 VIRTUAL LOW-RES LCD DISPLAY                       */
+/* ========================================================= */
 .palm-lcd {
   flex: 1 1 auto;
   min-height: 0;
   background-color: var(--lcd-bg);
-  background-image: 
-    radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 70%),
-    repeating-linear-gradient(0deg, transparent, transparent 1px, var(--lcd-grid) 1px, var(--lcd-grid) 2px),
-    repeating-linear-gradient(90deg, transparent, transparent 1px, var(--lcd-grid) 1px, var(--lcd-grid) 2px);
   border-radius: 3px;
-  border: 1px solid rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(0, 0, 0, 0.55);
   box-shadow:
-    inset 0 2px 5px rgba(0, 0, 0, 0.35),
+    inset 0 2px 5px rgba(0, 0, 0, 0.4),
     inset 0 -1px 2px rgba(255, 255, 255, 0.1);
   color: var(--lcd-pixel);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  /* Authentic LCD response latency */
-  transition: background-color 150ms ease-out, color 150ms ease-out;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
-/* Faint passive-matrix ghosting trail overlay */
-.palm-lcd::after {
+/* Authentic Passive-Matrix 160x160 Pixel Grid Overlay */
+.palm-lcd::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   pointer-events: none;
-  background: transparent;
-  opacity: 0;
-  transition: opacity 120ms ease-out;
+  z-index: 100;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0px, transparent 2px, var(--lcd-grid) 2px, var(--lcd-grid) 3px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 2px, var(--lcd-grid) 2px, var(--lcd-grid) 3px);
+  background-size: 3px 3px;
 }
 
-.palm-lcd.lcd-ghosting::after {
-  opacity: 1;
-  background: var(--lcd-pixel-ghost);
+/* Authentic Passive-Matrix Liquid Crystal Ghosting / Latency Trail Canvas */
+.palm-lcd-ghost-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+  transition: opacity 160ms ease-out;
+}
+
+body.backlight-on .palm-lcd-ghost-canvas {
+  mix-blend-mode: screen;
+  opacity: 0.75;
 }
 
 /* Palm OS Title Bar */
 .palm-titlebar {
-  height: 18px;
+  height: 20px;
   background: var(--lcd-pixel);
   color: var(--lcd-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 4px;
-  font-weight: bold;
-  font-size: 10px;
+  font-weight: 700;
+  font-size: 11px;
   letter-spacing: 0.5px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .palm-title-left {
@@ -225,36 +256,37 @@ html, body {
   border: 1px solid var(--lcd-bg);
   background: transparent;
   color: var(--lcd-bg);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: bold;
-  padding: 0 3px;
-  line-height: 12px;
+  padding: 1px 4px;
+  line-height: 11px;
   border-radius: 2px;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .palm-title-right {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 /* Palm OS Dropdown Menu */
 .palm-menu-dropdown {
   position: absolute;
-  top: 18px;
+  top: 20px;
   left: 0;
   background: var(--lcd-bg);
   border: 1px solid var(--lcd-pixel);
   box-shadow: 2px 2px 0 var(--lcd-pixel);
-  z-index: 50;
-  min-width: 130px;
+  z-index: 150;
+  min-width: 140px;
   padding: 2px 0;
 }
 
 .palm-menu-dropdown[hidden] {
-  display: none;
+  display: none !important;
 }
 
 .palm-menu-item {
@@ -263,9 +295,9 @@ html, body {
   text-align: left;
   background: transparent;
   border: none;
-  padding: 2px 8px;
+  padding: 3px 8px;
   font-family: inherit;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--lcd-pixel);
   cursor: pointer;
 }
@@ -289,10 +321,12 @@ html, body {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 4px;
+  padding: 4px 6px;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
+  /* Authentic LCD passive-matrix decay lag when transitioning */
+  transition: opacity 140ms ease-out;
 }
 
 .palm-screen[hidden] {
@@ -304,10 +338,10 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1px 2px 3px;
+  padding: 2px 2px 3px;
   border-bottom: 1px solid var(--lcd-pixel);
   margin-bottom: 3px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .palm-picker-btn {
@@ -316,7 +350,7 @@ html, body {
   border-bottom: 1px dotted var(--lcd-pixel);
   color: var(--lcd-pixel);
   font-family: inherit;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: bold;
   padding: 0 1px;
   cursor: pointer;
@@ -332,7 +366,7 @@ html, body {
   border-radius: 4px;
   color: var(--lcd-pixel);
   font-family: inherit;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: bold;
   padding: 2px 6px;
   cursor: pointer;
@@ -350,7 +384,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .palm-input {
@@ -362,13 +396,13 @@ html, body {
   border-radius: 0;
   color: var(--lcd-pixel);
   font-family: var(--palm-font-system);
-  font-size: 11px;
+  font-size: 12px;
   padding: 1px 2px;
   outline: none;
 }
 
 .palm-status-text {
-  font-size: 9px;
+  font-size: 10px;
   margin: 1px 0;
   color: var(--lcd-pixel-light);
   white-space: nowrap;
@@ -385,25 +419,24 @@ html, body {
   background: repeating-linear-gradient(
     to bottom,
     transparent 0px,
-    transparent 17px,
-    var(--lcd-grid) 17px,
-    var(--lcd-grid) 18px
+    transparent 21px,
+    var(--lcd-grid) 21px,
+    var(--lcd-grid) 22px
   );
   scrollbar-width: thin;
   scrollbar-color: var(--lcd-pixel) transparent;
 }
 
 .palm-list-item {
-  padding: 2px 4px;
-  min-height: 18px;
+  padding: 3px 4px;
+  min-height: 22px;
   box-sizing: border-box;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  border-bottom: 1px dotted rgba(20, 27, 18, 0.2);
+  flex-direction: column;
+  border-bottom: 1px dotted rgba(20, 27, 18, 0.35);
   cursor: pointer;
-  font-size: 10px;
-  line-height: 14px;
+  font-size: 11px;
+  line-height: 1.25;
 }
 
 .palm-list-item:hover,
@@ -413,13 +446,13 @@ html, body {
 }
 
 .palm-item-headword {
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 11px;
 }
 
 .palm-item-gloss {
-  font-size: 9px;
-  opacity: 0.85;
-  margin-left: 6px;
+  font-size: 10px;
+  opacity: 0.9;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -429,7 +462,7 @@ html, body {
 .palm-decon-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 9px;
+  font-size: 10px;
   margin-top: 4px;
 }
 
@@ -453,7 +486,7 @@ html, body {
   border-bottom: 1px solid var(--lcd-pixel);
   padding-bottom: 2px;
   margin-bottom: 4px;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: bold;
 }
 
@@ -502,7 +535,7 @@ html, body {
   border-top: 2px solid var(--lcd-pixel);
   padding: 3px 2px;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.25);
-  z-index: 60;
+  z-index: 120;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -581,6 +614,7 @@ html, body {
   cursor: pointer;
   color: var(--palm-silk-icon);
   padding: 0;
+  z-index: 20;
 }
 
 .palm-silk-btn:active {
@@ -605,7 +639,7 @@ html, body {
 /* The Central Graffiti Drawing Quadrants */
 .palm-graffiti-box {
   flex: 1 1 auto;
-  height: 48px;
+  height: 52px;
   margin: 0 4px;
   background: #2b2f34;
   border: 1px solid #1c1e21;
@@ -614,9 +648,10 @@ html, body {
   display: flex;
   position: relative;
   cursor: crosshair;
+  touch-action: none;
 }
 
-/* Canvas overlay for drawing stroke */
+/* Canvas overlay for drawing stroke: sits ON TOP of guides so strokes are never blocked */
 .palm-graffiti-canvas {
   position: absolute;
   top: 0;
@@ -624,10 +659,13 @@ html, body {
   width: 100%;
   height: 100%;
   image-rendering: pixelated;
-  z-index: 5;
+  image-rendering: crisp-edges;
+  z-index: 15;
   touch-action: none;
+  pointer-events: auto;
 }
 
+/* Guide layers below canvas */
 .palm-graffiti-quadrant {
   flex: 1 1 50%;
   display: flex;
@@ -637,7 +675,7 @@ html, body {
   box-sizing: border-box;
   position: relative;
   pointer-events: none;
-  z-index: 10;
+  z-index: 5;
 }
 
 .palm-graffiti-quadrant.letters {
@@ -657,21 +695,62 @@ html, body {
   line-height: 1;
 }
 
+/* Keyboard toggle dots: placed above canvas for clicking */
+.palm-graffiti-actions {
+  position: absolute;
+  bottom: 3px;
+  left: 4px;
+  right: 4px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 30;
+}
+
 .palm-keyboard-toggle-dot {
   pointer-events: auto;
-  font-size: 7px;
+  position: relative;
+  font-size: 8px;
   font-weight: bold;
-  color: #7b848e;
+  color: #8c97a4;
   background: #1e2124;
-  border: 1px solid #3d434a;
+  border: 1px solid #454c54;
   border-radius: 2px;
-  padding: 1px 3px;
+  padding: 1px 4px;
   width: fit-content;
   cursor: pointer;
 }
 
 .palm-keyboard-toggle-dot:active {
   background: #4bf8d3;
+  color: #09262b;
+}
+
+/* Recognized Character Pop Indicator */
+.palm-graffiti-indicator {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(17, 24, 15, 0.85);
+  color: #96a18b;
+  font-family: var(--palm-font-mono);
+  font-size: 9px;
+  font-weight: bold;
+  padding: 1px 4px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity 80ms ease-out;
+}
+
+.palm-graffiti-indicator.visible {
+  opacity: 1;
+}
+
+body.backlight-on .palm-graffiti-indicator {
+  background: rgba(75, 248, 211, 0.85);
   color: #09262b;
 }
 
