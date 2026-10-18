@@ -103,31 +103,36 @@
   window.addEventListener("resize", setupGhostCanvas);
 
   let ghostDecayTimer = null;
+  let ghostRafId = null;
+
   function triggerLcdGhosting(intensity = 0.8) {
     if (!ghostCtx || !ghostCanvas) return;
-    try {
-      // Paint ghosting smear into the ghost canvas representing passive-matrix lag
-      ghostCanvas.style.opacity = intensity;
-      const isBacklight = document.body.classList.contains("backlight-on");
-      ghostCtx.fillStyle = isBacklight ? "rgba(75, 248, 211, 0.28)" : "rgba(17, 24, 15, 0.25)";
-      
-      // Draw simulated ghosting lines across the display
-      for (let y = 0; y < 160; y += 4) {
-        if (Math.random() > 0.4) {
-          ghostCtx.fillRect(0, y, 160, 2);
-        }
-      }
+    if (ghostRafId) cancelAnimationFrame(ghostRafId);
 
-      clearTimeout(ghostDecayTimer);
-      ghostDecayTimer = setTimeout(() => {
-        ghostCanvas.style.opacity = "0";
-        setTimeout(() => {
-          if (ghostCtx) ghostCtx.clearRect(0, 0, 160, 160);
-        }, 160);
-      }, 140);
-    } catch {
-      // Fallback
-    }
+    ghostRafId = requestAnimationFrame(() => {
+      try {
+        ghostCanvas.style.opacity = intensity;
+        const isBacklight = document.body.classList.contains("backlight-on");
+        ghostCtx.fillStyle = isBacklight ? "rgba(75, 248, 211, 0.28)" : "rgba(17, 24, 15, 0.25)";
+        
+        // Draw simulated ghosting lines across the display
+        for (let y = 0; y < 160; y += 4) {
+          if (Math.random() > 0.4) {
+            ghostCtx.fillRect(0, y, 160, 2);
+          }
+        }
+
+        clearTimeout(ghostDecayTimer);
+        ghostDecayTimer = setTimeout(() => {
+          ghostCanvas.style.opacity = "0";
+          setTimeout(() => {
+            if (ghostCtx) ghostCtx.clearRect(0, 0, 160, 160);
+          }, 160);
+        }, 140);
+      } catch {
+        // Fallback
+      }
+    });
   }
 
   // -------------------------------------------------------------
@@ -152,7 +157,8 @@
     }
   }
 
-  // Clock updater
+  // Clock updater with stored timer reference
+  let clockIntervalId = null;
   function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, "0");
@@ -160,7 +166,7 @@
     clockEl.textContent = `${h}:${m}`;
   }
   updateClock();
-  setInterval(updateClock, 30000);
+  clockIntervalId = setInterval(updateClock, 30000);
 
   // Power / Backlight Toggle
   btnPower.addEventListener("click", () => {
@@ -248,7 +254,7 @@
   }
 
   // -------------------------------------------------------------
-  // OQ! Dictionary Logic (Shows BOTH Lexeme and English Gloss)
+  // OQ! Dictionary Logic (Event Delegation + Syllabified Headword)
   // -------------------------------------------------------------
   function renderOqResults(query) {
     if (!dictEntries) return;
@@ -272,6 +278,7 @@
       const item = document.createElement("div");
       item.className = "palm-list-item" + (i === 0 ? " selected" : "");
       item.role = "option";
+      item.dataset.index = String(i);
       
       // Lexeme (headword) - syllabified for linguistic readability
       const head = document.createElement("span");
@@ -286,19 +293,24 @@
 
       item.appendChild(head);
       item.appendChild(gloss);
-
-      item.addEventListener("click", () => {
-        selectedIndex = i;
-        triggerLcdGhosting(0.4);
-        document.querySelectorAll(".palm-list-item").forEach((el, idx) => {
-          el.classList.toggle("selected", idx === i);
-        });
-      });
-
       frag.appendChild(item);
     });
     oqResults.appendChild(frag);
   }
+
+  // Event delegation on oqResults container: replaces per-item listeners
+  oqResults.addEventListener("click", (e) => {
+    const item = e.target.closest(".palm-list-item");
+    if (!item || !item.dataset.index) return;
+    const idx = parseInt(item.dataset.index, 10);
+    if (!isNaN(idx)) {
+      selectedIndex = idx;
+      triggerLcdGhosting(0.4);
+      oqResults.querySelectorAll(".palm-list-item").forEach((el, i) => {
+        el.classList.toggle("selected", i === selectedIndex);
+      });
+    }
+  });
 
   oqFilter.addEventListener("input", (e) => {
     triggerLcdGhosting(0.3);
@@ -327,48 +339,69 @@
   // -------------------------------------------------------------
   let morphEngine = null;
 
-  function initMorphGame() {
-    if (!window.OqMorphGame || !window.OqMorphPuzzles) return;
-    morphEngine = window.OqMorphGame.createGame({
-      puzzles: window.OqMorphPuzzles,
-      onUpdate: (state) => {
-        triggerLcdGhosting(0.8);
-        morphLives.textContent = "❤".repeat(Math.max(0, state.lives));
-        morphScore.textContent = `Score: ${state.score}`;
-        morphWord.textContent = state.targetWord || "---";
+  function renderMorphStep(step) {
+    if (!morphEngine) return;
+    const { lives, score } = morphEngine.getState();
+    morphLives.textContent = "❤".repeat(Math.max(0, lives));
+    morphScore.textContent = `Score: ${score}`;
+    morphWord.textContent = (step.word || "---") + "-";
+    morphStatus.textContent = step.stepType === "suffix" ? "Pick the ending:" : "Pick next affix:";
+    morphOptions.innerHTML = "";
+    morphCard.hidden = true;
 
-        if (state.isRoundWon) {
+    (step.options || []).forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "palm-choice-btn";
+      btn.textContent = `-${opt.marker} (${opt.gloss})`;
+      btn.addEventListener("click", () => {
+        triggerLcdGhosting(0.5);
+        const result = morphEngine.choose(idx);
+        if (result.outcome === "wrong") {
+          morphStatus.textContent = result.gameOver ? "Game Over!" : "Wrong!";
+          const s = morphEngine.getState();
+          morphLives.textContent = "❤".repeat(Math.max(0, s.lives));
+          if (result.gameOver) {
+            morphOptions.innerHTML = "";
+            morphCardMeaning.textContent = `Final Score: ${s.score}`;
+            morphCard.hidden = false;
+          } else {
+            renderMorphStep(morphEngine.retryStep());
+          }
+        } else if (result.outcome === "win") {
           morphStatus.textContent = "Correct!";
           morphOptions.innerHTML = "";
-          morphCardMeaning.textContent = state.targetMeaning || "";
+          morphCardMeaning.textContent = result.resultGloss || "";
+          morphWord.textContent = result.word;
           morphCard.hidden = false;
-        } else if (state.isGameOver) {
-          morphStatus.textContent = "Game Over!";
-          morphOptions.innerHTML = "";
-          morphCardMeaning.textContent = `Final Score: ${state.score}`;
-          morphCard.hidden = false;
-        } else {
-          morphCard.hidden = true;
-          morphStatus.textContent = "Select next morpheme:";
-          morphOptions.innerHTML = "";
-          (state.choices || []).forEach((choice) => {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "palm-choice-btn";
-            btn.textContent = `${choice.text} (${choice.gloss})`;
-            btn.addEventListener("click", () => {
-              morphEngine.choose(choice.id);
-            });
-            morphOptions.appendChild(btn);
-          });
+        } else if (result.outcome === "continue") {
+          renderMorphStep(morphEngine.advanceStep());
         }
-      },
+      });
+      morphOptions.appendChild(btn);
     });
-    morphEngine.start();
+  }
+
+  function initMorphGame() {
+    if (!window.OqMorphGame || !window.OqMorphPuzzles || !window.OqMorphPuzzles.puzzles) return;
+    morphEngine = window.OqMorphGame.createGame({
+      puzzles: window.OqMorphPuzzles.puzzles,
+      startLives: 3,
+      deterministicOrder: Boolean(navigator.webdriver),
+    });
+    const firstStep = morphEngine.start();
+    renderMorphStep(firstStep);
   }
 
   morphCardNext.addEventListener("click", () => {
-    if (morphEngine) morphEngine.nextRound();
+    triggerLcdGhosting(0.6);
+    if (!morphEngine) return;
+    const s = morphEngine.getState();
+    if (s.lives <= 0) {
+      renderMorphStep(morphEngine.start());
+    } else {
+      renderMorphStep(morphEngine.advancePuzzle());
+    }
   });
 
   // -------------------------------------------------------------
@@ -527,6 +560,13 @@
     }
   }
 
+  function cancelStroke() {
+    if (!drawing) return;
+    drawing = false;
+    strokePoints = [];
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
   function endStroke(e) {
     if (!drawing) return;
     e.preventDefault();
@@ -559,6 +599,8 @@
   canvas.addEventListener("touchstart", startStroke, { passive: false });
   canvas.addEventListener("touchmove", moveStroke, { passive: false });
   canvas.addEventListener("touchend", endStroke, { passive: false });
+  canvas.addEventListener("touchcancel", cancelStroke, { passive: false });
+  window.addEventListener("pointercancel", cancelStroke);
 
   // Deterministic Palm Unistroke Graffiti Recognizer
   function recognizeGraffiti(pts) {
@@ -622,7 +664,7 @@
 
     // C shape: starts top-right, arches left, ends bottom-right
     if (start.x > minX + w * 0.35 && end.x > minX + w * 0.35 && dx < 12) {
-      const leftPt = pts.reduce((acc, p) => p.y < acc.y ? p : acc, pts[0]);
+      const leftPt = pts.reduce((acc, p) => p.x < acc.x ? p : acc, pts[0]);
       if (leftPt.x <= minX + 4) {
         return isNumberZone ? "0" : "c";
       }
