@@ -8,6 +8,7 @@ Tests for Itumak Tallimat (Palm V / Vx handheld theme):
 - Virtual pixel keyboard popup (abc / 123)
 - Reverse-EL Indiglo backlight toggle
 - Shareable ?screen= router params
+- Lexeme (headword) and English gloss (translation) rendering
 """
 
 
@@ -98,3 +99,91 @@ def test_virtual_keyboard_popup(page, base_url):
     page.locator("#kbd-close").click()
     page.wait_for_timeout(100)
     assert page.locator("#palm-keyboard").is_hidden()
+
+
+FIXTURE_ENTRIES = [
+    {"lexeme": "illu", "gloss_en": "house"},
+    {"lexeme": "nuna", "gloss_en": "land"},
+    {"lexeme": "qajaq", "gloss_en": "kayak"},
+]
+
+
+def mock_dict_source(page):
+    page.route(
+        "**/Oqaasileriffik-dicts/all_entries.json",
+        lambda route: route.fulfill(
+            json={"dictionary_entries": FIXTURE_ENTRIES}
+        ),
+    )
+    page.route(
+        "**/Oqaasileriffik-katersat/**",
+        lambda route: route.abort("failed"),
+    )
+
+
+def test_dictionary_renders_lexeme_and_gloss(page, base_url):
+    mock_dict_source(page)
+    goto_itumak(page, base_url, "?screen=oq")
+    page.wait_for_function(
+        """() => {
+          const s = document.getElementById('oq-status');
+          return s && s.textContent && !s.textContent.includes('Loading')
+            && !s.textContent.includes('Error');
+        }""",
+        timeout=15000,
+    )
+    items = page.locator(".palm-list-item")
+    assert items.count() > 0
+
+    first_item = items.first
+    headword = first_item.locator(".palm-item-headword").inner_text().strip()
+    gloss = first_item.locator(".palm-item-gloss").inner_text().strip()
+    assert headword, "headword must show the Kalaallisut lexeme"
+    assert gloss, "gloss must show the translation"
+
+
+def test_rocker_scrolling(page, base_url):
+    mock_dict_source(page)
+    goto_itumak(page, base_url, "?screen=oq")
+    page.wait_for_function(
+        """() => {
+          const s = document.getElementById('oq-status');
+          return s && s.textContent && !s.textContent.includes('Loading');
+        }""",
+        timeout=15000,
+    )
+    items = page.locator(".palm-list-item")
+    assert items.count() > 1
+    assert "selected" in (items.nth(0).get_attribute("class") or "")
+
+    # Click rocker down
+    page.locator("#hw-rocker-down").click()
+    page.wait_for_timeout(100)
+    assert "selected" in (items.nth(1).get_attribute("class") or "")
+
+    # Click rocker up
+    page.locator("#hw-rocker-up").click()
+    page.wait_for_timeout(100)
+    assert "selected" in (items.nth(0).get_attribute("class") or "")
+
+
+def test_graffiti_stroke_recognition(page, base_url):
+    goto_itumak(page, base_url, "?screen=oq")
+    canvas = page.locator("#graffiti-canvas")
+    box = canvas.bounding_box()
+    assert box is not None
+
+    # Simulate horizontal right swipe (Space) in letters zone: x from 20 to 60, y around 25
+    start_x = box["x"] + 20
+    start_y = box["y"] + 25
+    end_x = box["x"] + 65
+    end_y = box["y"] + 25
+
+    page.mouse.move(start_x, start_y)
+    page.mouse.down()
+    page.mouse.move(end_x, end_y, steps=5)
+    page.mouse.up()
+    page.wait_for_timeout(150)
+
+    # Indicator should have shown space (␣)
+    assert page.locator("#graffiti-indicator").is_visible() or page.locator("#oq-filter").input_value().endswith(" ")
