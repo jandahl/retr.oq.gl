@@ -39,6 +39,7 @@
 
   // Screens
   const SCREENS = {
+    launcher: document.getElementById("screen-launcher"),
     oq: document.getElementById("screen-oq"),
     decon: document.getElementById("screen-decon"),
     morph: document.getElementById("screen-morph"),
@@ -46,13 +47,16 @@
   };
 
   const TITLE_MAP = {
+    launcher: "Applications",
     oq: "OQ! Dictionary",
     decon: "Word Decon",
     morph: "Morph Challenge",
     about: "About Itumak",
   };
 
-  let currentScreen = "oq";
+  const btnCategoryLauncher = document.getElementById("btn-category-launcher");
+
+  let currentScreen = "launcher";
   let dictEntries = null;
   let visibleRows = [];
   let selectedIndex = 0;
@@ -139,14 +143,18 @@
   // Screen Navigation
   // -------------------------------------------------------------
   function showScreen(name) {
-    if (!SCREENS[name]) return;
+    if (!SCREENS[name]) name = "launcher";
     triggerLcdGhosting(0.9);
     currentScreen = name;
     for (const [key, el] of Object.entries(SCREENS)) {
-      el.hidden = key !== name;
+      if (el) el.hidden = key !== name;
     }
     appTitle.textContent = TITLE_MAP[name] || "Itumak";
     dropdown.hidden = true;
+
+    if (btnCategoryLauncher) {
+      btnCategoryLauncher.style.display = name === "launcher" ? "inline-block" : "none";
+    }
 
     if (name === "oq") {
       activeInputTarget = oqFilter;
@@ -156,6 +164,20 @@
       kbdDialog.hidden = true;
     }
   }
+
+  // Launcher App Icons Click Handler
+  document.querySelectorAll(".palm-app-icon").forEach((icon) => {
+    icon.addEventListener("click", () => {
+      triggerLcdGhosting(0.8);
+      const target = icon.dataset.launch;
+      if (target === "oq" || target === "decon" || target === "morph" || target === "about") {
+        window.OqRouter.navigate({ screen: target });
+      } else {
+        // Placeholder feedback for simulated Palm OS built-in apps
+        triggerLcdGhosting(0.4);
+      }
+    });
+  });
 
   // Clock updater with stored timer reference
   let clockIntervalId = null;
@@ -191,7 +213,7 @@
     btn.addEventListener("click", () => {
       const action = btn.dataset.action;
       dropdown.hidden = true;
-      if (action === "oq" || action === "decon" || action === "morph" || action === "about") {
+      if (action === "launcher" || action === "oq" || action === "decon" || action === "morph" || action === "about") {
         window.OqRouter.navigate({ screen: action });
       } else if (action === "toggle-el") {
         document.body.classList.toggle("backlight-on");
@@ -211,7 +233,7 @@
 
   // Soft touch silk buttons
   silkApps.addEventListener("click", () => {
-    window.OqRouter.navigate({ screen: currentScreen === "oq" ? "decon" : "oq" });
+    window.OqRouter.navigate({ screen: "launcher" });
   });
 
   silkCalc.addEventListener("click", () => {
@@ -704,7 +726,7 @@
   // Router Initialization
   // -------------------------------------------------------------
   window.OqRouter.onChange((params) => {
-    const screen = params.get("screen") || "oq";
+    const screen = params.get("screen") || "launcher";
     showScreen(screen);
 
     const filter = params.get("filter");

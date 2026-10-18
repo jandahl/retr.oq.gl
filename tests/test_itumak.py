@@ -41,10 +41,27 @@ def assert_clean(errors, console_errors, unexpected_404s):
 def test_itumak_loads_without_errors(page, base_url):
     errors, console_errors, unexpected_404s = goto_itumak(page, base_url)
     assert_clean(errors, console_errors, unexpected_404s)
-    assert page.locator("#screen-oq").is_visible()
-    assert page.locator("#palm-app-title").inner_text() == "OQ! Dictionary"
+    assert page.locator("#screen-launcher").is_visible()
+    assert page.locator("#palm-app-title").inner_text() == "Applications"
     assert page.locator("#palm-lcd").is_visible()
     assert page.locator("#graffiti-box").is_visible()
+    assert page.locator(".palm-app-icon").count() >= 10
+
+
+def test_home_screen_launcher(page, base_url):
+    goto_itumak(page, base_url)
+    # Launch Dictionary from icon
+    page.locator(".palm-app-icon[data-launch='oq']").click()
+    page.wait_for_timeout(100)
+    assert page.locator("#screen-oq").is_visible()
+    assert page.locator("#screen-launcher").is_hidden()
+    assert "screen=oq" in page.url
+
+    # Home silk button returns to launcher
+    page.locator("#silk-apps").click()
+    page.wait_for_timeout(100)
+    assert page.locator("#screen-launcher").is_visible()
+    assert "screen=launcher" in page.url
 
 
 def test_hardware_buttons_navigation(page, base_url):

@@ -22,30 +22,31 @@
 }
 
 :root {
-  /* Chassis Colors */
-  --palm-case-top: #656c73;
-  --palm-case-mid: #4a5056;
-  --palm-case-bottom: #35393e;
-  --palm-bezel: #24272a;
-  --palm-silkscreen: #3a3f45;
-  --palm-silk-line: #525860;
-  --palm-silk-icon: #7c858e;
-  --palm-silk-icon-active: #ffffff;
+  /* Chassis Colors (Palm V Anodized Slate Aluminum) */
+  --palm-case-top: #98a0a8;
+  --palm-case-mid: #727a83;
+  --palm-case-bottom: #525962;
+  --palm-bezel: #1b1e20;
+  --palm-silkscreen: #a4be9e;
+  --palm-silkscreen-border: #7f9a7a;
+  --palm-silk-line: #5f755a;
+  --palm-silk-icon: #233420;
+  --palm-silk-icon-active: #050a04;
   
   /* Buttons */
-  --palm-btn-metal: #788088;
+  --palm-btn-metal: #858e96;
   --palm-btn-dark: #2a2e32;
-  --palm-rocker: #50565c;
+  --palm-rocker: #2f3439;
 
   /* LCD Reflective Monochrome Palette (Standard mode) */
-  --lcd-bg: #96a18b;
-  --lcd-bg-dim: #88937d;
-  --lcd-pixel: #11180f;
-  --lcd-pixel-ghost: rgba(17, 24, 15, 0.42);
+  --lcd-bg: #abb89e;
+  --lcd-bg-dim: #9aa98d;
+  --lcd-pixel: #161e14;
+  --lcd-pixel-ghost: rgba(22, 30, 20, 0.42);
   --lcd-pixel-light: #525e4a;
-  --lcd-grid: rgba(0, 0, 0, 0.09);
-  --lcd-highlight-bg: #11180f;
-  --lcd-highlight-text: #96a18b;
+  --lcd-grid: rgba(0, 0, 0, 0.08);
+  --lcd-highlight-bg: #161e14;
+  --lcd-highlight-text: #abb89e;
 
   /* Authentic Palm OS 160x160 typography: crisp, pixel-locked */
   --palm-font-system: "Pixelated MS Sans Serif", "Geneva", "Chicago", monospace, sans-serif;
@@ -140,7 +141,7 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 18px;
+  height: 22px;
   padding: 0 4px 6px;
 }
 
@@ -151,10 +152,10 @@ a {
   color: #adb5bd;
   font-size: 8px;
   font-weight: bold;
-  padding: 1px 6px;
+  padding: 2px 6px;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 1px 2px rgba(0,0,0,0.5);
 }
 
@@ -163,12 +164,39 @@ a {
   background: #202326;
 }
 
+.palm-power-green-accent {
+  width: 9px;
+  height: 5px;
+  background: #14a085;
+  border-radius: 1px;
+  display: inline-block;
+  box-shadow: 0 0 2px rgba(20, 160, 133, 0.6);
+}
+
+.palm-power-label {
+  font-size: 8px;
+  letter-spacing: 0.4px;
+}
+
 .palm-brand-stamp {
-  font-size: 9px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 1.5px;
-  color: #8c959e;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2), 0 -1px 0 rgba(0,0,0,0.4);
+  font-style: italic;
+  font-family: "Geneva", "Arial", sans-serif;
+  letter-spacing: -0.2px;
+  color: #e2e6eb;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7);
+}
+
+.palm-top-subtext {
+  font-size: 9px;
+  font-weight: 900;
+  font-family: sans-serif;
+  color: #111417;
+  background: #c8d0d8;
+  padding: 1px 3px;
+  border-radius: 1px;
+  letter-spacing: 0.5px;
 }
 
 /* Dark Screen Bezel */
@@ -338,6 +366,109 @@ body.backlight-on .palm-lcd-ghost-canvas {
 
 .palm-screen[hidden] {
   display: none !important;
+}
+
+/* Palm OS Battery Icon Indicator */
+.palm-battery-box {
+  display: inline-flex;
+  align-items: center;
+  height: 9px;
+  vertical-align: middle;
+}
+
+.palm-battery-body {
+  width: 18px;
+  height: 8px;
+  border: 1px solid currentColor;
+  box-sizing: border-box;
+  padding: 1px;
+  display: flex;
+  align-items: center;
+}
+
+.palm-battery-fill {
+  width: 75%;
+  height: 100%;
+  background: currentColor;
+  display: block;
+}
+
+.palm-battery-tip {
+  width: 2px;
+  height: 4px;
+  background: currentColor;
+  margin-left: 1px;
+  display: block;
+}
+
+/* Category Pill on right of Launcher titlebar */
+.palm-category-pill {
+  background: var(--lcd-bg);
+  border: 1px solid var(--lcd-pixel);
+  color: var(--lcd-pixel);
+  font-size: 9px;
+  font-weight: bold;
+  padding: 0 4px;
+  border-radius: 2px;
+  line-height: 12px;
+}
+
+/* Home Launcher Screen & App Grid */
+.palm-launcher-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px 4px;
+  padding: 8px 4px;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.palm-app-icon {
+  background: transparent;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px 1px;
+  color: var(--lcd-pixel);
+  border-radius: 4px;
+}
+
+.palm-app-icon:active,
+.palm-app-icon.is-active {
+  background: var(--lcd-highlight-bg);
+  color: var(--lcd-highlight-text);
+}
+
+.palm-icon-box {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.palm-icon-box svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+}
+
+.palm-icon-label {
+  font-size: 9px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palm-app-icon.is-placeholder {
+  opacity: 0.95;
 }
 
 /* Category Tab / Header bar under titlebar */
@@ -593,26 +724,25 @@ body.backlight-on .palm-lcd-ghost-canvas {
 /* ========================================================= */
 .palm-silkscreen {
   background: var(--palm-silkscreen);
-  border-radius: 3px;
-  margin-top: 4px;
-  padding: 3px 4px 2px;
-  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  margin-top: 5px;
+  padding: 4px 5px 3px;
+  border: 1px solid var(--palm-silkscreen-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
   position: relative;
   touch-action: none;
 }
 
-/* Silk Screen Soft Touch Icons (Applications, Menu, Calc, Find) */
+/* Silk Screen Soft Touch Icons (Applications/Home, Menu, Calc, Find) */
 .palm-silk-btn {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: radial-gradient(circle, #2f3338 60%, #1e2023 100%);
-  border: 1px solid #1a1c1e;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.1);
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -623,20 +753,18 @@ body.backlight-on .palm-lcd-ghost-canvas {
 }
 
 .palm-silk-btn:active {
-  background: #111214;
   color: var(--palm-silk-icon-active);
-  transform: scale(0.96);
+  transform: scale(0.94);
 }
 
 .palm-silk-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
+  width: 22px;
+  height: 22px;
 }
 
 .palm-silk-btn span {
   font-size: 6px;
-  font-weight: bold;
+  font-weight: 800;
   letter-spacing: -0.2px;
   margin-top: 1px;
 }
@@ -646,10 +774,10 @@ body.backlight-on .palm-lcd-ghost-canvas {
   flex: 1 1 auto;
   height: 52px;
   margin: 0 4px;
-  background: #2b2f34;
-  border: 1px solid #1c1e21;
+  background: var(--palm-silkscreen);
+  border: 1px solid var(--palm-silk-line);
   border-radius: 3px;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.7);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
   display: flex;
   position: relative;
   touch-action: none;
@@ -674,7 +802,8 @@ body.backlight-on .palm-lcd-ghost-canvas {
   flex: 1 1 50%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   padding: 2px 4px;
   box-sizing: border-box;
   position: relative;
@@ -686,15 +815,9 @@ body.backlight-on .palm-lcd-ghost-canvas {
   border-right: 1px dashed var(--palm-silk-line);
 }
 
-.palm-graffiti-label {
-  font-size: 8px;
-  font-weight: bold;
-  color: #636b74;
-}
-
 .palm-graffiti-guide {
-  font-size: 11px;
-  color: #484f56;
+  font-size: 13px;
+  color: var(--palm-silk-line);
   text-align: center;
   line-height: 1;
 }
@@ -702,9 +825,9 @@ body.backlight-on .palm-lcd-ghost-canvas {
 /* Keyboard toggle dots: placed above canvas for clicking */
 .palm-graffiti-actions {
   position: absolute;
-  bottom: 3px;
-  left: 4px;
-  right: 4px;
+  bottom: 2px;
+  left: 3px;
+  right: 3px;
   display: flex;
   justify-content: space-between;
   pointer-events: none;
@@ -716,17 +839,16 @@ body.backlight-on .palm-lcd-ghost-canvas {
   position: relative;
   font-size: 8px;
   font-weight: bold;
-  color: #8c97a4;
-  background: #1e2124;
-  border: 1px solid #454c54;
-  border-radius: 2px;
-  padding: 1px 4px;
+  color: var(--palm-silk-icon);
+  background: transparent;
+  border: none;
+  padding: 1px 3px;
   width: fit-content;
 }
 
 .palm-keyboard-toggle-dot:active {
-  background: #4bf8d3;
-  color: #09262b;
+  color: #000000;
+  transform: scale(1.1);
 }
 
 /* Recognized Character Pop Indicator */
