@@ -181,8 +181,8 @@ body.backlight-on input[type="checkbox"]:checked::after {
 /* The iconic Palm V tapered aluminum chassis */
 .palm-body {
   width: min(390px, 100%);
-  height: 100%;
-  max-height: 780px;
+  height: fit-content;
+  max-height: 96dvh;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -271,7 +271,7 @@ body.backlight-on input[type="checkbox"]:checked::after {
 
 /* Dark Screen Bezel */
 .palm-screen-bezel {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
