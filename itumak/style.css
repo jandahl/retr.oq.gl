@@ -713,13 +713,13 @@ body.backlight-on .palm-lcd-ghost-canvas {
   border-bottom: 1px solid var(--lcd-pixel);
   padding-bottom: 2px;
   margin-bottom: 4px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: bold;
 }
 
 .palm-morph-target {
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: bold;
   padding: 4px;
   border: 1px solid var(--lcd-pixel);
@@ -738,11 +738,11 @@ body.backlight-on .palm-lcd-ghost-canvas {
   text-align: left;
   border: 1px solid var(--lcd-pixel);
   background: transparent;
-  padding: 3px 6px;
+  padding: 4px 6px;
   border-radius: 3px;
   color: var(--lcd-pixel);
   font-family: inherit;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .palm-choice-btn:active,
@@ -950,9 +950,9 @@ body.backlight-on .palm-lcd-ghost-canvas {
   background: rgba(17, 24, 15, 0.85);
   color: #96a18b;
   font-family: var(--palm-font-mono);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: bold;
-  padding: 1px 4px;
+  padding: 2px 5px;
   border-radius: 2px;
   pointer-events: none;
   z-index: 30;
