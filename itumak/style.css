@@ -4,6 +4,14 @@
    silk-screened Graffiti writing area, and reverse-EL backlight. */
 
 @font-face {
+  font-family: "Palm OS";
+  src: url("../vendor/itumak/fonts/palm-os.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Pixelated MS Sans Serif";
   src: url("../vendor/win98/fonts/ms_sans_serif.woff2") format("woff2"),
        url("../vendor/win98/fonts/ms_sans_serif.woff") format("woff");
@@ -48,9 +56,9 @@
   --lcd-highlight-bg: #161e14;
   --lcd-highlight-text: #abb89e;
 
-  /* Authentic Palm OS 160x160 typography: crisp, pixel-locked */
-  --palm-font-system: "Pixelated MS Sans Serif", "Geneva", "Chicago", monospace, sans-serif;
-  --palm-font-mono: ui-monospace, "SF Mono", "Courier New", monospace;
+  /* Authentic Palm OS 160x160 typography: crisp pixel-brick bitmap glyphs */
+  --palm-font-system: "Palm OS", "Pixelated MS Sans Serif", monospace, sans-serif;
+  --palm-font-mono: "Palm OS", ui-monospace, "SF Mono", monospace;
   --palm-font-size: 11px;
 }
 
@@ -81,6 +89,11 @@ html, body {
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: unset;
+  font-smooth: never;
+  text-rendering: geometricPrecision;
   cursor: default;
 }
 
