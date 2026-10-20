@@ -349,22 +349,11 @@ textarea {
   right: 0.6rem;
   bottom: 3.5rem; /* above the copper strip */
 }
-.desktop-icons.is-free {
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  max-height: none;
-  display: block;
-  pointer-events: none;
-}
-.desktop-icons.is-free .desktop-icon {
+.desktop-icon.is-placed {
   position: absolute;
-  pointer-events: auto;
 }
 .desktop-icon.is-dragging {
+  position: absolute;
   z-index: 50;
   opacity: 0.92;
 }
@@ -413,7 +402,7 @@ textarea {
   text-shadow: none;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .desktop-icons-left,
   .desktop-icons-right {
     flex-direction: row;
@@ -671,7 +660,7 @@ textarea {
   margin: 0.2rem 0 0.6rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .wb-screen-title { display: none; }
   .wb-screen-clock { display: none; }
   .wb-screenbar > [role="menu-item"] { padding: 0 0.5rem; }
