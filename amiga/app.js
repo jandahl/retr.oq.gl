@@ -535,6 +535,33 @@
     });
   }
 
+  function clampFreeIconsToViewport() {
+    if (!iconContainers[0] || !iconContainers[0].classList.contains("is-free")) return;
+    const deskW = desktop.clientWidth;
+    const deskH = desktop.clientHeight;
+    let changed = false;
+    for (const icon of document.querySelectorAll(".desktop-icon")) {
+      const iconW = icon.offsetWidth;
+      const iconH = icon.offsetHeight;
+      const currentL = parseFloat(icon.style.left);
+      const currentT = parseFloat(icon.style.top);
+      if (Number.isFinite(currentL) && Number.isFinite(currentT)) {
+        const clampedL = Math.max(0, Math.min(currentL, Math.max(0, deskW - iconW)));
+        const clampedT = Math.max(0, Math.min(currentT, Math.max(0, deskH - iconH)));
+        if (Math.abs(clampedL - currentL) > 0.5 || Math.abs(clampedT - currentT) > 0.5) {
+          icon.style.left = `${clampedL}px`;
+          icon.style.top = `${clampedT}px`;
+          changed = true;
+        }
+      }
+    }
+    if (changed) {
+      persistCurrentIconPositions();
+    }
+  }
+
+  window.addEventListener("resize", clampFreeIconsToViewport);
+
   const menuCleanup = document.getElementById("menu-cleanup");
   if (menuCleanup) {
     menuCleanup.querySelector("a").addEventListener("click", (event) => {

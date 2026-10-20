@@ -95,3 +95,28 @@ def test_amiga_desktop_icon_drag_and_cleanup(page, base_url):
     cleaned_box = page.locator('.desktop-icon[data-open="win-ram"]').bounding_box()
     assert abs(cleaned_box["x"] - initial_box["x"]) < 5
     assert abs(cleaned_box["y"] - initial_box["y"]) < 5
+
+
+def test_amiga_desktop_icon_drag_clamped_on_resize(page, base_url):
+    page.set_viewport_size({"width": 1000, "height": 800})
+    goto_amiga(page, base_url)
+
+    # Drag icon near the bottom-right of 1000x800
+    rom_icon = page.locator('.desktop-icon[data-open="win-version"]')
+    initial_box = rom_icon.bounding_box()
+
+    center_x = initial_box["x"] + initial_box["width"] / 2
+    center_y = initial_box["y"] + initial_box["height"] / 2
+    page.mouse.move(center_x, center_y)
+    page.mouse.down()
+    page.mouse.move(850, 700, steps=5)
+    page.mouse.up()
+    page.wait_for_timeout(100)
+
+    # Now resize window to smaller dimensions: 600x450
+    page.set_viewport_size({"width": 600, "height": 450})
+    page.wait_for_timeout(100)
+
+    after_box = rom_icon.bounding_box()
+    assert after_box["x"] + after_box["width"] <= 600, f"Icon clipped horizontally: {after_box}"
+    assert after_box["y"] + after_box["height"] <= 450, f"Icon clipped vertically: {after_box}"
