@@ -336,15 +336,37 @@ textarea {
   z-index: 5;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
   gap: 0.85rem;
 }
 .desktop-icons-left {
   top: 0.75rem;
   left: 0.6rem;
+  max-height: calc(100% - 1.5rem - 64px); /* Leave room above bottom copper bar */
 }
 .desktop-icons-right {
   right: 0.6rem;
   bottom: 3.5rem; /* above the copper strip */
+}
+.desktop-icons.is-free {
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  display: block;
+  pointer-events: none;
+}
+.desktop-icons.is-free .desktop-icon {
+  position: absolute;
+  pointer-events: auto;
+}
+.desktop-icon.is-dragging {
+  z-index: 50;
+  opacity: 0.92;
 }
 .desktop-icon {
   display: flex;
@@ -359,6 +381,9 @@ textarea {
   font-size: 16px;
   color: var(--wb-white);
   text-align: center;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .desktop-icon img {
   width: 64px;
@@ -366,6 +391,9 @@ textarea {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 .desktop-icon-label {
   padding: 0 0.2rem;

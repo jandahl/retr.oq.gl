@@ -362,6 +362,188 @@
   window.addEventListener("pointerup", finishMarqueeDrag);
   window.addEventListener("pointercancel", finishMarqueeDrag);
 
+  // ---------- Desktop icon drag-reposition & Clean Up ----------
+  const DESKTOP_ICON_POS_KEY = "retr-oq:amiga-desktop-icon-pos";
+  const iconContainers = document.querySelectorAll(".desktop-icons");
+
+  function loadIconPositions() {
+    try {
+      const raw = localStorage.getItem(DESKTOP_ICON_POS_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveIconPositions(map) {
+    try {
+      localStorage.setItem(DESKTOP_ICON_POS_KEY, JSON.stringify(map));
+    } catch {
+      /* sandboxed */
+    }
+  }
+
+  function cleanUpDesktop() {
+    for (const icon of document.querySelectorAll(".desktop-icon")) {
+      icon.classList.remove("is-selected");
+      icon.style.position = "";
+      icon.style.top = "";
+      icon.style.left = "";
+      icon.style.right = "";
+      icon.classList.remove("is-dragging");
+    }
+    for (const container of iconContainers) {
+      container.classList.remove("is-free");
+      container.style.top = "";
+      container.style.right = "";
+      container.style.left = "";
+      container.style.bottom = "";
+      container.style.width = "";
+      container.style.height = "";
+    }
+    try {
+      localStorage.removeItem(DESKTOP_ICON_POS_KEY);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function ensureFreeIconLayout() {
+    const zoom = getDeskZoom();
+    const deskRect = desktop.getBoundingClientRect();
+    const positions = {};
+    for (const icon of document.querySelectorAll(".desktop-icon")) {
+      const r = icon.getBoundingClientRect();
+      const left = (r.left - deskRect.left) / zoom;
+      const top = (r.top - deskRect.top) / zoom;
+      if (icon.dataset.open) {
+        positions[icon.dataset.open] = { left, top };
+      }
+    }
+    for (const container of iconContainers) {
+      container.classList.add("is-free");
+    }
+    for (const icon of document.querySelectorAll(".desktop-icon")) {
+      const pos = positions[icon.dataset.open];
+      if (!pos) continue;
+      icon.style.position = "absolute";
+      icon.style.left = `${pos.left}px`;
+      icon.style.top = `${pos.top}px`;
+      icon.style.right = "auto";
+      icon.style.bottom = "auto";
+    }
+  }
+
+  function applyStoredIconPositions() {
+    const stored = loadIconPositions();
+    if (!stored) return;
+    const keys = Object.keys(stored);
+    if (!keys.length) return;
+    for (const container of iconContainers) {
+      container.classList.add("is-free");
+    }
+    for (const icon of document.querySelectorAll(".desktop-icon")) {
+      const pos = stored[icon.dataset.open];
+      if (!pos || typeof pos.left !== "number" || typeof pos.top !== "number") continue;
+      icon.style.position = "absolute";
+      icon.style.left = `${pos.left}px`;
+      icon.style.top = `${pos.top}px`;
+      icon.style.right = "auto";
+      icon.style.bottom = "auto";
+    }
+  }
+
+  function persistCurrentIconPositions() {
+    const map = {};
+    for (const icon of document.querySelectorAll(".desktop-icon")) {
+      const left = parseFloat(icon.style.left);
+      const top = parseFloat(icon.style.top);
+      if (Number.isFinite(left) && Number.isFinite(top) && icon.dataset.open) {
+        map[icon.dataset.open] = { left, top };
+      }
+    }
+    saveIconPositions(map);
+  }
+
+  applyStoredIconPositions();
+
+  const DRAG_THRESHOLD = 5;
+  for (const icon of document.querySelectorAll(".desktop-icon")) {
+    icon.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      const zoom = getDeskZoom();
+      const startX = event.clientX;
+      const startY = event.clientY;
+      let dragging = false;
+      let originLeft = 0;
+      let originTop = 0;
+      const pointerId = event.pointerId;
+
+      function onMove(ev) {
+        const dx = (ev.clientX - startX) / zoom;
+        const dy = (ev.clientY - startY) / zoom;
+        if (!dragging) {
+          if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+          dragging = true;
+          ensureFreeIconLayout();
+          originLeft = parseFloat(icon.style.left) || 0;
+          originTop = parseFloat(icon.style.top) || 0;
+          icon.classList.add("is-dragging");
+          try {
+            icon.setPointerCapture(pointerId);
+          } catch {
+            /* ignore */
+          }
+          for (const other of document.querySelectorAll(".desktop-icon")) {
+            other.classList.toggle("is-selected", other === icon);
+          }
+        }
+        const deskW = desktop.clientWidth;
+        const deskH = desktop.clientHeight;
+        const iconW = icon.offsetWidth;
+        const iconH = icon.offsetHeight;
+        let nextL = originLeft + dx;
+        let nextT = originTop + dy;
+        nextL = Math.max(0, Math.min(nextL, Math.max(0, deskW - iconW)));
+        nextT = Math.max(0, Math.min(nextT, Math.max(0, deskH - iconH)));
+        icon.style.left = `${nextL}px`;
+        icon.style.top = `${nextT}px`;
+      }
+
+      function onUp() {
+        window.removeEventListener("pointermove", onMove, true);
+        window.removeEventListener("pointerup", onUp, true);
+        window.removeEventListener("pointercancel", onUp, true);
+        if (dragging) {
+          icon.classList.remove("is-dragging");
+          persistCurrentIconPositions();
+          // Suppress the click that would fire after a drag.
+          const swallow = (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            icon.removeEventListener("click", swallow, true);
+          };
+          icon.addEventListener("click", swallow, true);
+        }
+      }
+
+      window.addEventListener("pointermove", onMove, true);
+      window.addEventListener("pointerup", onUp, true);
+      window.addEventListener("pointercancel", onUp, true);
+    });
+  }
+
+  const menuCleanup = document.getElementById("menu-cleanup");
+  if (menuCleanup) {
+    menuCleanup.querySelector("a").addEventListener("click", (event) => {
+      event.preventDefault();
+      closeMenu();
+      cleanUpDesktop();
+    });
+  }
+
   for (const icon of document.querySelectorAll(".desktop-icon[data-open]")) {
     icon.addEventListener("click", () => {
       for (const other of document.querySelectorAll(".desktop-icon")) {
