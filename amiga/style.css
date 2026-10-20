@@ -402,22 +402,7 @@ textarea {
   text-shadow: none;
 }
 
-@media (max-width: 768px) {
-  .desktop-icons-left,
-  .desktop-icons-right {
-    flex-direction: row;
-    flex-wrap: wrap;
-    top: 0.4rem;
-    left: 0.3rem;
-    right: 0.3rem;
-    bottom: auto;
-    width: auto;
-  }
-  .desktop-icons-right {
-    top: auto;
-    bottom: 3.2rem;
-    justify-content: flex-end;
-  }
+@media (max-width: 600px) {
   .desktop-icon {
     width: 4.6rem;
   }
