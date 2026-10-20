@@ -1,0 +1,25 @@
+/* shared/desktop-icons.css -- shared positioning styles for draggable desktop icons */
+
+.desktop-icon.is-placed {
+  position: absolute;
+}
+
+.desktop-icon.is-dragging {
+  position: absolute;
+  z-index: 50;
+  opacity: 0.92;
+}
+
+.desktop-icon {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.desktop-icon img,
+.desktop-icon .desktop-icon-glyph,
+.desktop-icon svg {
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}

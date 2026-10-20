@@ -529,6 +529,53 @@
     return 16;
   }
 
+  const BEOS_ICON_POS_KEY = "retr-oq:beos-desktop-icon-pos";
+  function saveBeosIconPositions() {
+    try {
+      const map = {};
+      for (const icon of document.querySelectorAll(".desktop-icon[data-open]")) {
+        const id = icon.dataset.open;
+        const left = parseFloat(icon.style.left);
+        const top = parseFloat(icon.style.top);
+        if (Number.isFinite(left) && Number.isFinite(top) && id) {
+          map[id] = { left, top };
+        }
+      }
+      localStorage.setItem(BEOS_ICON_POS_KEY, JSON.stringify(map));
+    } catch { /* sandboxed */ }
+  }
+
+  function loadBeosIconPositions() {
+    try {
+      const raw = localStorage.getItem(BEOS_ICON_POS_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  function clampBeosIcons() {
+    const deskW = desktop.clientWidth;
+    const deskH = desktop.clientHeight;
+    let changed = false;
+    for (const icon of document.querySelectorAll(".desktop-icon[data-open]")) {
+      const iconW = icon.offsetWidth || 76;
+      const iconH = icon.offsetHeight || 72;
+      const curL = parseFloat(icon.style.left);
+      const curT = parseFloat(icon.style.top);
+      if (Number.isFinite(curL) && Number.isFinite(curT)) {
+        const nextL = Math.max(0, Math.min(curL, Math.max(0, deskW - iconW)));
+        const nextT = Math.max(0, Math.min(curT, Math.max(0, deskH - iconH)));
+        if (Math.abs(nextL - curL) > 0.5 || Math.abs(nextT - curT) > 0.5) {
+          icon.style.left = `${nextL}px`;
+          icon.style.top = `${nextT}px`;
+          changed = true;
+        }
+      }
+    }
+    if (changed) saveBeosIconPositions();
+  }
+
+  window.addEventListener("resize", clampBeosIcons);
+
   function layoutIcons() {
     const icons = Array.from(document.querySelectorAll(".desktop-icon"));
     const top0 = iconColumnTop();
@@ -536,6 +583,19 @@
       icon.style.left = "16px";
       icon.style.top = `${top0 + i * 80}px`;
     });
+    try { localStorage.removeItem(BEOS_ICON_POS_KEY); } catch { /* ignore */ }
+  }
+
+  const storedBeosPos = loadBeosIconPositions();
+  if (storedBeosPos) {
+    for (const icon of document.querySelectorAll(".desktop-icon[data-open]")) {
+      const pos = storedBeosPos[icon.dataset.open];
+      if (pos && typeof pos.left === "number" && typeof pos.top === "number") {
+        icon.style.left = `${pos.left}px`;
+        icon.style.top = `${pos.top}px`;
+      }
+    }
+    clampBeosIcons();
   }
 
   function placeWindowsForViewport() {
@@ -597,7 +657,10 @@
       if (icon.hasPointerCapture?.(event.pointerId)) {
         try { icon.releasePointerCapture(event.pointerId); } catch { /* ignore */ }
       }
-      if (dragging) return;
+      if (dragging) {
+        saveBeosIconPositions();
+        return;
+      }
       selectIcon(icon);
       if (coarsePointer) {
         closeBeMenu();
