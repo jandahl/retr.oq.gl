@@ -385,23 +385,29 @@
     }
   }
 
+  const initialIconParents = new Map();
+  for (const icon of document.querySelectorAll(".desktop-icon")) {
+    if (icon.parentElement) {
+      initialIconParents.set(icon, {
+        parent: icon.parentElement,
+        nextSibling: icon.nextSibling,
+      });
+    }
+  }
+
   function cleanUpDesktop() {
-    for (const icon of document.querySelectorAll(".desktop-icon")) {
-      icon.classList.remove("is-selected");
+    for (const [icon, loc] of initialIconParents.entries()) {
+      icon.classList.remove("is-selected", "is-placed", "is-dragging");
       icon.style.position = "";
       icon.style.top = "";
       icon.style.left = "";
       icon.style.right = "";
-      icon.classList.remove("is-dragging");
-    }
-    for (const container of iconContainers) {
-      container.classList.remove("is-free");
-      container.style.top = "";
-      container.style.right = "";
-      container.style.left = "";
-      container.style.bottom = "";
-      container.style.width = "";
-      container.style.height = "";
+      icon.style.bottom = "";
+      if (loc.nextSibling && loc.nextSibling.parentNode === loc.parent) {
+        loc.parent.insertBefore(icon, loc.nextSibling);
+      } else {
+        loc.parent.appendChild(icon);
+      }
     }
     try {
       localStorage.removeItem(DESKTOP_ICON_POS_KEY);
@@ -410,61 +416,37 @@
     }
   }
 
-  function ensureFreeIconLayout() {
-    const zoom = getDeskZoom();
-    const deskRect = desktop.getBoundingClientRect();
-    const positions = {};
-    for (const icon of document.querySelectorAll(".desktop-icon")) {
-      const r = icon.getBoundingClientRect();
-      const left = (r.left - deskRect.left) / zoom;
-      const top = (r.top - deskRect.top) / zoom;
-      if (icon.dataset.open) {
-        positions[icon.dataset.open] = { left, top };
-      }
-    }
-    for (const container of iconContainers) {
-      container.classList.add("is-free");
-    }
-    for (const icon of document.querySelectorAll(".desktop-icon")) {
-      const pos = positions[icon.dataset.open];
-      if (!pos) continue;
-      icon.style.position = "absolute";
-      icon.style.left = `${pos.left}px`;
-      icon.style.top = `${pos.top}px`;
-      icon.style.right = "auto";
-      icon.style.bottom = "auto";
-    }
-  }
-
   function applyStoredIconPositions() {
     const stored = loadIconPositions();
     if (!stored) return;
-    const keys = Object.keys(stored);
-    if (!keys.length) return;
-    for (const container of iconContainers) {
-      container.classList.add("is-free");
-    }
     for (const icon of document.querySelectorAll(".desktop-icon")) {
       const pos = stored[icon.dataset.open];
       if (!pos || typeof pos.left !== "number" || typeof pos.top !== "number") continue;
-      icon.style.position = "absolute";
+      desktop.appendChild(icon);
+      icon.classList.add("is-placed");
       icon.style.left = `${pos.left}px`;
       icon.style.top = `${pos.top}px`;
-      icon.style.right = "auto";
-      icon.style.bottom = "auto";
     }
   }
 
   function persistCurrentIconPositions() {
     const map = {};
-    for (const icon of document.querySelectorAll(".desktop-icon")) {
+    for (const icon of document.querySelectorAll(".desktop-icon.is-placed")) {
       const left = parseFloat(icon.style.left);
       const top = parseFloat(icon.style.top);
       if (Number.isFinite(left) && Number.isFinite(top) && icon.dataset.open) {
         map[icon.dataset.open] = { left, top };
       }
     }
-    saveIconPositions(map);
+    if (Object.keys(map).length > 0) {
+      saveIconPositions(map);
+    } else {
+      try {
+        localStorage.removeItem(DESKTOP_ICON_POS_KEY);
+      } catch {
+        /* ignore */
+      }
+    }
   }
 
   applyStoredIconPositions();
@@ -487,10 +469,14 @@
         if (!dragging) {
           if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
           dragging = true;
-          ensureFreeIconLayout();
-          originLeft = parseFloat(icon.style.left) || 0;
-          originTop = parseFloat(icon.style.top) || 0;
-          icon.classList.add("is-dragging");
+          const iconRect = icon.getBoundingClientRect();
+          const deskRect = desktop.getBoundingClientRect();
+          originLeft = (iconRect.left - deskRect.left) / zoom;
+          originTop = (iconRect.top - deskRect.top) / zoom;
+          desktop.appendChild(icon);
+          icon.classList.add("is-placed", "is-dragging");
+          icon.style.left = `${originLeft}px`;
+          icon.style.top = `${originTop}px`;
           try {
             icon.setPointerCapture(pointerId);
           } catch {
@@ -535,12 +521,11 @@
     });
   }
 
-  function clampFreeIconsToViewport() {
-    if (!iconContainers[0] || !iconContainers[0].classList.contains("is-free")) return;
+  function clampPlacedIconsToViewport() {
     const deskW = desktop.clientWidth;
     const deskH = desktop.clientHeight;
     let changed = false;
-    for (const icon of document.querySelectorAll(".desktop-icon")) {
+    for (const icon of document.querySelectorAll(".desktop-icon.is-placed")) {
       const iconW = icon.offsetWidth;
       const iconH = icon.offsetHeight;
       const currentL = parseFloat(icon.style.left);
@@ -560,7 +545,7 @@
     }
   }
 
-  window.addEventListener("resize", clampFreeIconsToViewport);
+  window.addEventListener("resize", clampPlacedIconsToViewport);
 
   const menuCleanup = document.getElementById("menu-cleanup");
   if (menuCleanup) {
