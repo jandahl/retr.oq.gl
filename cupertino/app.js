@@ -802,6 +802,9 @@
   function cleanUpDesktop() {
     clearDesktopSelection();
     if (!desktopIcons) return;
+    if (desktopIconsApi) {
+      desktopIconsApi.cleanUp();
+    }
     const byOpen = new Map();
     for (const icon of desktopIcons.querySelectorAll(".desktop-icon")) {
       byOpen.set(icon.dataset.open, icon);
@@ -810,7 +813,7 @@
       icon.style.left = "";
       icon.style.right = "";
       icon.style.transform = "";
-      icon.classList.remove("is-dragging");
+      icon.classList.remove("is-dragging", "is-placed");
     }
     for (const id of DESKTOP_ICON_ORDER) {
       const icon = byOpen.get(id);
@@ -861,156 +864,14 @@
 
 
   // ---------- Desktop icon drag-reposition (fine pointer only) ----------
-  function loadIconPositions() {
-    try {
-      const raw = localStorage.getItem(DESKTOP_ICON_POS_KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      return parsed && typeof parsed === "object" ? parsed : null;
-    } catch {
-      return null;
-    }
-  }
-
-  function saveIconPositions(map) {
-    try {
-      localStorage.setItem(DESKTOP_ICON_POS_KEY, JSON.stringify(map));
-    } catch {
-      /* sandboxed */
-    }
-  }
-
-  function ensureFreeIconLayout() {
-    if (!desktopIcons || desktopIcons.classList.contains("is-free")) return;
-    const zoom = window.OqOsx.getZoomFactor ? window.OqOsx.getZoomFactor() : 1;
-    const deskRect = desktop.getBoundingClientRect();
-    const positions = {};
-    for (const icon of desktopIcons.querySelectorAll(".desktop-icon")) {
-      const r = icon.getBoundingClientRect();
-      const left = (r.left - deskRect.left) / zoom;
-      const top = (r.top - deskRect.top) / zoom;
-      positions[icon.dataset.open] = { left, top };
-    }
-    desktopIcons.classList.add("is-free");
-    desktopIcons.style.top = "0";
-    desktopIcons.style.right = "0";
-    desktopIcons.style.left = "0";
-    desktopIcons.style.bottom = "0";
-    desktopIcons.style.width = "100%";
-    desktopIcons.style.height = "100%";
-    for (const icon of desktopIcons.querySelectorAll(".desktop-icon")) {
-      const pos = positions[icon.dataset.open];
-      if (!pos) continue;
-      icon.style.position = "absolute";
-      icon.style.left = `${pos.left}px`;
-      icon.style.top = `${pos.top}px`;
-      icon.style.right = "auto";
-    }
-  }
-
-  function applyStoredIconPositions() {
-    const stored = loadIconPositions();
-    if (!stored || !desktopIcons) return;
-    const keys = Object.keys(stored);
-    if (!keys.length) return;
-    desktopIcons.classList.add("is-free");
-    desktopIcons.style.top = "0";
-    desktopIcons.style.right = "0";
-    desktopIcons.style.left = "0";
-    desktopIcons.style.bottom = "0";
-    desktopIcons.style.width = "100%";
-    desktopIcons.style.height = "100%";
-    for (const icon of desktopIcons.querySelectorAll(".desktop-icon")) {
-      const pos = stored[icon.dataset.open];
-      if (!pos || typeof pos.left !== "number" || typeof pos.top !== "number") continue;
-      icon.style.position = "absolute";
-      icon.style.left = `${pos.left}px`;
-      icon.style.top = `${pos.top}px`;
-      icon.style.right = "auto";
-    }
-  }
-
-  function persistCurrentIconPositions() {
-    if (!desktopIcons || !desktopIcons.classList.contains("is-free")) return;
-    const map = {};
-    for (const icon of desktopIcons.querySelectorAll(".desktop-icon")) {
-      const left = parseFloat(icon.style.left);
-      const top = parseFloat(icon.style.top);
-      if (Number.isFinite(left) && Number.isFinite(top)) {
-        map[icon.dataset.open] = { left, top };
-      }
-    }
-    saveIconPositions(map);
-  }
-
-  applyStoredIconPositions();
-
-  if (!opensOnSingleClick && desktopIcons) {
-    const DRAG_THRESHOLD = 5;
-    for (const icon of desktopIcons.querySelectorAll(".desktop-icon")) {
-      icon.addEventListener("pointerdown", (event) => {
-        if (event.button !== 0) return;
-        if (event.target.closest("a")) return;
-        const zoom = window.OqOsx.getZoomFactor ? window.OqOsx.getZoomFactor() : 1;
-        const startX = event.clientX;
-        const startY = event.clientY;
-        let dragging = false;
-        let originLeft = 0;
-        let originTop = 0;
-        const pointerId = event.pointerId;
-
-        function onMove(ev) {
-          const dx = (ev.clientX - startX) / zoom;
-          const dy = (ev.clientY - startY) / zoom;
-          if (!dragging) {
-            if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
-            dragging = true;
-            ensureFreeIconLayout();
-            originLeft = parseFloat(icon.style.left) || 0;
-            originTop = parseFloat(icon.style.top) || 0;
-            icon.classList.add("is-dragging");
-            try {
-              icon.setPointerCapture(pointerId);
-            } catch {
-              /* ignore */
-            }
-            selectDesktopIcon(icon);
-          }
-          const deskW = desktop.clientWidth;
-          const deskH = desktop.clientHeight;
-          const iconW = icon.offsetWidth;
-          const iconH = icon.offsetHeight;
-          let nextL = originLeft + dx;
-          let nextT = originTop + dy;
-          nextL = Math.max(0, Math.min(nextL, Math.max(0, deskW - iconW)));
-          nextT = Math.max(0, Math.min(nextT, Math.max(0, deskH - iconH)));
-          icon.style.left = `${nextL}px`;
-          icon.style.top = `${nextT}px`;
-        }
-
-        function onUp() {
-          window.removeEventListener("pointermove", onMove, true);
-          window.removeEventListener("pointerup", onUp, true);
-          window.removeEventListener("pointercancel", onUp, true);
-          if (dragging) {
-            icon.classList.remove("is-dragging");
-            persistCurrentIconPositions();
-            // Suppress the click that would fire after a drag.
-            const swallow = (ev) => {
-              ev.preventDefault();
-              ev.stopPropagation();
-              icon.removeEventListener("click", swallow, true);
-            };
-            icon.addEventListener("click", swallow, true);
-          }
-        }
-
-        window.addEventListener("pointermove", onMove, true);
-        window.addEventListener("pointerup", onUp, true);
-        window.addEventListener("pointercancel", onUp, true);
-      });
-    }
-  }
+  const desktopIconsApi = window.OqDesktopIcons && !opensOnSingleClick ? window.OqDesktopIcons.init({
+    desktop,
+    storageKey: DESKTOP_ICON_POS_KEY,
+    iconsSelector: ".desktop-icon",
+    getZoom: () => (window.OqOsx && window.OqOsx.getZoomFactor ? window.OqOsx.getZoomFactor() : 1),
+    bottomReserve: 60, // dock allowance
+    onSelect: selectDesktopIcon,
+  }) : null;
 
   // ---------- Get Info sheet ----------
   const getinfoOverlay = document.getElementById("getinfo-overlay");

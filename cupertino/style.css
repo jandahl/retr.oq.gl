@@ -294,8 +294,11 @@ select {
   position: absolute;
   top: 12px;
   right: 12px;
+  bottom: 60px; /* Leave room above bottom dock */
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap-reverse;
+  align-content: flex-start;
   align-items: flex-end;
   gap: 10px;
   z-index: 1;

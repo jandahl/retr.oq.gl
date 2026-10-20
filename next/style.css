@@ -225,9 +225,12 @@ a:active {
   position: absolute;
   top: 12px;
   left: calc(var(--nx-menu) + 24px);
+  bottom: 12px;
   z-index: 5;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
   gap: 12px;
 }
 .desktop-icon {

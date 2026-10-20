@@ -192,4 +192,13 @@
   }
 
   setFolderView("icon");
+
+  if (window.OqDesktopIcons) {
+    window.OqDesktopIcons.init({
+      desktop,
+      storageKey: "retr-oq:os2-desktop-icon-pos",
+      iconsSelector: ".desktop-icons .object-icon",
+      bottomReserve: 36,
+    });
+  }
 })();

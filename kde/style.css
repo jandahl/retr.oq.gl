@@ -171,8 +171,11 @@ html, body {
   position: absolute;
   top: 16px;
   left: 16px;
+  bottom: 48px; /* Leave room above bottom panel */
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
   gap: 18px;
   z-index: 1;
 }

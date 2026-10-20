@@ -11,7 +11,7 @@ button { font: inherit; cursor: default; }
 .oq-word i:nth-child(1) { transform: translateY(18px) rotate(-10deg); }.oq-word i:nth-child(2) { transform: translateY(-12px) rotate(-3deg); }.oq-word i:nth-child(3) { transform: translateY(-28px) rotate(9deg); }.oq-word i:nth-child(4) { transform: translateY(-8px) rotate(17deg); }
 .warp-word { margin-left: 22px; color: #6e80e5; font: 900 125px/0.8 Arial, Helvetica, sans-serif; letter-spacing: -10px; text-shadow: 5px 7px 0 #20226b; }
 .warp-word i:nth-child(1) { transform: translateY(-30px) rotate(8deg); }.warp-word i:nth-child(2) { transform: translateY(-6px) rotate(4deg); }.warp-word i:nth-child(3) { transform: translateY(25px) rotate(-5deg); }.warp-word i:nth-child(4) { transform: translateY(40px) rotate(-12deg); }
-.desktop-icons { position: absolute; z-index: 2; top: 24px; left: 24px; display: flex; flex-direction: column; gap: 18px; width: 90px; }
+.desktop-icons { position: absolute; z-index: 2; top: 24px; left: 24px; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; max-height: calc(100% - 48px); gap: 18px; }
 .object-icon, .program-icon { display: grid; justify-items: center; gap: 4px; border: 0; background: transparent; color: white; text-shadow: 1px 1px #000; }
 .object-icon { width: 90px; }
 .icon-art { position: relative; display: block !important; width: 42px !important; height: 36px !important; background: #c0c0c0; border: 0 !important; }
