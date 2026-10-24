@@ -115,6 +115,7 @@
   // since none of those have a feature backing them in this theme.
   const desktopContextMenu = document.getElementById("desktop-context-menu");
   const desktopIconsEl = document.querySelector(".desktop-icons");
+  const desktopContextArrange = document.getElementById("desktop-context-arrange");
   const desktopContextRefresh = document.getElementById("desktop-context-refresh");
   const desktopContextShowIcons = document.getElementById("desktop-context-show-icons");
   const SHOW_ICONS_STORAGE_KEY = "retr-oq:xp-desktop-icons";
@@ -131,7 +132,7 @@
     // elsewhere in shared/redmond/window-manager.js.
     const deskRect = desktop.getBoundingClientRect();
     const menuWidth = 176; // matches .desktop-context-menu's own min-width (11rem)
-    const menuHeight = 76; // two real items tall
+    const menuHeight = 104; // three real items tall
     const left = Math.min(event.clientX, deskRect.right - menuWidth);
     const top = Math.min(event.clientY, deskRect.bottom - menuHeight);
     desktopContextMenu.style.left = `${left}px`;
@@ -147,6 +148,20 @@
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !desktopContextMenu.hidden) closeDesktopContextMenu();
   });
+
+  // "Arrange Icons" -- aligns icons and clears any active selection
+  if (desktopContextArrange) {
+    desktopContextArrange.addEventListener("click", () => {
+      closeDesktopContextMenu();
+      desktop.querySelectorAll(".desktop-icon.selected").forEach((el) => {
+        el.classList.remove("selected");
+      });
+      if (desktopIconsEl) {
+        desktopIconsEl.classList.add("refreshing");
+        window.setTimeout(() => desktopIconsEl.classList.remove("refreshing"), 150);
+      }
+    });
+  }
 
   // "Refresh" -- a real, visible action standing in for a desktop redraw:
   // briefly dip the icons' opacity and bring it back via the CSS

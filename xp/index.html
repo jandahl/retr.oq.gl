@@ -242,10 +242,12 @@
 
   <!-- Real desktop right-click menu (issue #100), same shape as win98's own
        #desktop-context-menu: reuses the Start-menu chrome class rather than
-       inventing new chrome, positioned at the click by app.js. Only two
-       items with real backing behavior -- no Properties/New/Paste/Arrange
-       submenu, since none of those have a feature behind them here. -->
+       inventing new chrome, positioned at the click by app.js. Real backing
+       behavior for Arrange Icons, Refresh, and Show desktop icons. -->
   <ul role="menu" class="start-menu desktop-context-menu" id="desktop-context-menu" hidden>
+    <li role="menu-item" class="start-menu-item" id="desktop-context-arrange">
+      <span class="start-menu-icon" aria-hidden="true"></span> Arrange Icons
+    </li>
     <li role="menu-item" class="start-menu-item" id="desktop-context-refresh">
       <span class="start-menu-icon" aria-hidden="true"></span> Refresh
     </li>

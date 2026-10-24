@@ -29,9 +29,10 @@
   // handles the bare background itself).
   document.addEventListener("contextmenu", (event) => event.preventDefault());
 
-  // ---------- Desktop right-click menu: Refresh Desktop / Show Desktop Icons ----------
+  // ---------- Desktop right-click menu: Align Icons / Refresh Desktop / Show Desktop Icons ----------
   const desktopContextMenu = document.getElementById("desktop-context-menu");
   const desktopIcons = document.querySelector(".desktop-icons");
+  const desktopCtxAlign = document.getElementById("desktop-ctx-align");
   const desktopCtxRefresh = document.getElementById("desktop-ctx-refresh");
   const desktopCtxToggleIcons = document.getElementById("desktop-ctx-toggle-icons");
   const DESKTOP_ICONS_STORAGE_KEY = "retr-oq:kde-desktop-icons";
@@ -69,7 +70,7 @@
     event.preventDefault();
     const deskRect = desktop.getBoundingClientRect();
     const menuWidth = 190; // matches .desktop-context-menu's min-width
-    const menuHeight = 76; // two real items tall
+    const menuHeight = 110; // three real items tall
     const left = Math.min(event.clientX, deskRect.right - menuWidth);
     const top = Math.min(event.clientY, deskRect.bottom - menuHeight);
     desktopContextMenu.style.left = `${left}px`;
@@ -85,6 +86,21 @@
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !desktopContextMenu.hidden) closeDesktopContextMenu();
   });
+
+  if (desktopCtxAlign) {
+    desktopCtxAlign.addEventListener("click", () => {
+      closeDesktopContextMenu();
+      for (const icon of desktop.querySelectorAll(".desktop-icon.selected")) {
+        icon.classList.remove("selected");
+      }
+      if (desktopIcons) {
+        desktopIcons.classList.add("is-refreshing");
+        window.setTimeout(() => {
+          desktopIcons.classList.remove("is-refreshing");
+        }, 150);
+      }
+    });
+  }
 
   desktopCtxRefresh.addEventListener("click", () => {
     closeDesktopContextMenu();

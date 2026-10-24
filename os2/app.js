@@ -193,12 +193,72 @@
 
   setFolderView("icon");
 
+  let desktopIconsApi = null;
   if (window.OqDesktopIcons) {
-    window.OqDesktopIcons.init({
+    desktopIconsApi = window.OqDesktopIcons.init({
       desktop,
       storageKey: "retr-oq:os2-desktop-icon-pos",
       iconsSelector: ".desktop-icons .object-icon",
       bottomReserve: 36,
+    });
+  }
+
+  // ---------- Desktop Context Menu ----------
+  const desktopContextMenu = document.getElementById("desktop-context-menu");
+  const desktopIconsEl = document.querySelector(".desktop-icons");
+  const desktopCtxArrange = document.getElementById("desktop-ctx-arrange");
+  const desktopCtxRefresh = document.getElementById("desktop-ctx-refresh");
+
+  function closeDesktopContextMenu() {
+    if (desktopContextMenu) desktopContextMenu.hidden = true;
+  }
+
+  desktop.addEventListener("contextmenu", (event) => {
+    if (event.target.closest(".os2-window") || event.target.closest("#minimized-tray")) return;
+    event.preventDefault();
+    if (!desktopContextMenu) return;
+    const deskRect = desktop.getBoundingClientRect();
+    const menuWidth = 140;
+    const menuHeight = 110;
+    const left = Math.min(event.clientX - deskRect.left, deskRect.width - menuWidth);
+    const top = Math.min(event.clientY - deskRect.top, deskRect.height - menuHeight);
+    desktopContextMenu.style.left = `${Math.max(0, left)}px`;
+    desktopContextMenu.style.top = `${Math.max(0, top)}px`;
+    desktopContextMenu.hidden = false;
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    if (desktopContextMenu && !desktopContextMenu.hidden && !desktopContextMenu.contains(event.target)) {
+      closeDesktopContextMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && desktopContextMenu && !desktopContextMenu.hidden) {
+      closeDesktopContextMenu();
+    }
+  });
+
+  if (desktopCtxArrange) {
+    desktopCtxArrange.addEventListener("click", () => {
+      closeDesktopContextMenu();
+      if (desktopIconsApi && typeof desktopIconsApi.cleanUp === "function") {
+        desktopIconsApi.cleanUp();
+      }
+      if (desktopIconsEl) {
+        desktopIconsEl.classList.add("is-refreshing");
+        window.setTimeout(() => desktopIconsEl.classList.remove("is-refreshing"), 150);
+      }
+    });
+  }
+
+  if (desktopCtxRefresh) {
+    desktopCtxRefresh.addEventListener("click", () => {
+      closeDesktopContextMenu();
+      if (desktopIconsEl) {
+        desktopIconsEl.classList.add("is-refreshing");
+        window.setTimeout(() => desktopIconsEl.classList.remove("is-refreshing"), 150);
+      }
     });
   }
 })();

@@ -188,6 +188,24 @@
     }, 150);
   });
 
+  const desktopContextArrange = document.getElementById("desktop-context-arrange");
+  if (desktopContextArrange) {
+    desktopContextArrange.addEventListener("click", () => {
+      closeDesktopContextMenu();
+      desktop.querySelectorAll(".desktop-icon.selected").forEach((el) => {
+        el.classList.remove("selected");
+      });
+      if (desktopIcons) {
+        desktopIcons.classList.remove("is-refreshing");
+        void desktopIcons.offsetWidth;
+        desktopIcons.classList.add("is-refreshing");
+        window.setTimeout(() => {
+          desktopIcons.classList.remove("is-refreshing");
+        }, 150);
+      }
+    });
+  }
+
   function closeDesktopContextMenu() {
     desktopContextMenu.hidden = true;
   }
@@ -199,7 +217,7 @@
     // already excludes the taskbar (see style.css's `.desktop { bottom: 40px }`).
     const deskRect = desktop.getBoundingClientRect();
     const menuWidth = 190; // matches .start-menu's own min-width-ish sizing
-    const menuHeight = 78; // two real items tall
+    const menuHeight = 108; // three real items tall
     const left = Math.min(event.clientX, deskRect.right - menuWidth);
     const top = Math.min(event.clientY, deskRect.bottom - menuHeight);
     desktopContextMenu.style.left = `${left}px`;
