@@ -370,8 +370,10 @@
     iconsSelector: ".desktop-icon",
     getZoom: getDeskZoom,
     onSelect(icon) {
-      for (const other of document.querySelectorAll(".desktop-icon")) {
-        other.classList.toggle("is-selected", other === icon);
+      if (!icon.classList.contains("is-selected")) {
+        for (const other of document.querySelectorAll(".desktop-icon")) {
+          other.classList.toggle("is-selected", other === icon);
+        }
       }
     },
   }) : null;

@@ -1,5 +1,6 @@
 // shared/desktop-icons.js -- shared desktop icon drag-and-drop repositioning,
-// boundary clamping on window resize, and localStorage layout persistence.
+// boundary clamping on window resize, optional grid alignment, multi-icon drag,
+// and localStorage layout persistence.
 // Fits the authentic desktop paradigms across Amiga, Redmond, Classic Mac/Aqua,
 // CDE, BeOS, OS/2, NeXT, and KDE.
 
@@ -17,6 +18,7 @@
     const onSelect = options.onSelect || null;
     const getZoom = options.getZoom || (() => parseFloat(getComputedStyle(document.documentElement).zoom) || 1);
     const bottomReserve = options.bottomReserve || 0; // extra padding for bottom taskbar/strip
+    const grid = options.grid || null; // e.g. { x: 80, y: 84, originX: 12, originY: 12 }
 
     const initialParents = new Map();
     for (const icon of document.querySelectorAll(iconsSelector)) {
@@ -134,6 +136,28 @@
       }
     }
 
+    function snapIconToGrid(icon) {
+      if (!grid) return;
+      const stepX = grid.x || 80;
+      const stepY = grid.y || 80;
+      const originX = grid.originX || 0;
+      const originY = grid.originY || 0;
+      const curL = parseFloat(icon.style.left);
+      const curT = parseFloat(icon.style.top);
+      if (Number.isFinite(curL) && Number.isFinite(curT)) {
+        const deskW = desktop.clientWidth;
+        const deskH = desktop.clientHeight - bottomReserve;
+        const iconW = icon.offsetWidth;
+        const iconH = icon.offsetHeight;
+        let snappedL = originX + Math.round((curL - originX) / stepX) * stepX;
+        let snappedT = originY + Math.round((curT - originY) / stepY) * stepY;
+        snappedL = Math.max(0, Math.min(snappedL, Math.max(0, deskW - iconW)));
+        snappedT = Math.max(0, Math.min(snappedT, Math.max(0, deskH - iconH)));
+        icon.style.left = `${snappedL}px`;
+        icon.style.top = `${snappedT}px`;
+      }
+    }
+
     applyStoredPositions();
     clampPlacedIcons();
 
@@ -147,9 +171,10 @@
         const startX = event.clientX;
         const startY = event.clientY;
         let dragging = false;
-        let originLeft = 0;
-        let originTop = 0;
         const pointerId = event.pointerId;
+
+        // Group dragging for multi-selection
+        const draggedIcons = [];
 
         function onMove(ev) {
           const dx = (ev.clientX - startX) / zoom;
@@ -157,17 +182,36 @@
           if (!dragging) {
             if (Math.hypot(dx, dy) < dragThreshold) return;
             dragging = true;
-            const iconRect = icon.getBoundingClientRect();
+
+            const isPartOfSelection = icon.classList.contains("selected") || icon.classList.contains("is-selected");
+            const selection = isPartOfSelection
+              ? Array.from(document.querySelectorAll(`${iconsSelector}.selected, ${iconsSelector}.is-selected`))
+              : [icon];
+
             const deskRect = desktop.getBoundingClientRect();
-            originLeft = (iconRect.left - deskRect.left) / zoom;
-            originTop = (iconRect.top - deskRect.top) / zoom;
-            desktop.appendChild(icon);
-            icon.classList.add("is-placed", "is-dragging");
-            icon.style.position = "absolute";
-            icon.style.left = `${originLeft}px`;
-            icon.style.top = `${originTop}px`;
-            icon.style.right = "auto";
-            icon.style.bottom = "auto";
+
+            // Measure all origin offsets first so reparenting doesn't disturb flex layout
+            const itemsToDrag = [];
+            for (const item of selection) {
+              const itemRect = item.getBoundingClientRect();
+              itemsToDrag.push({
+                item,
+                originLeft: (itemRect.left - deskRect.left) / zoom,
+                originTop: (itemRect.top - deskRect.top) / zoom,
+              });
+            }
+
+            for (const d of itemsToDrag) {
+              desktop.appendChild(d.item);
+              d.item.classList.add("is-placed", "is-dragging");
+              d.item.style.position = "absolute";
+              d.item.style.left = `${d.originLeft}px`;
+              d.item.style.top = `${d.originTop}px`;
+              d.item.style.right = "auto";
+              d.item.style.bottom = "auto";
+              draggedIcons.push(d);
+            }
+
             try {
               icon.setPointerCapture(pointerId);
             } catch {
@@ -177,16 +221,20 @@
               onSelect(icon);
             }
           }
+
           const deskW = desktop.clientWidth;
           const deskH = desktop.clientHeight - bottomReserve;
-          const iconW = icon.offsetWidth;
-          const iconH = icon.offsetHeight;
-          let nextL = originLeft + dx;
-          let nextT = originTop + dy;
-          nextL = Math.max(0, Math.min(nextL, Math.max(0, deskW - iconW)));
-          nextT = Math.max(0, Math.min(nextT, Math.max(0, deskH - iconH)));
-          icon.style.left = `${nextL}px`;
-          icon.style.top = `${nextT}px`;
+
+          for (const d of draggedIcons) {
+            const iconW = d.item.offsetWidth;
+            const iconH = d.item.offsetHeight;
+            let nextL = d.originLeft + dx;
+            let nextT = d.originTop + dy;
+            nextL = Math.max(0, Math.min(nextL, Math.max(0, deskW - iconW)));
+            nextT = Math.max(0, Math.min(nextT, Math.max(0, deskH - iconH)));
+            d.item.style.left = `${nextL}px`;
+            d.item.style.top = `${nextT}px`;
+          }
         }
 
         function onUp() {
@@ -194,7 +242,12 @@
           window.removeEventListener("pointerup", onUp, true);
           window.removeEventListener("pointercancel", onUp, true);
           if (dragging) {
-            icon.classList.remove("is-dragging");
+            for (const d of draggedIcons) {
+              d.item.classList.remove("is-dragging");
+              if (grid) {
+                snapIconToGrid(d.item);
+              }
+            }
             persistCurrentPositions();
             const swallow = (ev) => {
               ev.preventDefault();
