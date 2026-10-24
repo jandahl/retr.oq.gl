@@ -166,7 +166,7 @@
     for (const icon of document.querySelectorAll(iconsSelector)) {
       icon.addEventListener("pointerdown", (event) => {
         if (event.button !== 0) return;
-        if (event.target.closest("a, input, select, textarea, button:not(.desktop-icon)")) return;
+        if (event.target.closest("a, input, select, textarea, button:not(.desktop-icon):not(.object-icon)")) return;
         const zoom = getZoom();
         const startX = event.clientX;
         const startY = event.clientY;

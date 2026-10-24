@@ -164,3 +164,15 @@ iframe { display: block; width: 100%; height: calc(100% - 24px); border: 0; back
 .os2-dropdown li button.is-checked::before {
   content: "✓ ";
 }
+.desktop-context-menu {
+  position: absolute;
+  z-index: 100;
+  min-width: 140px;
+}
+.desktop-icons.is-refreshing {
+  opacity: 0.4;
+  transition: opacity 150ms ease;
+}
+.desktop-icons {
+  transition: opacity 150ms ease;
+}

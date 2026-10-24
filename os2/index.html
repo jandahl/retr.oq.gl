@@ -45,6 +45,12 @@
       <header class="os2-titlebar"><button type="button" class="sysmenu" aria-label="System menu"><span class="pm-icon pm-dos"></span></button><span class="os2-caption">DOS Window — OQ!2 session</span><button type="button" class="minimize" aria-label="Hide"></button><button type="button" class="close-window" aria-label="Close"></button></header>
       <iframe src="../dos/index.html" title="DOS window session"></iframe>
     </section>
+    <ul class="os2-dropdown desktop-context-menu" id="desktop-context-menu" hidden>
+      <li><button type="button" id="desktop-ctx-arrange">Arrange icons</button></li>
+      <li><button type="button" id="desktop-ctx-refresh">Refresh</button></li>
+      <li class="os2-sep" aria-hidden="true"></li>
+      <li><button type="button" data-shutdown>Shut down…</button></li>
+    </ul>
   </main>
 <script src="../shared/desktop-icons.js?v=1"></script>
 <script src="app.js?v=4"></script>

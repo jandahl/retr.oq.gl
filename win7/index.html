@@ -189,11 +189,12 @@
   <!-- Real desktop right-click menu (issue #100), reusing the Start
        menu's own glass chrome class same as win98's desktop-context-menu
        reuses .start-menu -- see app.js's "Desktop right-click menu"
-       section for the wiring. Two items only, both with a real backing
-       action: no Personalize/Screen resolution/Gadgets/View/Sort
-       by/New submenus, since none of those has anything real behind it
-       in this theme. -->
+       section for the wiring. Real backing actions for Auto arrange icons,
+       Refresh, and Show desktop icons. -->
   <ul role="menu" class="start-menu desktop-context-menu" id="desktop-context-menu" hidden>
+    <li role="menu-item" class="start-menu-item" id="desktop-context-arrange">
+      <span class="start-menu-icon" aria-hidden="true"></span> Auto arrange icons
+    </li>
     <li role="menu-item" class="start-menu-item" id="desktop-context-refresh">
       <span class="start-menu-icon icon-computer" aria-hidden="true"></span> Refresh
     </li>
