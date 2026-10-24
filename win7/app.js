@@ -125,6 +125,13 @@
     },
   });
 
+  const desktopIconsApi = window.OqDesktopIcons ? window.OqDesktopIcons.init({
+    desktop,
+    storageKey: "retr-oq:win7-desktop-icon-pos",
+    iconsSelector: ".desktop-icon",
+    bottomReserve: 40,
+  }) : null;
+
   // ---------- Desktop right-click menu ----------
   // shared/redmond/window-manager.js already preventDefault()s a
   // right-click over the bare desktop (so the browser's own menu never
@@ -195,6 +202,7 @@
       desktop.querySelectorAll(".desktop-icon.selected").forEach((el) => {
         el.classList.remove("selected");
       });
+      if (desktopIconsApi) desktopIconsApi.cleanUp();
       if (desktopIcons) {
         desktopIcons.classList.remove("is-refreshing");
         void desktopIcons.offsetWidth;

@@ -257,6 +257,16 @@ textarea {
   outline: none;
 }
 
+.desktop-icon.is-placed {
+  position: absolute;
+}
+
+.desktop-icon.is-dragging {
+  position: absolute;
+  z-index: 50;
+  opacity: 0.92;
+}
+
 /* Desktop icons are real <button>s, so 7.css's own generic
    `button:not(:disabled):hover`/`:active` rules (a border-color change
    plus a `.active` bevel, see vendor/win7/7.css's own :root rules) apply

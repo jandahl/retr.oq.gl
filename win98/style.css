@@ -148,6 +148,16 @@ textarea {
   outline: none;
 }
 
+.desktop-icon.is-placed {
+  position: absolute;
+}
+
+.desktop-icon.is-dragging {
+  position: absolute;
+  z-index: 50;
+  opacity: 0.92;
+}
+
 .desktop-icons .desktop-icon:hover,
 .desktop-icons .desktop-icon:active,
 .desktop-icons .desktop-icon:focus {
