@@ -108,6 +108,13 @@
     },
   });
 
+  const desktopIconsApi = window.OqDesktopIcons ? window.OqDesktopIcons.init({
+    desktop,
+    storageKey: "retr-oq:xp-desktop-icon-pos",
+    iconsSelector: ".desktop-icon",
+    bottomReserve: 30,
+  }) : null;
+
   // ---------- Desktop right-click menu ----------
   // Real (not suppress-only) context menu (issue #100), same shape as
   // win98/app.js's own #desktop-context-menu: only two items, both with
@@ -156,6 +163,7 @@
       desktop.querySelectorAll(".desktop-icon.selected").forEach((el) => {
         el.classList.remove("selected");
       });
+      if (desktopIconsApi) desktopIconsApi.cleanUp();
       if (desktopIconsEl) {
         desktopIconsEl.classList.add("refreshing");
         window.setTimeout(() => desktopIconsEl.classList.remove("refreshing"), 150);

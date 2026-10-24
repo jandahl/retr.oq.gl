@@ -184,6 +184,16 @@ body * { cursor: var(--cursor-arrow) !important; }
   outline: none;
 }
 
+.desktop-icon.is-placed {
+  position: absolute;
+}
+
+.desktop-icon.is-dragging {
+  position: absolute;
+  z-index: 50;
+  opacity: 0.92;
+}
+
 /* No hover/selected treatment on the button element itself -- a border or
    fill drawn across the whole icon+gap+label cluster is exactly the "still
    a rectangle button" look this file otherwise goes out of its way to

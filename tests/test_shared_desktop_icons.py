@@ -79,3 +79,89 @@ def test_aqua_grid_snapping_support(page, base_url):
     # Snapped to (10 + N*50)
     assert (left - 10) % 50 == 0
     assert (top - 10) % 50 == 0
+
+
+def test_win98_icon_drag_and_persistence(page, base_url):
+    page.set_viewport_size({"width": 1024, "height": 768})
+    page.goto(f"{base_url}/win98/index.html")
+    page.wait_for_selector("#boot-screen.is-done", state="attached", timeout=6000)
+    page.wait_for_timeout(300)
+
+    icon = page.locator('.desktop-icon[data-open="win-computer"]')
+    box = icon.bounding_box()
+
+    # Drag icon by (+200, +150)
+    page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+    page.mouse.down()
+    page.mouse.move(box["x"] + box["width"] / 2 + 200, box["y"] + box["height"] / 2 + 150, steps=5)
+    page.mouse.up()
+    page.wait_for_timeout(100)
+
+    assert icon.evaluate("el => el.classList.contains('is-placed')")
+    pos_data = page.evaluate("() => localStorage.getItem('retr-oq:win98-desktop-icon-pos')")
+    assert pos_data is not None
+    assert "win-computer" in pos_data
+
+    # Reload page to verify persistence
+    page.reload()
+    page.wait_for_selector("#boot-screen.is-done", state="attached", timeout=6000)
+    page.wait_for_timeout(300)
+
+    reloaded_icon = page.locator('.desktop-icon[data-open="win-computer"]')
+    assert reloaded_icon.evaluate("el => el.classList.contains('is-placed')")
+
+
+def test_xp_and_win7_icon_drag_and_arrange(page, base_url):
+    # Test XP icon drag + context menu Arrange Icons
+    page.set_viewport_size({"width": 1024, "height": 768})
+    page.goto(f"{base_url}/xp/index.html")
+    page.wait_for_selector("#boot-screen.is-done", state="attached", timeout=6000)
+    page.wait_for_timeout(300)
+
+    icon = page.locator('.desktop-icon[data-open="win-oq"]')
+    box = icon.bounding_box()
+
+    page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+    page.mouse.down()
+    page.mouse.move(box["x"] + box["width"] / 2 + 180, box["y"] + box["height"] / 2 + 120, steps=5)
+    page.mouse.up()
+    page.wait_for_timeout(100)
+
+    assert icon.evaluate("el => el.classList.contains('is-placed')")
+    assert page.evaluate("() => localStorage.getItem('retr-oq:xp-desktop-icon-pos')") is not None
+
+    # Open context menu on bare desktop and click Arrange Icons
+    page.mouse.click(500, 400, button="right")
+    page.wait_for_selector("#desktop-context-menu:not([hidden])")
+    page.click("#desktop-context-arrange")
+    page.wait_for_timeout(100)
+
+    # Position reset and persistence cleared
+    assert not icon.evaluate("el => el.classList.contains('is-placed')")
+    assert page.evaluate("() => localStorage.getItem('retr-oq:xp-desktop-icon-pos')") is None
+
+    # Test Win7 icon drag + context menu Auto arrange icons
+    page.goto(f"{base_url}/win7/index.html")
+    page.wait_for_selector("#boot-screen.is-done", state="attached", timeout=6000)
+    page.wait_for_timeout(300)
+
+    w7_icon = page.locator('.desktop-icon[data-open="win-oq"]')
+    w7_box = w7_icon.bounding_box()
+
+    page.mouse.move(w7_box["x"] + w7_box["width"] / 2, w7_box["y"] + w7_box["height"] / 2)
+    page.mouse.down()
+    page.mouse.move(w7_box["x"] + w7_box["width"] / 2 + 150, w7_box["y"] + w7_box["height"] / 2 + 100, steps=5)
+    page.mouse.up()
+    page.wait_for_timeout(100)
+
+    assert w7_icon.evaluate("el => el.classList.contains('is-placed')")
+    assert page.evaluate("() => localStorage.getItem('retr-oq:win7-desktop-icon-pos')") is not None
+
+    page.mouse.click(500, 400, button="right")
+    page.wait_for_selector("#desktop-context-menu:not([hidden])")
+    page.click("#desktop-context-arrange")
+    page.wait_for_timeout(100)
+
+    assert not w7_icon.evaluate("el => el.classList.contains('is-placed')")
+    assert page.evaluate("() => localStorage.getItem('retr-oq:win7-desktop-icon-pos')") is None
+

@@ -154,6 +154,13 @@
     },
   });
 
+  const desktopIconsApi = window.OqDesktopIcons ? window.OqDesktopIcons.init({
+    desktop,
+    storageKey: "retr-oq:win98-desktop-icon-pos",
+    iconsSelector: ".desktop-icon",
+    bottomReserve: 32,
+  }) : null;
+
   // ---------- Start menu ----------
   const startButton = document.getElementById("start-button");
   const startMenu = document.getElementById("start-menu");
