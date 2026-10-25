@@ -167,7 +167,7 @@
   }
 
   function route(filter) {
-    var validFilters = ["all", "games", "console", "handheld", "home-computer", "redmond", "cupertino", "workstation"];
+    var validFilters = ["all", "games", "console", "handheld", "home-computer", "workstation"];
     if (validFilters.indexOf(filter) === -1) filter = "all";
     var isRing = filter === "console";
     document.body.classList.toggle("inventory-mode", isRing);

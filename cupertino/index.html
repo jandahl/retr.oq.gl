@@ -8,13 +8,18 @@
 <title>retr-oq — Cupertino / Aqua</title>
 <!-- Canonical Cupertino family shell; /aqua/ remains a compatibility URL. -->
 <script>
-/* Apply persisted OS X era before paint to avoid skin flash. */
+/* Apply persisted Cupertino era before paint to avoid skin flash. */
 (function () {
   try {
     var params = new URLSearchParams(window.location.search);
-    var e = params.get("era") || localStorage.getItem("retr-oq:cupertino-era") || localStorage.getItem("retr-oq:aqua-osx-era");
-    var allowed = { aqua: 1, tiger: 1, leopard: 1, lion: 1, yosemite: 1, bigsur: 1, glass: 1 };
+    var q = params.get("era");
+    var e = q || localStorage.getItem("retr-oq:cupertino-era") || localStorage.getItem("retr-oq:aqua-osx-era");
+    var allowed = { system1: 1, mac8: 1, aqua: 1, tiger: 1, leopard: 1, lion: 1, yosemite: 1, bigsur: 1, glass: 1 };
     if (!allowed[e]) e = "aqua";
+    if (q && allowed[q]) {
+      localStorage.setItem("retr-oq:cupertino-era", q);
+      localStorage.setItem("retr-oq:aqua-osx-era", q);
+    }
     document.documentElement.setAttribute("data-osx-era", e);
   } catch (err) {
     document.documentElement.setAttribute("data-osx-era", "aqua");

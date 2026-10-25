@@ -6,13 +6,13 @@
   // Galaxy: original canvas 2D star-tunnel / nebula (not Apple TM art).
 
   const ERA_KEY = "retr-oq:aqua-osx-era";
-  const ERAS = (window.OqCupertino?.eras || []).filter((era) => era.family === "osx");
+  const ERAS = (window.OqCupertino?.eras || []).slice();
 
   const ERA_IDS = new Set(ERAS.map((e) => e.id));
 
   // The inline boot script may already have applied the legacy Aqua value
   // before this adapter loads. Migrate independently of that paint guard.
-  window.OqCupertino?.migrateStoredEra("osx");
+  window.OqCupertino?.migrateStoredEra();
 
   function prefersReducedMotion() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -20,7 +20,9 @@
 
   function readStoredEra() {
     try {
-      const v = window.OqCupertino?.migrateStoredEra("osx") || localStorage.getItem(ERA_KEY);
+      const q = new URLSearchParams(window.location.search).get("era");
+      if (ERA_IDS.has(q)) return q;
+      const v = window.OqCupertino?.migrateStoredEra() || localStorage.getItem(ERA_KEY);
       if (ERA_IDS.has(v)) return v;
     } catch {
       /* ignore */

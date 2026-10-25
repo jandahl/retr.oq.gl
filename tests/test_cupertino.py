@@ -1,49 +1,56 @@
-"""Cupertino family coverage for the native Classic Time Machine adapter."""
+"""Cupertino family coverage for unified Classic + OS X skins and redirects."""
 
 import pytest
 
 
-def test_canonical_shell_and_aqua_compatibility_redirect(page, base_url):
+def test_canonical_shell_and_compatibility_redirects(page, base_url):
     page.goto(f"{base_url}/cupertino/index.html?era=lion#desktop")
     assert "/cupertino/" in page.url
     assert page.evaluate("() => document.documentElement.dataset.osxEra") == "lion"
+
     page.goto(f"{base_url}/aqua/index.html?era=tiger#desktop")
     assert "/cupertino/" in page.url
     assert page.evaluate("() => document.documentElement.dataset.osxEra") == "tiger"
 
+    page.goto(f"{base_url}/mac1984/index.html")
+    assert "/cupertino/" in page.url
+    assert page.evaluate("() => document.documentElement.dataset.osxEra") == "system1"
+    assert page.evaluate("() => localStorage.getItem('retr-oq:cupertino-era')") == "system1"
 
-@pytest.mark.parametrize(
-    ("theme", "skin"),
-    [("mac1984", "system1"), ("mac8", "mac8")],
-)
-def test_classic_time_machine_is_native_to_each_skin(page, base_url, theme, skin):
-    errors = []
-    page.on("pageerror", lambda error: errors.append(str(error)))
-    page.goto(f"{base_url}/{theme}/index.html")
-    page.wait_for_timeout(1600)
-    assert errors == []
-    assert page.locator("#cupertino-classic-time-machine").count() == 1
-
-    page.locator('[role="menu-bar"] > [role="menu-item"]').first.click()
-    page.click("#cupertino-classic-time-machine")
-    overlay = page.locator(f".cupertino-classic-tm.{skin}")
-    assert overlay.is_visible()
-    assert overlay.locator('[data-era="system1"]').count() == 1
-    assert overlay.locator('[data-era="mac8"]').count() == 1
-    assert overlay.locator('[data-era="aqua"]').count() == 1
-
-    page.click('[data-era="mac8"]')
-    assert page.locator(".cupertino-classic-tm__preview").inner_text().startswith("Mac OS 8.1")
-    page.click('[data-action="restore"]')
-    assert page.locator(".cupertino-classic-tm").is_hidden()
+    page.goto(f"{base_url}/mac8/index.html")
+    assert "/cupertino/" in page.url
+    assert page.evaluate("() => document.documentElement.dataset.osxEra") == "mac8"
     assert page.evaluate("() => localStorage.getItem('retr-oq:cupertino-era')") == "mac8"
 
 
-@pytest.mark.parametrize("theme", ["mac1984", "mac8"])
-def test_classic_mac_desktop_drag_rubberband_selection(page, base_url, theme):
-    page.goto(f"{base_url}/{theme}/index.html")
-    page.wait_for_selector("#boot-screen.hidden", state="attached", timeout=6000)
-    page.wait_for_timeout(300)
+@pytest.mark.parametrize("era", ["system1", "mac8"])
+def test_classic_eras_in_cupertino_hide_dock_and_persist(page, base_url, era):
+    errors = []
+    page.on("pageerror", lambda error: errors.append(str(error)))
+    page.goto(f"{base_url}/cupertino/index.html")
+    page.emulate_media(reduced_motion="reduce")
+    page.evaluate("() => window.__aquaTimeMachine.open()")
+    page.wait_for_timeout(40)
+    page.click(f'.tm-era-card[data-era="{era}"]')
+    page.click("#tm-restore")
+    page.wait_for_timeout(100)
+    assert errors == []
+    assert page.locator("#tm-overlay").is_hidden()
+    assert page.evaluate("() => document.documentElement.dataset.osxEra") == era
+    assert page.evaluate("() => localStorage.getItem('retr-oq:cupertino-era')") == era
+    assert page.locator("#dock").is_hidden()
+
+    # Reload without query parameter: Cupertino remembers the Classic era.
+    page.goto(f"{base_url}/cupertino/index.html")
+    page.wait_for_timeout(100)
+    assert page.evaluate("() => document.documentElement.dataset.osxEra") == era
+    assert page.locator("#dock").is_hidden()
+
+
+@pytest.mark.parametrize("era", ["system1", "mac8"])
+def test_classic_mac_desktop_drag_rubberband_selection(page, base_url, era):
+    page.goto(f"{base_url}/cupertino/index.html?era={era}")
+    page.wait_for_timeout(200)
     viewport = page.viewport_size
     start_x = viewport["width"] - 220
     end_x = viewport["width"] - 10
@@ -76,4 +83,3 @@ def test_amiga_desktop_drag_rubberband_selection(page, base_url):
 
     selected = page.query_selector_all(".desktop-icon.is-selected")
     assert len(selected) >= 1
-

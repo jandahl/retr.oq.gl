@@ -1,6 +1,321 @@
-/* OS X era skins for aqua/ — original art only (no Apple logos / TM galaxy rip).
+/* Cupertino era skins — original art only (no Apple logos / TM galaxy rip).
    Applied via html[data-osx-era]. Aqua = default :root.
-   Eras: aqua · tiger · leopard · lion · yosemite · bigsur · glass. */
+   Eras: system1 · mac8 · aqua · tiger · leopard · lion · yosemite · bigsur · glass. */
+
+/* ---------- System 1 (1984) — 1-bit monochrome desktop, striped active titlebars, no Dock ---------- */
+html[data-osx-era="system1"] {
+  --aqua-font: "Chicago_12", "Chicago", "Charcoal", "Geneva", ui-sans-serif, sans-serif;
+  --aqua-menubar: #ffffff;
+  --aqua-menubar-border: #000000;
+  --aqua-accent: #000000;
+  --aqua-window: #ffffff;
+  --aqua-text: #000000;
+}
+
+html[data-osx-era="system1"] #shell {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2' shape-rendering='crispEdges'%3E%3Crect width='2' height='2' fill='%23ffffff'/%3E%3Crect width='1' height='1' fill='%23000000'/%3E%3C/svg%3E");
+  background-size: 2px 2px;
+  image-rendering: pixelated;
+}
+
+html[data-osx-era="system1"] .osx-menubar {
+  background: #ffffff;
+  color: #000000;
+  border-bottom: 1px solid #000000;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-osx-era="system1"] .osx-menubar > #app-menu-item,
+html[data-osx-era="system1"] #menu-clock {
+  display: none;
+}
+
+html[data-osx-era="system1"] .osx-menubar > [role="menu-item"].menu-open,
+html[data-osx-era="system1"] .osx-menubar > [role="menuitem"].menu-open,
+html[data-osx-era="system1"] .osx-menubar [role="menu"] a:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+html[data-osx-era="system1"] .osx-menubar [role="menu"] {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow: 2px 2px 0 #000000;
+}
+
+html[data-osx-era="system1"] .osx-menubar [role="menu"] .divider {
+  border-top: 1px dotted #000000;
+}
+
+html[data-osx-era="system1"] #dock,
+html[data-osx-era="system1"] #tm-dock-preview {
+  display: none !important;
+}
+
+html[data-osx-era="system1"] .desktop-icons {
+  bottom: 12px;
+}
+
+html[data-osx-era="system1"] .desktop-icon-glyph {
+  filter: grayscale(1) contrast(350%);
+}
+
+html[data-osx-era="system1"] .desktop-icon-label {
+  background: #ffffff;
+  color: #000000;
+  text-shadow: none;
+  border-radius: 0;
+  padding: 1px 4px;
+  box-shadow: none;
+}
+
+html[data-osx-era="system1"] .desktop-icon.selected .desktop-icon-glyph {
+  filter: grayscale(1) contrast(350%) invert(1);
+}
+
+html[data-osx-era="system1"] .desktop-icon.selected .desktop-icon-label,
+html[data-osx-era="system1"] .desktop-icon:focus-visible .desktop-icon-label {
+  background: #000000;
+  color: #ffffff;
+  border-radius: 0;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) {
+  border-radius: 0;
+  border: 1px solid #000000;
+  background: #ffffff;
+  box-shadow: 2px 2px 0 #000000;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .osx-titlebar {
+  border-radius: 0;
+  border-bottom: 1px solid #000000;
+  box-shadow: none;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      #ffffff 0 2px,
+      #000000 2px 3px,
+      #ffffff 3px 4px
+    );
+}
+
+html[data-osx-era="system1"] .osx-window.inactive:not(#tm-oq-preview) .osx-titlebar {
+  background: #ffffff;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .osx-title {
+  background: #ffffff !important;
+  color: #000000;
+  text-shadow: none;
+  padding: 0 6px;
+  margin: 0 auto;
+  flex: 0 1 auto;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .osx-traffic {
+  width: 11px;
+  height: 11px;
+  border-radius: 0;
+  border: 1px solid #000000;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #ffffff;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .osx-traffic::before {
+  content: none !important;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .osx-btn-minimize {
+  display: none;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .osx-btn-zoom {
+  order: 2;
+}
+
+html[data-osx-era="system1"] .osx-window.inactive:not(#tm-oq-preview) .osx-traffic {
+  visibility: hidden;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .osx-body {
+  background: #ffffff;
+  border-top: 0;
+  color: #000000;
+}
+
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .aqua-panel,
+html[data-osx-era="system1"] .osx-window:not(#tm-oq-preview) .aqua-field-row input[type="text"] {
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow: none;
+  background: #ffffff;
+  color: #000000;
+}
+
+/* ---------- Mac OS 8.1 (1998) — Platinum bevels, striped titlebars, no Dock ---------- */
+html[data-osx-era="mac8"] {
+  --aqua-font: "Charcoal", "Chicago_12", "Chicago", "Geneva", ui-sans-serif, sans-serif;
+  --aqua-menubar: #dddddd;
+  --aqua-menubar-border: #000000;
+  --aqua-accent: #333399;
+  --aqua-window: #cccccc;
+  --aqua-text: #000000;
+}
+
+html[data-osx-era="mac8"] #shell {
+  background-color: #3c6894;
+  background-image:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.06) 0 2px,
+      rgba(0, 0, 0, 0.08) 2px 4px,
+      transparent 4px 16px
+    ),
+    radial-gradient(ellipse 90% 70% at 50% 35%, #4e7eae 0%, #355d86 65%, #264668 100%);
+}
+
+html[data-osx-era="mac8"] .osx-menubar {
+  background: linear-gradient(180deg, #ffffff 0%, #dddddd 100%);
+  color: #000000;
+  border-bottom: 1px solid #000000;
+  box-shadow: inset 0 1px 0 #ffffff, inset 0 -1px 0 #aaaaaa;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+html[data-osx-era="mac8"] .osx-menubar > #app-menu-item {
+  display: none;
+}
+
+html[data-osx-era="mac8"] .osx-menubar > [role="menu-item"].menu-open,
+html[data-osx-era="mac8"] .osx-menubar > [role="menuitem"].menu-open,
+html[data-osx-era="mac8"] .osx-menubar [role="menu"] a:hover,
+html[data-osx-era="mac8"] .desktop-context-menu a:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+html[data-osx-era="mac8"] .osx-menubar [role="menu"],
+html[data-osx-era="mac8"] .desktop-context-menu {
+  background: #dddddd;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 0;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #999999,
+    2px 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+html[data-osx-era="mac8"] #dock,
+html[data-osx-era="mac8"] #tm-dock-preview {
+  display: none !important;
+}
+
+html[data-osx-era="mac8"] .desktop-icons {
+  bottom: 12px;
+}
+
+html[data-osx-era="mac8"] .desktop-icon-label {
+  background: rgba(238, 238, 238, 0.88);
+  color: #000000;
+  text-shadow: none;
+  border-radius: 0;
+  padding: 1px 4px;
+  box-shadow: none;
+}
+
+html[data-osx-era="mac8"] .desktop-icon.selected .desktop-icon-label,
+html[data-osx-era="mac8"] .desktop-icon:focus-visible .desktop-icon-label {
+  background: #000000;
+  color: #ffffff;
+  border-radius: 0;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) {
+  border-radius: 0;
+  border: 1px solid #000000;
+  background: #cccccc;
+  padding: 0 5px 5px;
+  box-shadow:
+    inset 1px 1px 0 #ffffff,
+    inset -1px -1px 0 #888888,
+    3px 4px 10px rgba(0, 0, 0, 0.38);
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) .osx-titlebar {
+  border-radius: 0;
+  border-bottom: 0;
+  margin: 0 -5px;
+  padding: 0 6px;
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px 0 0 #888888;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      #cccccc 0 2px,
+      #ffffff 2px 3px,
+      #777777 3px 4px
+    );
+}
+
+html[data-osx-era="mac8"] .osx-window.inactive:not(#tm-oq-preview) .osx-titlebar {
+  background: #dddddd;
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) .osx-title {
+  background: #cccccc !important;
+  color: #000000;
+  text-shadow: none;
+  padding: 0 6px;
+  margin: 0 auto;
+  flex: 0 1 auto;
+}
+
+html[data-osx-era="mac8"] .osx-window.inactive:not(#tm-oq-preview) .osx-title {
+  background: #dddddd !important;
+  color: #777777;
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) .osx-traffic {
+  width: 11px;
+  height: 11px;
+  border-radius: 0;
+  border: 1px solid #222222;
+  background: linear-gradient(135deg, #999999 0%, #eeeeee 100%);
+  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #666666;
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) .osx-traffic::before {
+  content: none !important;
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) .osx-btn-minimize {
+  display: none;
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) .osx-btn-zoom {
+  order: 2;
+}
+
+html[data-osx-era="mac8"] .osx-window.inactive:not(#tm-oq-preview) .osx-traffic {
+  visibility: hidden;
+}
+
+html[data-osx-era="mac8"] .osx-window:not(#tm-oq-preview) .osx-body {
+  background: #eeeeee;
+  border: 1px solid #000000;
+  box-shadow: -1px -1px 0 #888888, 1px 1px 0 #ffffff;
+}
 
 /* ---------- Aqua (2001) — classic jelly chrome (explicit era cues) ---------- */
 html[data-osx-era="aqua"] .osx-window {
@@ -1439,6 +1754,12 @@ html[data-osx-era] #tm-oq-preview .osx-titlebar {
 html[data-osx-era="aqua"] #tm-oq-preview .osx-titlebar {
   background: linear-gradient(180deg, #e3eefa 0%, #afc8e8 42%, #7fa4d4 55%, #5f8cc4 100%) !important;
 }
+html[data-osx-era="system1"] #tm-oq-preview .osx-titlebar {
+  background: repeating-linear-gradient(180deg, #ffffff 0 2px, #222222 2px 3px, #ffffff 3px 4px) !important;
+}
+html[data-osx-era="mac8"] #tm-oq-preview .osx-titlebar {
+  background: linear-gradient(180deg, #e4e4e4 0%, #b8b8b8 100%) !important;
+}
 html[data-osx-era="tiger"] #tm-oq-preview .osx-titlebar {
   background: linear-gradient(180deg, #e0e6ea 0%, #c4ccd4 38%, #8a949e 52%, #6a747e 100%) !important;
 }
@@ -1694,6 +2015,24 @@ html[data-osx-era] #tm-oq-preview .tm-oq-preview-status {
 .tm-era-card.is-selected {
   transform: translateY(-12px) scale(1.1);
   z-index: 2;
+}
+
+.tm-era-card[data-era="system1"] {
+  --tm-accent: #d8d8d8;
+}
+.tm-era-card[data-era="system1"] .tm-era-preview {
+  background:
+    repeating-linear-gradient(180deg, #ffffff 0 2px, #000000 2px 3px, #ffffff 3px 4px) 0 0 / 100% 14px no-repeat,
+    repeating-conic-gradient(#000000 0% 25%, #ffffff 0% 50%) 0 0 / 4px 4px;
+}
+
+.tm-era-card[data-era="mac8"] {
+  --tm-accent: #9ab8d8;
+}
+.tm-era-card[data-era="mac8"] .tm-era-preview {
+  background:
+    repeating-linear-gradient(180deg, #cccccc 0 1px, #ffffff 1px 2px, #888888 2px 3px) 0 0 / 100% 14px no-repeat,
+    linear-gradient(165deg, #4e7eae 0%, #355d86 55%, #264668 100%);
 }
 
 .tm-era-card[data-era="aqua"] {
@@ -1974,6 +2313,12 @@ html[data-osx-era] #tm-oq-preview .osx-titlebar,
   background-image: none !important;
   background-color: #8ba4d1 !important;
   background: linear-gradient(180deg, #c8daf4 0%, #8ba4d1 100%) !important;
+}
+html[data-osx-era="system1"] #tm-oq-preview .osx-titlebar {
+  background: repeating-linear-gradient(180deg, #ffffff 0 2px, #222222 2px 3px, #ffffff 3px 4px) !important;
+}
+html[data-osx-era="mac8"] #tm-oq-preview .osx-titlebar {
+  background: linear-gradient(180deg, #e4e4e4 0%, #b8b8b8 100%) !important;
 }
 html[data-osx-era="tiger"] #tm-oq-preview .osx-titlebar {
   background: linear-gradient(180deg, #c5d5e0 0%, #6a8a9a 100%) !important;

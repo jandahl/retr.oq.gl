@@ -407,6 +407,8 @@
   const aboutEraDescription = document.getElementById("about-era-description");
 
   const eraAbout = {
+    system1: ["System 1", "1984", "A 1984 Macintosh System 1 desktop for retr-oq: 1-bit monochrome dither, striped active titlebars, square close and zoom boxes, and a fixed top menu bar without a Dock."],
+    mac8: ["Mac OS 8.1", "1998 (Platinum)", "A 1998 Mac OS 8.1 Platinum desktop for retr-oq: bevelled grey window frames, horizontal titlebar pinstripes, live menu bar clock, and Contextual Menu Manager support."],
     aqua: ["Aqua", "~2001 (Cheetah / Puma)", "An early OS X Aqua desktop for retr-oq: jelly traffic lights, pinstripes, and a shelf Dock with the bright, candy-colored chrome of the first public OS X releases."],
     tiger: ["Tiger", "2005", "A Tiger-inspired retr-oq desktop: unified brushed-metal chrome, a cooler blue-grey palette, and a flatter Dock shaped by the polished utility of Mac OS X 10.4."],
     leopard: ["Leopard", "2007", "A Leopard-inspired retr-oq desktop: dark menubar, cool graphite window chrome, reflective Dock glass, and the deeper night palette of Mac OS X 10.5."],
@@ -745,6 +747,9 @@
     }
     event.preventDefault();
     closeDesktopContextMenu();
+    if (document.documentElement.dataset.osxEra === "system1") {
+      return;
+    }
     if (onIcon) {
       selectDesktopIcon(onIcon);
       iconContextTarget = onIcon;

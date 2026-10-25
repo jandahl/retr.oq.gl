@@ -55,6 +55,7 @@ jobs:
           filters: |
             aqua:
               - "aqua/**"
+              - "cupertino/**"
               - "shared/osx/**"
               - "vendor/**"
               - "tests/test_aqua.py"
@@ -64,6 +65,7 @@ jobs:
               - ".github/workflows/theme-tests.yml"
             cupertino:
               - "aqua/**"
+              - "cupertino/**"
               - "mac1984/**"
               - "mac8/**"
               - "shared/cupertino/**"

@@ -68,33 +68,6 @@ window.OqHubMachines = [
     `,
   },
   {
-    href: "mac1984/",
-    name: "Mac",
-    year: "1984",
-    category: "cupertino",
-    hasGames: false,
-    meta: "System 1",
-    iconNote: "Compact Mac, 1-bit happy Mac, floppy chin",
-    icon: `
-      <rect width="32" height="32" fill="#c8b492"/>
-      <rect x="6" y="2" width="20" height="27" fill="#e6d3b0"/>
-      <rect x="6" y="2" width="20" height="1" fill="#f4e6cc"/>
-      <rect x="6" y="28" width="20" height="1" fill="#a89068"/>
-      <rect x="8" y="4" width="16" height="14" fill="#2b2722"/>
-      <rect x="9" y="5" width="14" height="12" fill="#111111"/>
-      <rect x="12" y="8" width="8" height="7" fill="#e8e8e8"/>
-      <rect x="13" y="10" width="2" height="2" fill="#111111"/>
-      <rect x="17" y="10" width="2" height="2" fill="#111111"/>
-      <rect x="14" y="13" width="4" height="1" fill="#111111"/>
-      <rect x="11" y="20" width="10" height="2" fill="#3a342c"/>
-      <rect x="12" y="24" width="2" height="2" fill="#51a3e1"/>
-      <rect x="14" y="24" width="2" height="2" fill="#7ac142"/>
-      <rect x="16" y="24" width="2" height="2" fill="#f5d031"/>
-      <rect x="18" y="24" width="2" height="2" fill="#f0892f"/>
-      <rect x="20" y="24" width="1" height="2" fill="#e23d3d"/>
-    `,
-  },
-  {
     href: "nes/",
     name: "NES",
     year: "1985",
@@ -254,31 +227,6 @@ window.OqHubMachines = [
     `,
   },
   {
-    href: "mac8/",
-    name: "Mac OS 8.1",
-    year: "1998",
-    category: "cupertino",
-    hasGames: false,
-    meta: "Platinum",
-    iconNote: "Platinum window, striped title bar, color finder",
-    icon: `
-      <rect width="32" height="32" fill="#8a8a8a"/>
-      <rect x="3" y="5" width="26" height="22" fill="#dddddd"/>
-      <rect x="3" y="5" width="26" height="1" fill="#ffffff"/>
-      <rect x="3" y="6" width="26" height="5" fill="#cccccc"/>
-      <rect x="4" y="7" width="24" height="1" fill="#ffffff"/>
-      <rect x="4" y="9" width="24" height="1" fill="#ffffff"/>
-      <rect x="5" y="7" width="3" height="3" fill="#888888"/>
-      <rect x="5" y="12" width="22" height="13" fill="#ffffff"/>
-      <rect x="11" y="15" width="10" height="8" fill="#4aa0e8"/>
-      <rect x="13" y="17" width="2" height="2" fill="#1a1a1a"/>
-      <rect x="17" y="17" width="2" height="2" fill="#1a1a1a"/>
-      <rect x="14" y="20" width="4" height="1" fill="#1a1a1a"/>
-      <rect x="12" y="16" width="2" height="2" fill="#e24b4b"/>
-      <rect x="18" y="16" width="2" height="2" fill="#f0c030"/>
-    `,
-  },
-  {
     href: "itumak/",
     name: "Itumak",
     year: "1999",
@@ -355,10 +303,10 @@ window.OqHubMachines = [
   {
     href: "cupertino/",
     name: "Cupertino",
-    year: "2001",
+    year: "1984–2026",
     category: "cupertino",
     hasGames: false,
-    meta: "Aqua / Dock · family",
+    meta: "Time Machine",
     iconNote: "Pinstripe desktop, traffic-light window, glass Dock",
     icon: `
       <rect width="32" height="32" fill="#e2e6ec"/>

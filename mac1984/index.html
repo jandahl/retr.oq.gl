@@ -3,163 +3,24 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<!-- Mostly a no-op in modern browsers (they ignore http-equiv Cache-Control
-     for the document's own caching) but kept as a statement of intent on a
-     static host with no server config to set a real header from. -->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<title>retr-oq — 1984 Mac desktop prototype</title>
-<link rel="stylesheet" href="../vendor/mac1984/system.css" />
-<link rel="stylesheet" href="style.css?v=7" />
-<link rel="stylesheet" href="../shared/cupertino/classic-time-machine.css?v=1" />
+<title>retr-oq — System 1 (Cupertino)</title>
+<script>
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  if (!params.get("era")) params.set("era", "system1");
+  try {
+    localStorage.setItem("retr-oq:cupertino-era", params.get("era"));
+    localStorage.setItem("retr-oq:aqua-osx-era", params.get("era"));
+  } catch (err) {
+    /* ignore */
+  }
+  var q = params.toString();
+  var target = "../cupertino/" + (q ? "?" + q : "") + (window.location.hash || "");
+  window.location.replace(target);
+})();
+</script>
 </head>
 <body>
-  <div id="boot-screen">
-    <div id="boot-sequence" class="visible">
-      <svg class="happy-mac" viewBox="0 0 16 16" shape-rendering="crispEdges" fill="#000000" role="img" aria-label="Happy Mac"><rect x="2" y="0" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/><rect x="4" y="0" width="1" height="1"/><rect x="5" y="0" width="1" height="1"/><rect x="6" y="0" width="1" height="1"/><rect x="7" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="9" y="0" width="1" height="1"/><rect x="10" y="0" width="1" height="1"/><rect x="11" y="0" width="1" height="1"/><rect x="12" y="0" width="1" height="1"/><rect x="13" y="0" width="1" height="1"/><rect x="1" y="1" width="1" height="1"/><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="12" y="1" width="1" height="1"/><rect x="13" y="1" width="1" height="1"/><rect x="14" y="1" width="1" height="1"/><rect x="0" y="2" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="14" y="2" width="1" height="1"/><rect x="15" y="2" width="1" height="1"/><rect x="0" y="3" width="1" height="1"/><rect x="15" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="11" y="4" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/><rect x="15" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="11" y="5" width="1" height="1"/><rect x="12" y="5" width="1" height="1"/><rect x="15" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="15" y="6" width="1" height="1"/><rect x="0" y="7" width="1" height="1"/><rect x="15" y="7" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="11" y="8" width="1" height="1"/><rect x="15" y="8" width="1" height="1"/><rect x="0" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/><rect x="6" y="9" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/><rect x="0" y="10" width="1" height="1"/><rect x="6" y="10" width="1" height="1"/><rect x="7" y="10" width="1" height="1"/><rect x="8" y="10" width="1" height="1"/><rect x="9" y="10" width="1" height="1"/><rect x="15" y="10" width="1" height="1"/><rect x="0" y="11" width="1" height="1"/><rect x="15" y="11" width="1" height="1"/><rect x="0" y="12" width="1" height="1"/><rect x="1" y="12" width="1" height="1"/><rect x="14" y="12" width="1" height="1"/><rect x="15" y="12" width="1" height="1"/><rect x="1" y="13" width="1" height="1"/><rect x="2" y="13" width="1" height="1"/><rect x="3" y="13" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="5" y="13" width="1" height="1"/><rect x="6" y="13" width="1" height="1"/><rect x="7" y="13" width="1" height="1"/><rect x="8" y="13" width="1" height="1"/><rect x="9" y="13" width="1" height="1"/><rect x="10" y="13" width="1" height="1"/><rect x="11" y="13" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/><rect x="14" y="13" width="1" height="1"/><rect x="2" y="14" width="1" height="1"/><rect x="3" y="14" width="1" height="1"/><rect x="4" y="14" width="1" height="1"/><rect x="5" y="14" width="1" height="1"/><rect x="6" y="14" width="1" height="1"/><rect x="7" y="14" width="1" height="1"/><rect x="8" y="14" width="1" height="1"/><rect x="9" y="14" width="1" height="1"/><rect x="10" y="14" width="1" height="1"/><rect x="11" y="14" width="1" height="1"/><rect x="12" y="14" width="1" height="1"/><rect x="13" y="14" width="1" height="1"/><rect x="4" y="15" width="1" height="1"/><rect x="5" y="15" width="1" height="1"/><rect x="6" y="15" width="1" height="1"/><rect x="7" y="15" width="1" height="1"/><rect x="8" y="15" width="1" height="1"/><rect x="9" y="15" width="1" height="1"/><rect x="10" y="15" width="1" height="1"/><rect x="11" y="15" width="1" height="1"/></svg>
-      <p>Welcome to Macintosh.</p>
-    </div>
-  </div>
-
-  <ul role="menu-bar" class="desktop-menu-bar">
-    <li role="menu-item" tabindex="0" aria-haspopup="true">
-      <span role="img" class="apple" aria-label="Apple"></span>
-      <ul role="menu">
-        <li role="menu-item"><a href="#">About the Finder…</a></li>
-        <li role="menu-item" class="divider"><a href="#">Alarm Clock</a></li>
-        <li role="menu-item"><a href="#">Calculator</a></li>
-        <li role="menu-item"><a href="#">Control Panel</a></li>
-        <li role="menu-item"><a href="#">Key Caps</a></li>
-        <li role="menu-item"><a href="#">Note Pad</a></li>
-        <li role="menu-item"><a href="#">Puzzle</a></li>
-        <li role="menu-item"><a href="#">Scrapbook</a></li>
-      </ul>
-    </li>
-    <li role="menu-item" tabindex="0" aria-haspopup="true">
-      File
-      <ul role="menu">
-        <li role="menu-item"><a href="#">New Folder</a></li>
-        <li role="menu-item"><a href="#">Open</a></li>
-        <li role="menu-item"><a href="#">Print</a></li>
-        <li role="menu-item" class="divider"><a href="#">Close</a></li>
-        <li role="menu-item"><a href="#">Get Info</a></li>
-        <li role="menu-item"><a href="#">Duplicate</a></li>
-        <li role="menu-item"><a href="#">Put Back</a></li>
-        <li role="menu-item" class="divider"><a href="#">Eject</a></li>
-        <li role="menu-item"><a href="#">Erase Disk…</a></li>
-      </ul>
-    </li>
-    <li role="menu-item" tabindex="0" aria-haspopup="true">
-      Edit
-      <ul role="menu">
-        <li role="menu-item"><a href="#">Undo</a></li>
-        <li role="menu-item" class="divider"><a href="#">Cut</a></li>
-        <li role="menu-item"><a href="#">Copy</a></li>
-        <li role="menu-item"><a href="#">Paste</a></li>
-        <li role="menu-item"><a href="#">Clear</a></li>
-        <li role="menu-item" class="divider"><a href="#">Select All</a></li>
-        <li role="menu-item"><a href="#">Show Clipboard</a></li>
-      </ul>
-    </li>
-    <li role="menu-item" tabindex="0" aria-haspopup="true">
-      View
-      <ul role="menu">
-        <li role="menu-item"><a href="#">by Icon</a></li>
-        <li role="menu-item"><a href="#">by Name</a></li>
-        <li role="menu-item"><a href="#">by Date</a></li>
-        <li role="menu-item"><a href="#">by Size</a></li>
-        <li role="menu-item"><a href="#">by Kind</a></li>
-      </ul>
-    </li>
-    <li role="menu-item" tabindex="0" aria-haspopup="true">
-      Special
-      <ul role="menu">
-        <li role="menu-item"><a href="#">Clean Up</a></li>
-        <li role="menu-item"><a href="#">Empty Trash</a></li>
-        <li role="menu-item" class="divider"><a href="#">Set Startup</a></li>
-        <li role="menu-item"><a href="#" id="mac1984-restart">Restart</a></li>
-        <li role="menu-item"><a href="#" id="mac1984-shutdown">Shut Down</a></li>
-      </ul>
-    </li>
-  </ul>
-
-  <button type="button" class="btn" id="reopen">Reopen window</button>
-
-  <!-- OQ and Word Builder still have no windows (click is a no-op). Word
-       Parts opens #win-decon (shared DECON stack). Notes has #win2. -->
-  <div class="desktop-icons">
-    <button type="button" class="desktop-icon" id="win2-icon">
-      <svg class="note-icon" viewBox="0 0 16 16" shape-rendering="crispEdges" fill="#000000" aria-hidden="true"><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="12" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="13" y="4" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="13" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="13" y="6" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="9" y="7" width="1" height="1"/><rect x="10" y="7" width="1" height="1"/><rect x="13" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="13" y="8" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/><rect x="6" y="9" width="1" height="1"/><rect x="7" y="9" width="1" height="1"/><rect x="8" y="9" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="13" y="9" width="1" height="1"/><rect x="2" y="10" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="13" y="10" width="1" height="1"/><rect x="2" y="11" width="1" height="1"/><rect x="13" y="11" width="1" height="1"/><rect x="2" y="12" width="1" height="1"/><rect x="3" y="12" width="1" height="1"/><rect x="4" y="12" width="1" height="1"/><rect x="5" y="12" width="1" height="1"/><rect x="6" y="12" width="1" height="1"/><rect x="7" y="12" width="1" height="1"/><rect x="8" y="12" width="1" height="1"/><rect x="9" y="12" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="11" y="12" width="1" height="1"/><rect x="12" y="12" width="1" height="1"/><rect x="13" y="12" width="1" height="1"/></svg>
-      <span>Notes</span>
-    </button>
-    <button type="button" class="desktop-icon" id="oq-icon">
-      <svg class="oq-icon" viewBox="0 0 16 16" shape-rendering="crispEdges" fill="#000000" aria-hidden="true"><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="12" y="1" width="1" height="1"/><rect x="13" y="1" width="1" height="1"/><rect x="1" y="2" width="1" height="1"/><rect x="14" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="14" y="3" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="14" y="4" width="1" height="1"/><rect x="1" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="14" y="5" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="14" y="6" width="1" height="1"/><rect x="1" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="14" y="7" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="14" y="8" width="1" height="1"/><rect x="1" y="9" width="1" height="1"/><rect x="7" y="9" width="1" height="1"/><rect x="8" y="9" width="1" height="1"/><rect x="14" y="9" width="1" height="1"/><rect x="1" y="10" width="1" height="1"/><rect x="7" y="10" width="1" height="1"/><rect x="8" y="10" width="1" height="1"/><rect x="14" y="10" width="1" height="1"/><rect x="1" y="11" width="1" height="1"/><rect x="7" y="11" width="1" height="1"/><rect x="8" y="11" width="1" height="1"/><rect x="14" y="11" width="1" height="1"/><rect x="1" y="12" width="1" height="1"/><rect x="14" y="12" width="1" height="1"/><rect x="2" y="13" width="1" height="1"/><rect x="3" y="13" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="5" y="13" width="1" height="1"/><rect x="6" y="13" width="1" height="1"/><rect x="7" y="13" width="1" height="1"/><rect x="8" y="13" width="1" height="1"/><rect x="9" y="13" width="1" height="1"/><rect x="10" y="13" width="1" height="1"/><rect x="11" y="13" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/></svg>
-      <span>OQ</span>
-    </button>
-    <button type="button" class="desktop-icon" id="wordbuilder-icon">
-      <svg class="wordbuilder-icon" viewBox="0 0 16 16" shape-rendering="crispEdges" fill="#000000" aria-hidden="true"><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="10" y="3" width="1" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="9" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="0" y="8" width="1" height="1"/><rect x="1" y="8" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="11" y="8" width="1" height="1"/><rect x="12" y="8" width="1" height="1"/><rect x="13" y="8" width="1" height="1"/><rect x="14" y="8" width="1" height="1"/><rect x="15" y="8" width="1" height="1"/><rect x="0" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/><rect x="0" y="10" width="1" height="1"/><rect x="5" y="10" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="15" y="10" width="1" height="1"/><rect x="0" y="11" width="1" height="1"/><rect x="5" y="11" width="1" height="1"/><rect x="10" y="11" width="1" height="1"/><rect x="15" y="11" width="1" height="1"/><rect x="0" y="12" width="1" height="1"/><rect x="1" y="12" width="1" height="1"/><rect x="2" y="12" width="1" height="1"/><rect x="3" y="12" width="1" height="1"/><rect x="4" y="12" width="1" height="1"/><rect x="5" y="12" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="11" y="12" width="1" height="1"/><rect x="12" y="12" width="1" height="1"/><rect x="13" y="12" width="1" height="1"/><rect x="14" y="12" width="1" height="1"/><rect x="15" y="12" width="1" height="1"/></svg>
-      <span>Word Builder</span>
-    </button>
-    <button type="button" class="desktop-icon" id="deconstructor-icon" data-open="win-decon">
-      <svg class="deconstructor-icon" viewBox="0 0 16 16" shape-rendering="crispEdges" fill="#000000" aria-hidden="true"><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="12" y="1" width="1" height="1"/><rect x="13" y="1" width="1" height="1"/><rect x="14" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="14" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="10" y="3" width="1" height="1"/><rect x="15" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="15" y="4" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="15" y="5" width="1" height="1"/><rect x="11" y="6" width="1" height="1"/><rect x="15" y="6" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="10" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="9" y="8" width="1" height="1"/><rect x="11" y="8" width="1" height="1"/><rect x="15" y="8" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="8" y="9" width="1" height="1"/><rect x="11" y="9" width="1" height="1"/><rect x="15" y="9" width="1" height="1"/><rect x="2" y="10" width="1" height="1"/><rect x="7" y="10" width="1" height="1"/><rect x="11" y="10" width="1" height="1"/><rect x="12" y="10" width="1" height="1"/><rect x="13" y="10" width="1" height="1"/><rect x="14" y="10" width="1" height="1"/><rect x="15" y="10" width="1" height="1"/><rect x="2" y="11" width="1" height="1"/><rect x="3" y="11" width="1" height="1"/><rect x="4" y="11" width="1" height="1"/><rect x="5" y="11" width="1" height="1"/><rect x="6" y="11" width="1" height="1"/><rect x="7" y="11" width="1" height="1"/><rect x="3" y="13" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/></svg>
-      <span>Word Parts</span>
-    </button>
-  </div>
-
-  <!-- Opened by the "Notes" desktop icon (#win2-icon); starts .closed so it
-       reuses the same open/close/focus machinery as every other window. -->
-  <section class="window desktop-window closed" id="win2" style="top: 6rem; left: 7rem;">
-    <div class="inactive-title-bar" id="win2-titlebar">
-      <button type="button" aria-label="Close" class="close" id="win2-close"></button>
-      <h1 class="title">Notes</h1>
-      <button type="button" aria-label="Zoom" class="resize"></button>
-    </div>
-    <div class="separator"></div>
-    <div class="window-pane">
-      <p>
-        This window opened from a desktop icon, not a window that was
-        already on screen -- click the "Notes" icon on the desktop (top
-        right) any time to reopen it after closing.
-      </p>
-    </div>
-    <div class="growbox"></div>
-  </section>
-
-
-  <!-- Word Parts (= DECON / shared decon stack). Visible name is "Word Parts"
-       — pairs with Word Builder; short enough for a 1-bit icon label. Not
-       "Deconstructor" (not a valid 1984 Mac app label). See NOTES.md. -->
-  <section class="window desktop-window closed" id="win-decon" style="top: 5rem; left: 5rem; width: 28rem; height: 20rem;">
-    <div class="inactive-title-bar" id="win-decon-titlebar">
-      <button type="button" aria-label="Close" class="close" id="win-decon-close"></button>
-      <h1 class="title">Word Parts</h1>
-      <button type="button" aria-label="Zoom" class="resize"></button>
-    </div>
-    <div class="separator"></div>
-    <div class="window-pane decon-body">
-      <div class="mac1984-field-row">
-        <input type="text" id="decon-word" placeholder="Type a Kalaallisut word..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
-      </div>
-      <div class="mac1984-field-row mac1984-checkbox-row">
-        <input type="checkbox" id="decon-root-first" checked />
-        <label for="decon-root-first">Root first</label>
-      </div>
-      <p class="mac1984-status" id="decon-status">Type a word, press Enter.</p>
-      <div class="mac1984-decon-results" id="decon-results"></div>
-    </div>
-    <div class="growbox"></div>
-  </section>
-
-<script src="../shared/dict-source.js?v=3"></script>
-<script src="../shared/katersat-source.js?v=2"></script>
-<script src="../shared/dict-merge.js?v=2"></script>
-<script src="../shared/hyphenation.js?v=1"></script>
-<script src="../shared/router.js?v=24"></script>
-<script src="../shared/cupertino/era-registry.js?v=1"></script>
-<script type="module" src="../shared/oq-analysis.js?v=14"></script>
-<script src="../shared/decon-app.js?v=6"></script>
-<script src="app.js?v=6"></script>
-<script src="../shared/cupertino/classic-time-machine.js?v=1"></script>
+  <p><a href="../cupertino/?era=system1">Continue to Cupertino (System 1)…</a></p>
 </body>
 </html>
