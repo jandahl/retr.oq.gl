@@ -17,25 +17,26 @@ test("Cupertino registry covers Classic and OS X milestones in chronology", () =
   assert.match(source, /retr-oq:aqua-osx-era/);
 });
 
-test("Aqua Time Machine consumes only OS X eras from the shared registry", () => {
+test("Cupertino Time Machine consumes all Classic and OS X eras from the shared registry", () => {
   const source = read("cupertino/timemachine.js");
   assert.match(source, /window\.OqCupertino\?\.eras/);
-  assert.match(source, /era\.family === "osx"/);
-  assert.match(source, /migrateStoredEra\("osx"\)/);
+  assert.doesNotMatch(source, /era\.family === "osx"/);
+  assert.match(source, /migrateStoredEra\(\)/);
 });
 
-test("Aqua entry point loads the registry before its Time Machine adapter", () => {
+test("Cupertino entry point loads the registry before its Time Machine adapter and accepts classic eras", () => {
   const html = read("cupertino/index.html");
   const registry = html.indexOf("shared/cupertino/era-registry.js?v=1");
   const timeMachine = html.indexOf('src="timemachine.js?v=11"');
   assert.ok(registry >= 0 && timeMachine > registry);
+  assert.match(html, /system1:\s*1/);
+  assert.match(html, /mac8:\s*1/);
 });
 
-test("Classic Mac entry points load the native Time Machine adapter", () => {
-  for (const [file, marker] of [["mac1984/index.html", "classic-time-machine.js?v=1"], ["mac8/index.html", "classic-time-machine.js?v=1"]]) {
+test("Legacy Classic Mac URLs redirect to canonical Cupertino eras", () => {
+  for (const [file, era] of [["mac1984/index.html", "system1"], ["mac8/index.html", "mac8"]]) {
     const html = read(file);
-    assert.match(html, /shared\/cupertino\/era-registry\.js\?v=1/);
-    assert.match(html, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-    assert.match(html, /classic-time-machine\.css\?v=1/);
+    assert.match(html, new RegExp(`params\\.set\\("era", "${era}"\\)`));
+    assert.match(html, /\.\.\/cupertino\//);
   }
 });

@@ -550,13 +550,15 @@ def test_time_machine_reduced_motion_instant_restore(page, base_url):
 
 
 def test_time_machine_eras_include_future_milestones(page, base_url):
-    """Timeline lists aqua→glass milestones in chronological order."""
+    """Timeline lists system1→glass milestones in chronological order."""
     goto_aqua(page, base_url)
     ids = page.evaluate(
         """() => (window.__aquaTimeMachine && window.__aquaTimeMachine.eras || [])
           .map((e) => e.id)"""
     )
     assert ids == [
+        "system1",
+        "mac8",
         "aqua",
         "tiger",
         "leopard",
@@ -568,7 +570,7 @@ def test_time_machine_eras_include_future_milestones(page, base_url):
     years = page.evaluate(
         """() => (window.__aquaTimeMachine.eras || []).map((e) => e.year)"""
     )
-    assert years == ["2001", "2005", "2007", "2011", "2014", "2020", "2026"]
+    assert years == ["1984", "1998", "2001", "2005", "2007", "2011", "2014", "2020", "2026"]
 
 
 def test_time_machine_glass_era_persists(page, base_url):
