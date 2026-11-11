@@ -8,11 +8,11 @@
 // directly (browser ES module or Node)"). This repo targets http(s)
 // hosting, not file://, so that's not a constraint here.
 //
-// Imported from oq-api's pinned 0.4.5 release rather than vendored —
+// Imported from oq-api's pinned 0.4.210 release rather than vendored —
 // public-api.js's whole point is to be a stable import boundary;
 // vendoring a copy would defeat that and silently drift stale.
 //
-// The 0.4.5 API exposes the standardized example
+// The 0.4.210 API exposes the standardized example
 // catalog consumed below. Keep this pinned so the catalog and its schema do
 // not silently drift.
 //
@@ -30,7 +30,7 @@ import { restoreGlossItemPresetReferences } from "./oq-api-compat.mjs";
   let api;
   try {
     // Pin the deployed oq-api release so this app does not silently drift.
-    api = await import("https://api.oq.gl/api/v0.4.5/public-api.js");
+    api = await import("https://api.oq.gl/api/v0.4.210/public-api.js");
   } catch (err) {
     // window.OqAnalysis.analyzeWord still exists and is still a function
     // that returns a rejected Promise -- callers (dos/app.js's
